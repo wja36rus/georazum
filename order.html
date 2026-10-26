@@ -1,223 +1,558 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Конструктор заказа — Гео Разум</title>
-<meta name="description" content="Заказ отчета Гео Разум: кадастровый номер, выбор роли, комбо-модули и оплата.">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<header class="site-header">
-  <div class="container site-header__inner">
-    <a class="logo" href="index.html"><span class="logo__mark">◈</span> Гео Разум</a>
-    <nav class="nav" data-nav aria-label="Основное меню">
-      <a href="index.html#how">О сервисе</a>
-      <a href="index.html#tariffs">Тарифы</a>
-      <a href="index.html#b2b">Для бизнеса</a>
-      <a href="index.html#faq">FAQ</a>
-    </nav>
-    <div class="header-actions">
-      <button class="btn btn--ghost" type="button" data-open-modal="login">Войти</button>
-      <a class="btn btn--accent" href="order.html">Получить отчет</a>
-      <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Открыть меню">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-</header>
-
-<main class="section">
-  <div class="container">
-    <div class="wizard" data-wizard>
-
-      <div class="wizard__progress">
-        <span class="wizard__progress-text" data-progress-text>Шаг 1 из 6</span>
-        <div class="bar" role="progressbar" aria-label="Прогресс оформления заказа" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1">
-          <i data-progress-bar></i>
-        </div>
-      </div>
-
-      <!-- Шаг 1. Подтверждение участка -->
-      <section class="step" data-step="1">
-        <h2 tabindex="-1">Шаг 1 из 6. Подтверждение участка</h2>
-        <p class="muted">Мы нашли участок по вашему запросу. Проверьте данные.</p>
-        <div class="preview">
-          <div class="map-mock" aria-hidden="true">
-            <svg viewBox="0 0 400 260" width="400" height="260" role="img">
-              <rect width="400" height="260" fill="#eaf1e6"/>
-              <path d="M0 190 Q90 150 150 178 T300 150 T400 176 L400 260 L0 260 Z" fill="#d4e4cd"/>
-              <path d="M0 60 Q120 90 210 62 T400 40 L400 0 L0 0 Z" fill="#dfeadb"/>
-              <path d="M40 240 L60 90 Q70 40 130 30 L340 20" stroke="#b9cdc0" stroke-width="3" fill="none" stroke-dasharray="7 6"/>
-              <polygon points="150,80 285,62 300,170 165,188" fill="#8fc79f" fill-opacity=".55" stroke="#0f8a5f" stroke-width="3"/>
-              <text x="170" y="130" font-family="Segoe UI, sans-serif" font-size="17" fill="#0b4b34">36:25:6945030:776</text>
-              <text x="170" y="152" font-family="Segoe UI, sans-serif" font-size="13" fill="#5b6b60">1,1 га · земли лесного фонда</text>
-              <circle cx="150" cy="80" r="5" fill="#0b6b4a"/>
-              <circle cx="285" cy="62" r="5" fill="#0b6b4a"/>
-              <circle cx="300" cy="170" r="5" fill="#0b6b4a"/>
-              <circle cx="165" cy="188" r="5" fill="#0b6b4a"/>
-              <path d="M20 20 L60 20" stroke="#c9791f" stroke-width="4"/>
-              <text x="68" y="25" font-family="Segoe UI, sans-serif" font-size="13" fill="#5b6b60">приаэродромная территория (100%)</text>
-            </svg>
-          </div>
-          <dl>
-            <dt>Кадастровый номер</dt>
-            <dd>36:25:6945030:776</dd>
-            <dt>Адрес</dt>
-            <dd>Воронежская обл., Рамонский р-н, урочище «Подгоренская дача»</dd>
-            <dt>Площадь</dt>
-            <dd>11 203 м² (1,1 га)</dd>
-            <dt>Категория</dt>
-            <dd>Земли лесного фонда</dd>
-            <dt>ВРИ</dt>
-            <dd>Осуществление рекреационной деятельности</dd>
-          </dl>
-        </div>
-        <div class="step__actions">
-          <button class="btn btn--accent btn--lg" type="button" data-next>Все верно, продолжить →</button>
-        </div>
-      </section>
-
-      <!-- Шаг 2. Выбор роли -->
-      <section class="step is-hidden" data-step="2">
-        <h2 tabindex="-1">Шаг 2 из 6. Для кого готовим отчет?</h2>
-        <p class="muted">Выберите базовый пакет. Вы сможете расширить его на следующем шаге.</p>
-        <div class="pick-grid" data-roles></div>
-        <div class="step__actions">
-          <button class="btn btn--ghost" type="button" data-prev>← Назад</button>
-          <button class="btn btn--accent btn--lg" type="button" data-next>Перейти к настройке →</button>
-        </div>
-      </section>
-
-      <!-- Шаг 3. Конструктор Комбо -->
-      <section class="step is-hidden" data-step="3">
-        <h2 tabindex="-1">Шаг 3 из 6. Соберите идеальный отчет</h2>
-        <p class="muted">Добавьте специализированные модули к вашему базовому тарифу.</p>
-        <div class="modules" data-modules></div>
-        <p class="total">Ваш заказ: <b data-total>2 990 ₽</b></p>
-        <div class="step__actions">
-          <button class="btn btn--ghost" type="button" data-prev>← Назад</button>
-          <button class="btn btn--accent btn--lg" type="button" data-next>Далее: Оформление →</button>
-        </div>
-      </section>
-
-      <!-- Шаг 4. Данные для PDF -->
-      <section class="step is-hidden" data-step="4">
-        <h2 tabindex="-1">Шаг 4 из 6. Куда отправить отчет?</h2>
-        <div class="form-grid">
-          <div class="form-field">
-            <label for="buyer-name">Ваше имя и фамилия (для титульного листа отчета)</label>
-            <input class="field" id="buyer-name" data-field="name" type="text" autocomplete="name" placeholder="Иван Иванов">
-          </div>
-          <div class="form-field">
-            <label for="buyer-email">Email (сюда придет ссылка на PDF)</label>
-            <input class="field" id="buyer-email" data-field="email" type="email" autocomplete="email" placeholder="ivan@mail.ru">
-          </div>
-          <div class="form-field">
-            <label for="buyer-phone">Телефон (для чека и уведомлений)</label>
-            <input class="field" id="buyer-phone" data-field="phone" type="tel" autocomplete="tel" placeholder="+7 (900) 000-00-00">
-          </div>
-        </div>
-        <label class="check" style="margin-top:16px">
-          <input type="checkbox" data-field="consent" checked>
-          <span>Я согласен с <a class="link-arrow" href="index.html#faq">политикой обработки персональных данных</a> и <a class="link-arrow" href="index.html#faq">офертой</a>.</span>
-        </label>
-        <div class="step__actions">
-          <button class="btn btn--ghost" type="button" data-prev>← Назад</button>
-          <button class="btn btn--accent btn--lg" type="button" data-next>Перейти к оплате →</button>
-        </div>
-      </section>
-
-      <!-- Шаг 5. Оплата -->
-      <section class="step is-hidden" data-step="5">
-        <h2 tabindex="-1">Шаг 5 из 6. Оплата заказа</h2>
-        <p>Сумма к оплате: <span class="pay-amount" data-total>2 990 ₽</span></p>
-        <div class="card-form">
-          <div class="form-grid">
-            <div class="form-field">
-              <label for="card">Номер карты</label>
-              <input class="field" id="card" data-field="card" type="text" inputmode="numeric" placeholder="0000 0000 0000 0000" autocomplete="cc-number">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Конструктор заказа — Гео Разум</title>
+        <meta
+            name="description"
+            content="Заказ отчета Гео Разум: кадастровый номер, выбор роли, комбо-модули и оплата."
+        />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container site-header__inner">
+                <a class="logo" href="index.html"
+                    ><span class="logo__mark">◈</span> Гео Разум</a
+                >
+                <nav class="nav" data-nav aria-label="Основное меню">
+                    <a href="index.html#how">О сервисе</a>
+                    <a href="index.html#tariffs">Тарифы</a>
+                    <a href="index.html#b2b">Для бизнеса</a>
+                    <a href="index.html#faq">FAQ</a>
+                </nav>
+                <div class="header-actions">
+                    <button
+                        class="btn btn--ghost"
+                        type="button"
+                        data-open-modal="login"
+                    >
+                        Войти
+                    </button>
+                    <a class="btn btn--accent" href="order.html"
+                        >Получить отчет</a
+                    >
+                    <button
+                        class="burger"
+                        type="button"
+                        data-burger
+                        aria-expanded="false"
+                        aria-label="Открыть меню"
+                    >
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
             </div>
-            <div class="form-field">
-              <label for="expiry">Срок действия</label>
-              <input class="field" id="expiry" data-field="expiry" type="text" inputmode="numeric" placeholder="ММ/ГГ" autocomplete="cc-exp">
+        </header>
+
+        <main class="section">
+            <div class="container">
+                <div class="wizard" data-wizard>
+                    <div class="wizard__progress">
+                        <span class="wizard__progress-text" data-progress-text
+                            >Шаг 1 из 6</span
+                        >
+                        <div
+                            class="bar"
+                            role="progressbar"
+                            aria-label="Прогресс оформления заказа"
+                            aria-valuemin="1"
+                            aria-valuemax="6"
+                            aria-valuenow="1"
+                        >
+                            <i data-progress-bar></i>
+                        </div>
+                    </div>
+
+                    <!-- Шаг 1. Подтверждение участка -->
+                    <section class="step" data-step="1">
+                        <h2 tabindex="-1">Шаг 1 из 6. Подтверждение участка</h2>
+                        <p class="muted">
+                            Мы нашли участок по вашему запросу. Проверьте
+                            данные.
+                        </p>
+                        <div class="preview">
+                            <div class="map-mock" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 400 260"
+                                    width="400"
+                                    height="260"
+                                    role="img"
+                                >
+                                    <rect
+                                        width="400"
+                                        height="260"
+                                        fill="#eaf1e6"
+                                    />
+                                    <path
+                                        d="M0 190 Q90 150 150 178 T300 150 T400 176 L400 260 L0 260 Z"
+                                        fill="#d4e4cd"
+                                    />
+                                    <path
+                                        d="M0 60 Q120 90 210 62 T400 40 L400 0 L0 0 Z"
+                                        fill="#dfeadb"
+                                    />
+                                    <path
+                                        d="M40 240 L60 90 Q70 40 130 30 L340 20"
+                                        stroke="#b9cdc0"
+                                        stroke-width="3"
+                                        fill="none"
+                                        stroke-dasharray="7 6"
+                                    />
+                                    <polygon
+                                        points="150,80 285,62 300,170 165,188"
+                                        fill="#8fc79f"
+                                        fill-opacity=".55"
+                                        stroke="#0f8a5f"
+                                        stroke-width="3"
+                                    />
+                                    <text
+                                        x="170"
+                                        y="130"
+                                        font-family="Segoe UI, sans-serif"
+                                        font-size="17"
+                                        fill="#0b4b34"
+                                    >
+                                        36:25:6945030:776
+                                    </text>
+                                    <text
+                                        x="170"
+                                        y="152"
+                                        font-family="Segoe UI, sans-serif"
+                                        font-size="13"
+                                        fill="#5b6b60"
+                                    >
+                                        1,1 га · земли лесного фонда
+                                    </text>
+                                    <circle
+                                        cx="150"
+                                        cy="80"
+                                        r="5"
+                                        fill="#0b6b4a"
+                                    />
+                                    <circle
+                                        cx="285"
+                                        cy="62"
+                                        r="5"
+                                        fill="#0b6b4a"
+                                    />
+                                    <circle
+                                        cx="300"
+                                        cy="170"
+                                        r="5"
+                                        fill="#0b6b4a"
+                                    />
+                                    <circle
+                                        cx="165"
+                                        cy="188"
+                                        r="5"
+                                        fill="#0b6b4a"
+                                    />
+                                    <path
+                                        d="M20 20 L60 20"
+                                        stroke="#c9791f"
+                                        stroke-width="4"
+                                    />
+                                    <text
+                                        x="68"
+                                        y="25"
+                                        font-family="Segoe UI, sans-serif"
+                                        font-size="13"
+                                        fill="#5b6b60"
+                                    >
+                                        приаэродромная территория (100%)
+                                    </text>
+                                </svg>
+                            </div>
+                            <dl>
+                                <dt>Кадастровый номер</dt>
+                                <dd>36:25:6945030:776</dd>
+                                <dt>Адрес</dt>
+                                <dd>
+                                    Воронежская обл., Рамонский р-н, урочище
+                                    «Подгоренская дача»
+                                </dd>
+                                <dt>Площадь</dt>
+                                <dd>11 203 м² (1,1 га)</dd>
+                                <dt>Категория</dt>
+                                <dd>Земли лесного фонда</dd>
+                                <dt>ВРИ</dt>
+                                <dd>
+                                    Осуществление рекреационной деятельности
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="step__actions">
+                            <button
+                                class="btn btn--accent btn--lg"
+                                type="button"
+                                data-next
+                            >
+                                Все верно, продолжить →
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Шаг 2. Выбор роли -->
+                    <section class="step is-hidden" data-step="2">
+                        <h2 tabindex="-1">
+                            Шаг 2 из 6. Для кого готовим отчет?
+                        </h2>
+                        <p class="muted">
+                            Выберите базовый пакет. Вы сможете расширить его на
+                            следующем шаге.
+                        </p>
+                        <div class="pick-grid" data-roles></div>
+                        <div class="step__actions">
+                            <button
+                                class="btn btn--ghost"
+                                type="button"
+                                data-prev
+                            >
+                                ← Назад
+                            </button>
+                            <button
+                                class="btn btn--accent btn--lg"
+                                type="button"
+                                data-next
+                            >
+                                Перейти к настройке →
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Шаг 3. Конструктор Комбо -->
+                    <section class="step is-hidden" data-step="3">
+                        <h2 tabindex="-1">
+                            Шаг 3 из 6. Соберите идеальный отчет
+                        </h2>
+                        <p class="muted">
+                            Добавьте специализированные модули к вашему базовому
+                            тарифу.
+                        </p>
+                        <div class="modules" data-modules></div>
+                        <p class="total">
+                            Ваш заказ: <b data-total>2 990 ₽</b>
+                        </p>
+                        <div class="step__actions">
+                            <button
+                                class="btn btn--ghost"
+                                type="button"
+                                data-prev
+                            >
+                                ← Назад
+                            </button>
+                            <button
+                                class="btn btn--accent btn--lg"
+                                type="button"
+                                data-next
+                            >
+                                Далее: Оформление →
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Шаг 4. Данные для PDF -->
+                    <section class="step is-hidden" data-step="4">
+                        <h2 tabindex="-1">Шаг 4 из 6. Куда отправить отчет?</h2>
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="buyer-name"
+                                    >Ваше имя и фамилия (для титульного листа
+                                    отчета)</label
+                                >
+                                <input
+                                    class="field"
+                                    id="buyer-name"
+                                    data-field="name"
+                                    type="text"
+                                    autocomplete="name"
+                                    placeholder="Иван Иванов"
+                                />
+                            </div>
+                            <div class="form-field">
+                                <label for="buyer-email"
+                                    >Email (сюда придет ссылка на PDF)</label
+                                >
+                                <input
+                                    class="field"
+                                    id="buyer-email"
+                                    data-field="email"
+                                    type="email"
+                                    autocomplete="email"
+                                    placeholder="ivan@mail.ru"
+                                />
+                            </div>
+                            <div class="form-field">
+                                <label for="buyer-phone"
+                                    >Телефон (для чека и уведомлений)</label
+                                >
+                                <input
+                                    class="field"
+                                    id="buyer-phone"
+                                    data-field="phone"
+                                    type="tel"
+                                    autocomplete="tel"
+                                    placeholder="+7 (900) 000-00-00"
+                                />
+                            </div>
+                        </div>
+                        <label class="check" style="margin-top: 16px">
+                            <input
+                                type="checkbox"
+                                data-field="consent"
+                                checked
+                            />
+                            <span
+                                >Я согласен с
+                                <a class="link-arrow" href="index.html#faq"
+                                    >политикой обработки персональных данных</a
+                                >
+                                и
+                                <a class="link-arrow" href="index.html#faq"
+                                    >офертой</a
+                                >.</span
+                            >
+                        </label>
+                        <div class="step__actions">
+                            <button
+                                class="btn btn--ghost"
+                                type="button"
+                                data-prev
+                            >
+                                ← Назад
+                            </button>
+                            <button
+                                class="btn btn--accent btn--lg"
+                                type="button"
+                                data-next
+                            >
+                                Перейти к оплате →
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Шаг 5. Оплата -->
+                    <section class="step is-hidden" data-step="5">
+                        <h2 tabindex="-1">Шаг 5 из 6. Оплата заказа</h2>
+                        <p>
+                            Сумма к оплате:
+                            <span class="pay-amount" data-total>2 990 ₽</span>
+                        </p>
+                        <div class="card-form">
+                            <div class="form-grid">
+                                <div class="form-field">
+                                    <label for="card">Номер карты</label>
+                                    <input
+                                        class="field"
+                                        id="card"
+                                        data-field="card"
+                                        type="text"
+                                        inputmode="numeric"
+                                        placeholder="0000 0000 0000 0000"
+                                        autocomplete="cc-number"
+                                    />
+                                </div>
+                                <div class="form-field">
+                                    <label for="expiry">Срок действия</label>
+                                    <input
+                                        class="field"
+                                        id="expiry"
+                                        data-field="expiry"
+                                        type="text"
+                                        inputmode="numeric"
+                                        placeholder="ММ/ГГ"
+                                        autocomplete="cc-exp"
+                                    />
+                                </div>
+                                <div class="form-field">
+                                    <label for="cvv">CVV</label>
+                                    <input
+                                        class="field"
+                                        id="cvv"
+                                        data-field="cvv"
+                                        type="password"
+                                        inputmode="numeric"
+                                        placeholder="***"
+                                        autocomplete="cc-csc"
+                                    />
+                                </div>
+                                <div class="form-field">
+                                    <label for="holder">Имя владельца</label>
+                                    <input
+                                        class="field"
+                                        id="holder"
+                                        data-field="holder"
+                                        type="text"
+                                        placeholder="IVAN IVANOV"
+                                        autocomplete="cc-name"
+                                    />
+                                </div>
+                            </div>
+                            <p class="small muted" style="margin-top: 12px">
+                                Оплата имитируется: реальная транзакция не
+                                проводится, данные карты никуда не отправляются.
+                            </p>
+                        </div>
+                        <div class="step__actions">
+                            <button
+                                class="btn btn--ghost"
+                                type="button"
+                                data-prev
+                            >
+                                ← Назад
+                            </button>
+                            <button
+                                class="btn btn--accent btn--lg"
+                                type="button"
+                                data-next
+                            >
+                                Оплатить и сформировать отчет
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Шаг 6. Успех -->
+                    <section class="step is-hidden" data-step="6">
+                        <div class="success">
+                            <div class="success__icon">✅</div>
+                            <h2 tabindex="-1">Оплата прошла успешно!</h2>
+                            <p class="muted">
+                                Нейросеть «Гео Разум» уже анализирует ваш
+                                участок. Обычно это занимает 10-15 минут. Мы
+                                отправим готовый PDF-отчет на почту
+                                <b data-success-email>ivan@mail.ru</b>.
+                            </p>
+                            <div class="success__actions">
+                                <a class="btn btn--ghost" href="index.html"
+                                    >Вернуться на главную</a
+                                >
+                                <button
+                                    class="btn btn--accent"
+                                    type="button"
+                                    data-open-modal="cabinet"
+                                >
+                                    Перейти в Личный кабинет
+                                </button>
+                            </div>
+                            <p class="small muted" style="margin-top: 18px">
+                                Пример готового отчета:
+                                <a
+                                    class="link-arrow"
+                                    href="report-demo.html"
+                                    target="_blank"
+                                    rel="noopener"
+                                    >демо PDF</a
+                                >
+                            </p>
+                        </div>
+                    </section>
+
+                    <p
+                        class="form-error"
+                        role="alert"
+                        tabindex="-1"
+                        data-error
+                    ></p>
+                </div>
             </div>
-            <div class="form-field">
-              <label for="cvv">CVV</label>
-              <input class="field" id="cvv" data-field="cvv" type="password" inputmode="numeric" placeholder="***" autocomplete="cc-csc">
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <div class="site-footer__grid">
+                    <div>
+                        <a class="logo" href="index.html"
+                            ><span class="logo__mark">◈</span> Гео Разум</a
+                        >
+                        <p class="small">Цифровой интеллект территорий.</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="index.html#how">О сервисе</a>
+                        <a href="index.html#tariffs">Тарифы</a>
+                        <a href="index.html#b2b">Для бизнеса</a>
+                        <a
+                            href="report-demo.html"
+                            target="_blank"
+                            rel="noopener"
+                            >Пример отчета</a
+                        >
+                    </div>
+                    <div>
+                        <p class="small">Контакты</p>
+                        <p>
+                            <a href="mailto:support@georazum.ru"
+                                >support@georazum.ru</a
+                            ><br /><a href="tel:+78000000000"
+                                >8 (800) 000-00-00</a
+                            >
+                        </p>
+                    </div>
+                </div>
+                <p class="footer-copy">
+                    © 2026 Гео Разум. Цифровой интеллект территорий.
+                </p>
             </div>
-            <div class="form-field">
-              <label for="holder">Имя владельца</label>
-              <input class="field" id="holder" data-field="holder" type="text" placeholder="IVAN IVANOV" autocomplete="cc-name">
+        </footer>
+
+        <div
+            class="modal"
+            id="modal-login"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-login-title"
+        >
+            <div class="modal__panel">
+                <h3 id="modal-login-title">Вход в личный кабинет</h3>
+                <p class="muted">
+                    Личный кабинет появится в следующем релизе. Сейчас отчеты
+                    приходят на почту, указанную при оформлении заказа.
+                </p>
+                <button
+                    class="btn btn--accent btn--wide"
+                    type="button"
+                    data-close-modal
+                >
+                    Понятно
+                </button>
             </div>
-          </div>
-          <p class="small muted" style="margin-top:12px">Оплата имитируется: реальная транзакция не проводится, данные карты никуда не отправляются.</p>
         </div>
-        <div class="step__actions">
-          <button class="btn btn--ghost" type="button" data-prev>← Назад</button>
-          <button class="btn btn--accent btn--lg" type="button" data-next>Оплатить и сформировать отчет</button>
+
+        <div
+            class="modal"
+            id="modal-cabinet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-cabinet-title"
+        >
+            <div class="modal__panel">
+                <h3 id="modal-cabinet-title">Личный кабинет</h3>
+                <p class="muted">
+                    Раздел в разработке: здесь появятся все ваши отчеты, история
+                    заказов и повторная генерация PDF.
+                </p>
+                <p class="muted">
+                    А пока пример отчета доступен по
+                    <a
+                        class="link-arrow"
+                        href="report-demo.html"
+                        target="_blank"
+                        rel="noopener"
+                        >прямой ссылке</a
+                    >.
+                </p>
+                <button
+                    class="btn btn--accent btn--wide"
+                    type="button"
+                    data-close-modal
+                >
+                    Закрыть
+                </button>
+            </div>
         </div>
-      </section>
 
-      <!-- Шаг 6. Успех -->
-      <section class="step is-hidden" data-step="6">
-        <div class="success">
-          <div class="success__icon">✅</div>
-          <h2 tabindex="-1">Оплата прошла успешно!</h2>
-          <p class="muted">Нейросеть «Гео Разум» уже анализирует ваш участок. Обычно это занимает 10-15 минут. Мы отправим готовый PDF-отчет на почту <b data-success-email>ivan@mail.ru</b>.</p>
-          <div class="success__actions">
-            <a class="btn btn--ghost" href="index.html">Вернуться на главную</a>
-            <button class="btn btn--accent" type="button" data-open-modal="cabinet">Перейти в Личный кабинет</button>
-          </div>
-          <p class="small muted" style="margin-top:18px">Пример готового отчета: <a class="link-arrow" href="report-demo.html" target="_blank" rel="noopener">демо PDF</a></p>
-        </div>
-      </section>
-
-      <p class="form-error" role="alert" tabindex="-1" data-error></p>
-    </div>
-  </div>
-</main>
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="site-footer__grid">
-      <div>
-        <a class="logo" href="index.html"><span class="logo__mark">◈</span> Гео Разум</a>
-        <p class="small">Цифровой интеллект территорий.</p>
-      </div>
-      <div class="footer-links">
-        <a href="index.html#how">О сервисе</a>
-        <a href="index.html#tariffs">Тарифы</a>
-        <a href="index.html#b2b">Для бизнеса</a>
-        <a href="report-demo.html" target="_blank" rel="noopener">Пример отчета</a>
-      </div>
-      <div>
-        <p class="small">Контакты</p>
-        <p><a href="mailto:support@georazum.ru">support@georazum.ru</a><br><a href="tel:+78000000000">8 (800) 000-00-00</a></p>
-      </div>
-    </div>
-    <p class="footer-copy">© 2026 Гео Разум. Цифровой интеллект территорий.</p>
-  </div>
-</footer>
-
-<div class="modal" id="modal-login" role="dialog" aria-modal="true" aria-labelledby="modal-login-title">
-  <div class="modal__panel">
-    <h3 id="modal-login-title">Вход в личный кабинет</h3>
-    <p class="muted">Личный кабинет появится в следующем релизе. Сейчас отчеты приходят на почту, указанную при оформлении заказа.</p>
-    <button class="btn btn--accent btn--wide" type="button" data-close-modal>Понятно</button>
-  </div>
-</div>
-
-<div class="modal" id="modal-cabinet" role="dialog" aria-modal="true" aria-labelledby="modal-cabinet-title">
-  <div class="modal__panel">
-    <h3 id="modal-cabinet-title">Личный кабинет</h3>
-    <p class="muted">Раздел в разработке: здесь появятся все ваши отчеты, история заказов и повторная генерация PDF.</p>
-    <p class="muted">А пока пример отчета доступен по <a class="link-arrow" href="report-demo.html" target="_blank" rel="noopener">прямой ссылке</a>.</p>
-    <button class="btn btn--accent btn--wide" type="button" data-close-modal>Закрыть</button>
-  </div>
-</div>
-
-<script src="app.js"></script>
-</body>
+        <script src="vendor/jquery.min.js"></script>
+        <script src="app.js"></script>
+    </body>
 </html>

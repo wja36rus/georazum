@@ -83,7 +83,7 @@ const formatExpiry = (v) => {
   return d.length > 2 ? d.slice(0, 2) + "/" + d.slice(2) : d;
 };
 
-/* ---------- Интерфейс ---------- */
+/* ---------- Интерфейс (jQuery) ---------- */
 function initUI() {
   initNav();
   initReveal();
@@ -93,77 +93,74 @@ function initUI() {
   initWizard();
 }
 
+function initNav() {
+  const $burger = $("[data-burger]");
+  const $nav = $("[data-nav]");
+  if (!$burger.length || !$nav.length) return;
+  const close = () => {
+    $nav.removeClass("is-open");
+    $burger.attr("aria-expanded", "false");
+  };
+  $burger.on("click", () => {
+    const open = $nav.toggleClass("is-open").hasClass("is-open");
+    $burger.attr("aria-expanded", String(open));
+  });
+  $nav.on("click", (e) => {
+    if (e.target.tagName === "A") close();
+  });
+}
+
 /* Появление блоков при скролле (WOW.js из vendor/wow.min.js). */
 function initReveal() {
   const reduced =
     window.matchMedia &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduced || typeof WOW === "undefined") return;
-  document.documentElement.classList.add("js-anim");
+  $("html").addClass("js-anim");
   new WOW({ offset: 60 }).init();
   // WOW.js не раскрывает блоки, оставшиеся выше позиции загрузки (заход по ссылке index.html#tariffs),
   // поэтому после полной загрузки показываем их без анимации.
-  window.addEventListener("load", () => {
-    document.querySelectorAll(".wow").forEach((el) => {
-      if (el.getBoundingClientRect().bottom < 0)
-        el.style.visibility = "visible";
+  $(window).on("load", () => {
+    $(".wow").each(function () {
+      if (this.getBoundingClientRect().bottom < 0)
+        this.style.visibility = "visible";
     });
-  });
-}
-
-function initNav() {
-  const burger = document.querySelector("[data-burger]");
-  const nav = document.querySelector("[data-nav]");
-  if (!burger || !nav) return;
-  const close = () => {
-    nav.classList.remove("is-open");
-    burger.setAttribute("aria-expanded", "false");
-  };
-  burger.addEventListener("click", () => {
-    const open = nav.classList.toggle("is-open");
-    burger.setAttribute("aria-expanded", String(open));
-  });
-  nav.addEventListener("click", (e) => {
-    if (e.target.tagName === "A") close();
   });
 }
 
 function initModals() {
-  const openers = document.querySelectorAll("[data-open-modal]");
-  if (!openers.length) return;
+  const $openers = $("[data-open-modal]");
+  if (!$openers.length) return;
   let lastFocus = null;
-  const open = (id) => {
-    const modal = document.getElementById("modal-" + id);
-    if (!modal) return;
-    lastFocus = document.activeElement;
-    modal.classList.add("is-open");
-    const focusable = modal.querySelector("button, [href], input");
-    if (focusable) focusable.focus();
-  };
   const closeAll = () => {
-    document
-      .querySelectorAll(".modal.is-open")
-      .forEach((m) => m.classList.remove("is-open"));
+    $(".modal.is-open").removeClass("is-open");
     if (lastFocus) lastFocus.focus();
   };
-  openers.forEach((b) =>
-    b.addEventListener("click", () => open(b.dataset.openModal)),
-  );
-  document.querySelectorAll(".modal").forEach((m) => {
-    m.addEventListener("click", (e) => {
-      if (e.target === m || e.target.closest("[data-close-modal]")) closeAll();
-    });
+  $openers.on("click", function () {
+    const $modal = $("#modal-" + $(this).data("openModal"));
+    if (!$modal.length) return;
+    lastFocus = document.activeElement;
+    $modal.addClass("is-open");
+    const $focusable = $modal.find("button, [href], input").first();
+    if ($focusable.length) $focusable.trigger("focus");
   });
-  document.addEventListener("keydown", (e) => {
+  $(".modal").on("click", (e) => {
+    if (
+      e.target === e.currentTarget ||
+      $(e.target).closest("[data-close-modal]").length
+    )
+      closeAll();
+  });
+  $(document).on("keydown", (e) => {
     if (e.key === "Escape") closeAll();
   });
 }
 
 /* Главная: поле ввода в hero ведет в конструктор */
 function initHero() {
-  const form = document.querySelector("[data-hero-form]");
-  if (!form) return;
-  form.addEventListener("submit", (e) => {
+  const $form = $("[data-hero-form]");
+  if (!$form.length) return;
+  $form.on("submit", (e) => {
     e.preventDefault();
     location.href = "order.html";
   });
@@ -171,34 +168,36 @@ function initHero() {
 
 /* Главная: B2B/B2G заявка (клиентская имитация) */
 function initLeadForm() {
-  const form = document.querySelector("[data-lead-form]");
-  if (!form) return;
-  const note = form.querySelector("[data-note]");
-  form.addEventListener("submit", (e) => {
+  const $form = $("[data-lead-form]");
+  if (!$form.length) return;
+  const $note = $form.find("[data-note]");
+  $form.on("submit", (e) => {
     e.preventDefault();
-    const name = form.querySelector('[name="lead-name"]').value;
-    const contact = form.querySelector('[name="lead-contact"]').value;
-    const company = form.querySelector('[name="lead-company"]').value;
+    const name = $form.find('[name="lead-name"]').val();
+    const contact = $form.find('[name="lead-contact"]').val();
+    const company = $form.find('[name="lead-company"]').val();
     if (
       !isName(name) ||
       (contact.indexOf("@") > 0 ? !isEmail(contact) : !isPhone(contact)) ||
       company.trim().length < 2
     ) {
-      note.textContent =
-        "Проверьте поля: имя, корректный контакт и название организации.";
-      note.classList.add("is-error");
+      $note
+        .text("Проверьте поля: имя, корректный контакт и название организации.")
+        .addClass("is-error");
       return;
     }
-    note.classList.remove("is-error");
-    note.textContent =
-      "Заявка отправлена. Менеджер по интеграциям свяжется с вами в рабочее время.";
-    form.reset();
+    $note
+      .removeClass("is-error")
+      .text(
+        "Заявка отправлена. Менеджер по интеграциям свяжется с вами в рабочее время.",
+      );
+    $form[0].reset();
   });
 }
 
 function initWizard() {
-  const root = document.querySelector("[data-wizard]");
-  if (!root) return;
+  const $root = $("[data-wizard]");
+  if (!$root.length) return;
 
   const params = new URLSearchParams(location.search);
   const state = {
@@ -208,89 +207,87 @@ function initWizard() {
     email: "",
   };
 
-  const steps = [...root.querySelectorAll("[data-step]")];
-  const progressText = root.querySelector("[data-progress-text]");
-  const progressBar = root.querySelector("[data-progress-bar]");
-  const totalOut = root.querySelectorAll("[data-total]");
-  const errorBox = root.querySelector("[data-error]");
+  const $steps = $root.find("[data-step]");
+  const $progressText = $root.find("[data-progress-text]");
+  const $progressBar = $root.find("[data-progress-bar]");
+  const $totalOut = $root.find("[data-total]");
+  const $errorBox = $root.find("[data-error]");
 
-  const rolesBox = root.querySelector("[data-roles]");
-  if (rolesBox) {
-    rolesBox.innerHTML = Object.entries(TARIFFS)
-      .map(
-        ([id, t]) =>
-          '<button type="button" class="pick" data-role="' +
-          id +
-          '">' +
-          '<span class="pick__icon">' +
-          t.icon +
-          "</span>" +
-          '<span class="pick__text"><b>' +
-          t.name +
-          '</b><span class="pick__price">' +
-          rub(t.price) +
-          "</span></span></button>",
-      )
-      .join("");
+  const $rolesBox = $root.find("[data-roles]");
+  if ($rolesBox.length) {
+    $rolesBox.html(
+      Object.entries(TARIFFS)
+        .map(
+          ([id, t]) =>
+            '<button type="button" class="pick" data-role="' +
+            id +
+            '">' +
+            '<span class="pick__icon">' +
+            t.icon +
+            "</span>" +
+            '<span class="pick__text"><b>' +
+            t.name +
+            '</b><span class="pick__price">' +
+            rub(t.price) +
+            "</span></span></button>",
+        )
+        .join(""),
+    );
   }
 
-  const modBox = root.querySelector("[data-modules]");
-  if (modBox) {
-    modBox.innerHTML = Object.entries(MODULES)
-      .map(
-        ([id, m]) =>
-          '<label class="module">' +
-          '<input type="checkbox" data-module="' +
-          id +
-          '">' +
-          "<span><b>Модуль «" +
-          m.name +
-          "» (+ " +
-          m.price +
-          ' ₽)</b><span class="muted">' +
-          m.note +
-          "</span></span></label>",
-      )
-      .join("");
+  const $modBox = $root.find("[data-modules]");
+  if ($modBox.length) {
+    $modBox.html(
+      Object.entries(MODULES)
+        .map(
+          ([id, m]) =>
+            '<label class="module">' +
+            '<input type="checkbox" data-module="' +
+            id +
+            '">' +
+            "<span><b>Модуль «" +
+            m.name +
+            "» (+ " +
+            m.price +
+            ' ₽)</b><span class="muted">' +
+            m.note +
+            "</span></span></label>",
+        )
+        .join(""),
+    );
   }
 
   const refresh = () => {
-    totalOut.forEach((el) => {
-      el.textContent = rub(totalPrice(state.role, state.modules));
+    $totalOut.text(rub(totalPrice(state.role, state.modules)));
+    $root.find("[data-role]").each(function () {
+      $(this).toggleClass("is-active", this.dataset.role === state.role);
     });
-    root
-      .querySelectorAll("[data-role]")
-      .forEach((b) =>
-        b.classList.toggle("is-active", b.dataset.role === state.role),
-      );
   };
 
   const goTo = (n, opts) => {
     const silent = !!(opts && opts.silent);
     state.step = Math.min(6, Math.max(1, n));
-    steps.forEach((s) =>
-      s.classList.toggle("is-hidden", +s.dataset.step !== state.step),
-    );
-    progressText.textContent = "Шаг " + state.step + " из 6";
-    progressBar.style.width = (state.step / 6) * 100 + "%";
-    if (errorBox) {
-      errorBox.textContent = "";
-    }
+    $steps.each(function () {
+      $(this).toggleClass("is-hidden", +this.dataset.step !== state.step);
+    });
+    $progressText.text("Шаг " + state.step + " из 6");
+    $progressBar.css("width", (state.step / 6) * 100 + "%");
+    if ($errorBox.length) $errorBox.text("");
     if (state.step === 6) {
-      const mail = root.querySelector("[data-success-email]");
-      if (mail) mail.textContent = state.email;
+      const $mail = $root.find("[data-success-email]");
+      if ($mail.length) $mail.text(state.email);
     }
-    const heading = root.querySelector('[data-step="' + state.step + '"] h2');
     if (silent) return;
-    if (heading) heading.focus();
-    root.scrollIntoView({ block: "start", behavior: "smooth" });
+    const $heading = $root.find('[data-step="' + state.step + '"] h2');
+    if ($heading.length) $heading.trigger("focus");
+    $root[0].scrollIntoView({ block: "start", behavior: "smooth" });
   };
 
   /* Проверки перед переходом. Пункт 4 и 5 — единственные шаги с реальным вводом. */
   const validators = {
     2: () => (state.role ? "" : "Выберите формат отчета, чтобы продолжить."),
     4: () => {
-      const val = (sel) => root.querySelector(sel).value;
+      const val = (sel) => $root.find(sel).val();
       const name = val('[data-field="name"]'),
         email = val('[data-field="email"]'),
         phone = val('[data-field="phone"]');
@@ -300,13 +297,13 @@ function initWizard() {
         return "Проверьте email: на него придет ссылка на PDF.";
       if (!isPhone(phone))
         return "Проверьте телефон в формате +7 (900) 000-00-00.";
-      if (!root.querySelector('[data-field="consent"]').checked)
+      if (!$root.find('[data-field="consent"]').prop("checked"))
         return "Подтвердите согласие с политикой обработки данных и офертой.";
       state.email = email.trim();
       return "";
     },
     5: () => {
-      const val = (sel) => root.querySelector(sel).value;
+      const val = (sel) => $root.find(sel).val();
       if (digits(val('[data-field="card"]')).length !== 16)
         return "Введите 16 цифр номера карты.";
       if (!isExpiryValid(val('[data-field="expiry"]')))
@@ -319,44 +316,41 @@ function initWizard() {
     },
   };
 
-  root.addEventListener("click", (e) => {
-    const pick = e.target.closest("[data-role]");
-    if (pick) {
-      state.role = pick.dataset.role;
+  $root.on("click", (e) => {
+    const $pick = $(e.target).closest("[data-role]");
+    if ($pick.length) {
+      state.role = $pick[0].dataset.role;
       refresh();
       return;
     }
 
-    const next = e.target.closest("[data-next]");
-    if (next) {
+    const $next = $(e.target).closest("[data-next]");
+    if ($next.length) {
       const check = validators[state.step];
       const err = check ? check() : "";
       if (err) {
-        errorBox.textContent = err;
-        errorBox.focus();
+        $errorBox.text(err).trigger("focus");
         return;
       }
       goTo(state.step + 1);
       return;
     }
-    if (e.target.closest("[data-prev]")) goTo(state.step - 1);
+    if ($(e.target).closest("[data-prev]").length) goTo(state.step - 1);
   });
 
-  root.addEventListener("change", (e) => {
-    const box = e.target.closest("[data-module]");
-    if (!box) return;
-    state.modules = box.checked
-      ? state.modules.concat(box.dataset.module)
-      : state.modules.filter((id) => id !== box.dataset.module);
+  $root.on("change", (e) => {
+    const $box = $(e.target).closest("[data-module]");
+    if (!$box.length) return;
+    state.modules = $box.prop("checked")
+      ? state.modules.concat($box[0].dataset.module)
+      : state.modules.filter((id) => id !== $box[0].dataset.module);
     refresh();
   });
 
   const mask = (sel, fn) => {
-    const el = root.querySelector(sel);
-    if (el)
-      el.addEventListener("input", () => {
-        el.value = fn(el.value);
-      });
+    $root.find(sel).on("input", function () {
+      this.value = fn(this.value);
+    });
   };
   mask('[data-field="card"]', formatCard);
   mask('[data-field="expiry"]', formatExpiry);
@@ -367,7 +361,12 @@ function initWizard() {
   goTo(params.get("step") === "3" ? 3 : 1, { silent: true });
 }
 
-if (typeof document !== "undefined") initUI();
+if (typeof document !== "undefined" && typeof jQuery !== "undefined") {
+  jQuery(function () {
+    initUI();
+  });
+}
+
 if (typeof module !== "undefined") {
   module.exports = {
     TARIFFS,
