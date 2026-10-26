@@ -428,13 +428,9 @@
                                 <a class="btn btn--ghost" href="index.html"
                                     >Вернуться на главную</a
                                 >
-                                <button
-                                    class="btn btn--accent"
-                                    type="button"
-                                    data-open-modal="cabinet"
+                                <a class="btn btn--accent" href="cabinet.html"
+                                    >Перейти в Личный кабинет</a
                                 >
-                                    Перейти в Личный кабинет
-                                </button>
                             </div>
                             <p class="small muted" style="margin-top: 18px">
                                 Пример готового отчета:
@@ -478,6 +474,7 @@
                             rel="noopener"
                             >Пример отчета</a
                         >
+                        <a href="cabinet.html">Личный кабинет</a>
                     </div>
                     <div>
                         <p class="small">Контакты</p>
@@ -505,49 +502,38 @@
         >
             <div class="modal__panel">
                 <h3 id="modal-login-title">Вход в личный кабинет</h3>
-                <p class="muted">
-                    Личный кабинет появится в следующем релизе. Сейчас отчеты
-                    приходят на почту, указанную при оформлении заказа.
+                <div class="form-field">
+                    <label for="login-email">Email</label>
+                    <input
+                        class="field"
+                        id="login-email"
+                        type="email"
+                        placeholder="ivan@mail.ru"
+                        autocomplete="email"
+                    />
+                </div>
+                <div class="form-field">
+                    <label for="login-pass">Пароль</label>
+                    <input
+                        class="field"
+                        id="login-pass"
+                        type="password"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                    />
+                </div>
+                <p class="small muted">
+                    Вход имитируется: введите любые данные и нажмите «Войти».
                 </p>
+                <a class="btn btn--accent btn--wide" href="cabinet.html"
+                    >Войти в кабинет →</a
+                >
                 <button
-                    class="btn btn--accent btn--wide"
+                    class="btn btn--ghost btn--wide"
                     type="button"
                     data-close-modal
                 >
-                    Понятно
-                </button>
-            </div>
-        </div>
-
-        <div
-            class="modal"
-            id="modal-cabinet"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-cabinet-title"
-        >
-            <div class="modal__panel">
-                <h3 id="modal-cabinet-title">Личный кабинет</h3>
-                <p class="muted">
-                    Раздел в разработке: здесь появятся все ваши отчеты, история
-                    заказов и повторная генерация PDF.
-                </p>
-                <p class="muted">
-                    А пока пример отчета доступен по
-                    <a
-                        class="link-arrow"
-                        href="report-demo.html"
-                        target="_blank"
-                        rel="noopener"
-                        >прямой ссылке</a
-                    >.
-                </p>
-                <button
-                    class="btn btn--accent btn--wide"
-                    type="button"
-                    data-close-modal
-                >
-                    Закрыть
+                    Отмена
                 </button>
             </div>
         </div>

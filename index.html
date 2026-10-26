@@ -735,6 +735,7 @@
                             rel="noopener"
                             >Пример отчета</a
                         >
+                        <a href="cabinet.html">Личный кабинет</a>
                         <a href="#faq">Политика конфиденциальности</a>
                         <a href="#faq">Оферта</a>
                     </div>
@@ -764,16 +765,38 @@
         >
             <div class="modal__panel">
                 <h3 id="modal-login-title">Вход в личный кабинет</h3>
-                <p class="muted">
-                    Личный кабинет появится в следующем релизе. Сейчас отчеты
-                    приходят на почту, указанную при оформлении заказа.
+                <div class="form-field">
+                    <label for="login-email">Email</label>
+                    <input
+                        class="field"
+                        id="login-email"
+                        type="email"
+                        placeholder="ivan@mail.ru"
+                        autocomplete="email"
+                    />
+                </div>
+                <div class="form-field">
+                    <label for="login-pass">Пароль</label>
+                    <input
+                        class="field"
+                        id="login-pass"
+                        type="password"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
+                    />
+                </div>
+                <p class="small muted">
+                    Вход имитируется: введите любые данные и нажмите «Войти».
                 </p>
+                <a class="btn btn--accent btn--wide" href="cabinet.html"
+                    >Войти в кабинет →</a
+                >
                 <button
-                    class="btn btn--accent btn--wide"
+                    class="btn btn--ghost btn--wide"
                     type="button"
                     data-close-modal
                 >
-                    Понятно
+                    Отмена
                 </button>
             </div>
         </div>
