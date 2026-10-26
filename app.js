@@ -86,10 +86,29 @@ const formatExpiry = (v) => {
 /* ---------- Интерфейс ---------- */
 function initUI() {
   initNav();
+  initReveal();
   initModals();
   initHero();
   initLeadForm();
   initWizard();
+}
+
+/* Появление блоков при скролле (WOW.js из vendor/wow.min.js). */
+function initReveal() {
+  const reduced =
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || typeof WOW === "undefined") return;
+  document.documentElement.classList.add("js-anim");
+  new WOW({ offset: 60 }).init();
+  // WOW.js не раскрывает блоки, оставшиеся выше позиции загрузки (заход по ссылке index.html#tariffs),
+  // поэтому после полной загрузки показываем их без анимации.
+  window.addEventListener("load", () => {
+    document.querySelectorAll(".wow").forEach((el) => {
+      if (el.getBoundingClientRect().bottom < 0)
+        el.style.visibility = "visible";
+    });
+  });
 }
 
 function initNav() {

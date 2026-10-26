@@ -1,244 +1,472 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Гео Разум — цифровой интеллект вашей земли</title>
-<meta name="description" content="Гео Разум: отчет по земельному участку за 10 минут. Скрытые ограничения, инфраструктура, инвестиционная концепция и финмодель по кадастровым данным.">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Гео Разум — цифровой интеллект вашей земли</title>
+        <meta
+            name="description"
+            content="Гео Разум: отчет по земельному участку за 10 минут. Скрытые ограничения, инфраструктура, инвестиционная концепция и финмодель по кадастровым данным."
+        />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container site-header__inner">
+                <a class="logo" href="index.html"
+                    ><span class="logo__mark">◈</span> Гео Разум</a
+                >
+                <nav class="nav" data-nav aria-label="Основное меню">
+                    <a href="#how">О сервисе</a>
+                    <a href="#tariffs">Тарифы</a>
+                    <a href="#b2b">Для бизнеса</a>
+                    <a href="#faq">FAQ</a>
+                </nav>
+                <div class="header-actions">
+                    <button
+                        class="btn btn--ghost"
+                        type="button"
+                        data-open-modal="login"
+                    >
+                        Войти
+                    </button>
+                    <a class="btn btn--accent" href="order.html"
+                        >Получить отчет</a
+                    >
+                    <button
+                        class="burger"
+                        type="button"
+                        data-burger
+                        aria-expanded="false"
+                        aria-label="Открыть меню"
+                    >
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
 
-<header class="site-header">
-  <div class="container site-header__inner">
-    <a class="logo" href="index.html"><span class="logo__mark">◈</span> Гео Разум</a>
-    <nav class="nav" data-nav aria-label="Основное меню">
-      <a href="#how">О сервисе</a>
-      <a href="#tariffs">Тарифы</a>
-      <a href="#b2b">Для бизнеса</a>
-      <a href="#faq">FAQ</a>
-    </nav>
-    <div class="header-actions">
-      <button class="btn btn--ghost" type="button" data-open-modal="login">Войти</button>
-      <a class="btn btn--accent" href="order.html">Получить отчет</a>
-      <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Открыть меню">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-</header>
+        <main>
+            <!-- 3.1 Hero -->
+            <section class="hero">
+                <div class="container">
+                    <h1 class="wow fadeInUp">
+                        Гео Разум. Цифровой интеллект вашей земли.
+                    </h1>
+                    <p class="hero__sub wow fadeInUp" data-wow-delay="0.1s">
+                        Получите полный отчет по любому участку за 10 минут. От
+                        скрытых ограничений и борщевика до готовой
+                        инвестиционной концепции и финмодели.
+                    </p>
+                    <form
+                        class="hero-console wow fadeInUp"
+                        data-wow-delay="0.2s"
+                        data-hero-form
+                    >
+                        <input
+                            type="text"
+                            name="query"
+                            aria-label="Кадастровый номер или адрес участка"
+                            placeholder="Введите кадастровый номер или адрес участка..."
+                        />
+                        <button class="btn btn--accent btn--lg" type="submit">
+                            Узнать, что скрывает участок →
+                        </button>
+                    </form>
+                    <p class="hero-note wow fadeIn" data-wow-delay="0.35s">
+                        Анализ по 15+ государственным реестрам и спутниковым
+                        снимкам. Данные актуальны на 2026 год.
+                    </p>
+                </div>
+            </section>
 
-<main>
-  <!-- 3.1 Hero -->
-  <section class="hero">
-    <div class="container">
-      <h1>Гео Разум. Цифровой интеллект вашей земли.</h1>
-      <p class="hero__sub">Получите полный отчет по любому участку за 10 минут. От скрытых ограничений и борщевика до готовой инвестиционной концепции и финмодели.</p>
-      <form class="hero-console" data-hero-form>
-        <input type="text" name="query" aria-label="Кадастровый номер или адрес участка" placeholder="Введите кадастровый номер или адрес участка...">
-        <button class="btn btn--accent btn--lg" type="submit">Узнать, что скрывает участок →</button>
-      </form>
-      <p class="hero-note">Анализ по 15+ государственным реестрам и спутниковым снимкам. Данные актуальны на 2026 год.</p>
-    </div>
-  </section>
+            <!-- 3.2 Как это работает -->
+            <section class="section" id="how">
+                <div class="container">
+                    <div class="section__head wow fadeInUp">
+                        <h2>Как получить отчет за 3 шага</h2>
+                    </div>
+                    <ol class="steps">
+                        <li class="step-card wow fadeInUp">
+                            <span class="step-card__num">1</span>
+                            <h3>Укажите участок</h3>
+                            <p class="muted">
+                                Введите кадастровый номер или выберите точку на
+                                карте.
+                            </p>
+                        </li>
+                        <li
+                            class="step-card wow fadeInUp"
+                            data-wow-delay="0.12s"
+                        >
+                            <span class="step-card__num">2</span>
+                            <h3>Выберите вашу цель</h3>
+                            <p class="muted">
+                                Система подберет данные под вашу задачу: покупка
+                                дачи, продажа, инвест-проект или юридическая
+                                проверка.
+                            </p>
+                        </li>
+                        <li
+                            class="step-card wow fadeInUp"
+                            data-wow-delay="0.24s"
+                        >
+                            <span class="step-card__num">3</span>
+                            <h3>Получите PDF</h3>
+                            <p class="muted">
+                                Нейросеть анализирует участок и через 10 минут
+                                присылает вам структурированный отчет на почту.
+                            </p>
+                        </li>
+                    </ol>
+                </div>
+            </section>
 
-  <!-- 3.2 Как это работает -->
-  <section class="section" id="how">
-    <div class="container">
-      <div class="section__head">
-        <h2>Как получить отчет за 3 шага</h2>
-      </div>
-      <ol class="steps">
-        <li class="step-card">
-          <span class="step-card__num">1</span>
-          <h3>Укажите участок</h3>
-          <p class="muted">Введите кадастровый номер или выберите точку на карте.</p>
-        </li>
-        <li class="step-card">
-          <span class="step-card__num">2</span>
-          <h3>Выберите вашу цель</h3>
-          <p class="muted">Система подберет данные под вашу задачу: покупка дачи, продажа, инвест-проект или юридическая проверка.</p>
-        </li>
-        <li class="step-card">
-          <span class="step-card__num">3</span>
-          <h3>Получите PDF</h3>
-          <p class="muted">Нейросеть анализирует участок и через 10 минут присылает вам структурированный отчет на почту.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
+            <!-- 3.3 Тарифы по ролям -->
+            <section class="section section--alt" id="tariffs">
+                <div class="container">
+                    <div class="section__head wow fadeInUp">
+                        <h2>Выберите свой формат отчета</h2>
+                    </div>
+                    <div class="role-grid">
+                        <article class="role-card wow fadeInUp">
+                            <span class="role-card__icon">🏡</span>
+                            <h3>Дачник / Частный покупатель</h3>
+                            <p class="muted">
+                                Покупаете землю для жизни или отдыха?
+                            </p>
+                            <ul>
+                                <li>
+                                    Проверка на скрытые угрозы (борщевик,
+                                    свалки, ЛЭП)
+                                </li>
+                                <li>
+                                    Охранные зоны и места, где нельзя строить
+                                </li>
+                                <li>Реальная удаленность от дорог и сетей</li>
+                            </ul>
+                            <a
+                                class="btn btn--accent"
+                                href="order.html?role=dachnik"
+                                >Проверить участок на риски</a
+                            >
+                        </article>
+                        <article
+                            class="role-card wow fadeInUp"
+                            data-wow-delay="0.1s"
+                        >
+                            <span class="role-card__icon">🏢</span>
+                            <h3>Риэлтор / Агент</h3>
+                            <p class="muted">
+                                Продаете или подбираете участок клиенту?
+                            </p>
+                            <ul>
+                                <li>
+                                    Аргументы для продажи и юридическая чистота
+                                </li>
+                                <li>Детализация обременений</li>
+                                <li>
+                                    Контакты сетевых организаций для быстрого
+                                    подключения
+                                </li>
+                            </ul>
+                            <a
+                                class="btn btn--accent"
+                                href="order.html?role=realtor"
+                                >Скачать отчет для продажи</a
+                            >
+                        </article>
+                        <article
+                            class="role-card wow fadeInUp"
+                            data-wow-delay="0.2s"
+                        >
+                            <span class="role-card__icon">📈</span>
+                            <h3>Инвестор / Девелопер</h3>
+                            <p class="muted">
+                                Планируете застройку, глэмпинг или агробизнес?
+                            </p>
+                            <ul>
+                                <li>Готовая концепция развития</li>
+                                <li>
+                                    Финансовая модель: NPV, IRR, срок
+                                    окупаемости
+                                </li>
+                                <li>
+                                    Баланс территории, анализ рисков и сценарии
+                                    доходности
+                                </li>
+                            </ul>
+                            <a
+                                class="btn btn--accent"
+                                href="order.html?role=investor"
+                                >Получить инвест-паспорт</a
+                            >
+                        </article>
+                        <article
+                            class="role-card wow fadeInUp"
+                            data-wow-delay="0.3s"
+                        >
+                            <span class="role-card__icon">⚖️</span>
+                            <h3>Юрист / Кадастровый инженер</h3>
+                            <p class="muted">
+                                Готовите сделку, суд или снимаете ограничения?
+                            </p>
+                            <ul>
+                                <li>Пошаговая дорожная карта (10 шагов)</li>
+                                <li>
+                                    Чек-лист документов для ИСОГД и лесничества
+                                </li>
+                                <li>Анализ правовой осуществимости</li>
+                            </ul>
+                            <a
+                                class="btn btn--accent"
+                                href="order.html?role=lawyer"
+                                >Заказать юридический аудит</a
+                            >
+                        </article>
+                    </div>
+                    <p style="margin-top: 22px">
+                        <a class="link-arrow" href="order.html?role=combo"
+                            >Не нашли свою роль? Собрать Комбо-тариф из нужных
+                            модулей →</a
+                        >
+                    </p>
+                </div>
+            </section>
 
-  <!-- 3.3 Тарифы по ролям -->
-  <section class="section section--alt" id="tariffs">
-    <div class="container">
-      <div class="section__head">
-        <h2>Выберите свой формат отчета</h2>
-      </div>
-      <div class="role-grid">
-        <article class="role-card">
-          <span class="role-card__icon">🏡</span>
-          <h3>Дачник / Частный покупатель</h3>
-          <p class="muted">Покупаете землю для жизни или отдыха?</p>
-          <ul>
-            <li>Проверка на скрытые угрозы (борщевик, свалки, ЛЭП)</li>
-            <li>Охранные зоны и места, где нельзя строить</li>
-            <li>Реальная удаленность от дорог и сетей</li>
-          </ul>
-          <a class="btn btn--accent" href="order.html?role=dachnik">Проверить участок на риски</a>
-        </article>
-        <article class="role-card">
-          <span class="role-card__icon">🏢</span>
-          <h3>Риэлтор / Агент</h3>
-          <p class="muted">Продаете или подбираете участок клиенту?</p>
-          <ul>
-            <li>Аргументы для продажи и юридическая чистота</li>
-            <li>Детализация обременений</li>
-            <li>Контакты сетевых организаций для быстрого подключения</li>
-          </ul>
-          <a class="btn btn--accent" href="order.html?role=realtor">Скачать отчет для продажи</a>
-        </article>
-        <article class="role-card">
-          <span class="role-card__icon">📈</span>
-          <h3>Инвестор / Девелопер</h3>
-          <p class="muted">Планируете застройку, глэмпинг или агробизнес?</p>
-          <ul>
-            <li>Готовая концепция развития</li>
-            <li>Финансовая модель: NPV, IRR, срок окупаемости</li>
-            <li>Баланс территории, анализ рисков и сценарии доходности</li>
-          </ul>
-          <a class="btn btn--accent" href="order.html?role=investor">Получить инвест-паспорт</a>
-        </article>
-        <article class="role-card">
-          <span class="role-card__icon">⚖️</span>
-          <h3>Юрист / Кадастровый инженер</h3>
-          <p class="muted">Готовите сделку, суд или снимаете ограничения?</p>
-          <ul>
-            <li>Пошаговая дорожная карта (10 шагов)</li>
-            <li>Чек-лист документов для ИСОГД и лесничества</li>
-            <li>Анализ правовой осуществимости</li>
-          </ul>
-          <a class="btn btn--accent" href="order.html?role=lawyer">Заказать юридический аудит</a>
-        </article>
-      </div>
-      <p style="margin-top:22px"><a class="link-arrow" href="order.html?role=combo">Не нашли свою роль? Собрать Комбо-тариф из нужных модулей →</a></p>
-    </div>
-  </section>
+            <!-- 3.4 Примеры данных -->
+            <section class="section">
+                <div class="container">
+                    <div class="section__head wow fadeInUp">
+                        <h2>Нейросеть находит то, что скрыто от глаз</h2>
+                    </div>
+                    <div class="split">
+                        <div class="wow fadeInLeft">
+                            <p>
+                                Обычная выписка ЕГРН покажет только границы. Гео
+                                Разум анализирует спутниковые снимки, генпланы и
+                                реестры, чтобы найти скрытые риски и точки
+                                роста.
+                            </p>
+                            <dl class="preview">
+                                <dt>Участок из демо-отчета</dt>
+                                <dd>36:25:6945030:776 · 11 203 м² (1,1 га)</dd>
+                                <dt>Ограничения</dt>
+                                <dd>
+                                    100% площади — приаэродромная территория и
+                                    зона охраняемого объекта
+                                </dd>
+                                <dt>Свободно для застройки</dt>
+                                <dd>9 691 м²</dd>
+                                <dt>Инфраструктура</dt>
+                                <dd>
+                                    Дорога 99,9 м · Электричество 262,2 м · Газ
+                                    194,5 м · Вода 80,9 м
+                                </dd>
+                            </dl>
+                        </div>
+                        <div class="insight wow fadeInRight">
+                            <p class="insight__label">
+                                Критический риск в концепции
+                            </p>
+                            <p>
+                                «Ресторан на 2 посадочных места физически не
+                                может обслуживать 89 гостей глэмпинга. Выручка
+                                не подтверждена физикой. Рекомендуется увеличить
+                                посадку до 22 мест или сменить формат на
+                                фудтрак.»
+                            </p>
+                            <p class="small muted">
+                                Из инвестиционного раздела отчета: CAPEX 109,2
+                                млн ₽ · NPV 27,3 млн ₽ · IRR 21,6% · окупаемость
+                                96 месяцев.
+                            </p>
+                        </div>
+                    </div>
+                    <p
+                        class="wow fadeInUp"
+                        data-wow-delay="0.2s"
+                        style="margin-top: 24px"
+                    >
+                        <a
+                            class="btn btn--ghost"
+                            href="report-demo.html"
+                            target="_blank"
+                            rel="noopener"
+                            >Посмотреть пример полного отчета (PDF)</a
+                        >
+                    </p>
+                </div>
+            </section>
 
-  <!-- 3.4 Примеры данных -->
-  <section class="section">
-    <div class="container">
-      <div class="section__head">
-        <h2>Нейросеть находит то, что скрыто от глаз</h2>
-      </div>
-      <div class="split">
-        <div>
-          <p>Обычная выписка ЕГРН покажет только границы. Гео Разум анализирует спутниковые снимки, генпланы и реестры, чтобы найти скрытые риски и точки роста.</p>
-          <dl class="preview">
-            <dt>Участок из демо-отчета</dt>
-            <dd>36:25:6945030:776 · 11 203 м² (1,1 га)</dd>
-            <dt>Ограничения</dt>
-            <dd>100% площади — приаэродромная территория и зона охраняемого объекта</dd>
-            <dt>Свободно для застройки</dt>
-            <dd>9 691 м²</dd>
-            <dt>Инфраструктура</dt>
-            <dd>Дорога 99,9 м · Электричество 262,2 м · Газ 194,5 м · Вода 80,9 м</dd>
-          </dl>
+            <!-- 3.5 B2B / B2G -->
+            <section class="section section--alt" id="b2b">
+                <div class="container">
+                    <div class="section__head wow fadeInUp">
+                        <h2>
+                            Управляете тысячами гектаров или портфелем активов?
+                        </h2>
+                        <p class="muted">
+                            Подключите модули «Гео Разум Агро», «ЭкоКонтроль»
+                            или «Земельный Банк» через API. Мониторинг
+                            зарастания земель, поиск заброшенных объектов и
+                            оценка инфраструктуры в реальном времени.
+                        </p>
+                    </div>
+                    <form
+                        class="form-grid wow fadeInUp"
+                        data-wow-delay="0.1s"
+                        data-lead-form
+                        novalidate
+                    >
+                        <div class="form-field">
+                            <label for="lead-name">Ваше имя</label>
+                            <input
+                                class="field"
+                                id="lead-name"
+                                name="lead-name"
+                                type="text"
+                                autocomplete="name"
+                            />
+                        </div>
+                        <div class="form-field">
+                            <label for="lead-contact">Email / Телефон</label>
+                            <input
+                                class="field"
+                                id="lead-contact"
+                                name="lead-contact"
+                                type="text"
+                                autocomplete="email"
+                            />
+                        </div>
+                        <div class="form-field">
+                            <label for="lead-company"
+                                >Название компании / Ведомства</label
+                            >
+                            <input
+                                class="field"
+                                id="lead-company"
+                                name="lead-company"
+                                type="text"
+                                autocomplete="organization"
+                            />
+                        </div>
+                        <div class="form-field" style="justify-content: end">
+                            <button
+                                class="btn btn--accent btn--lg"
+                                type="submit"
+                            >
+                                Обсудить интеграцию и API
+                            </button>
+                        </div>
+                    </form>
+                    <p class="form-note" data-note role="status"></p>
+                </div>
+            </section>
+
+            <!-- 3.6 FAQ -->
+            <section class="section" id="faq">
+                <div class="container">
+                    <div class="section__head wow fadeInUp">
+                        <h2>FAQ</h2>
+                    </div>
+                    <div class="faq wow fadeInUp" data-wow-delay="0.1s">
+                        <details open>
+                            <summary>Откуда вы берете данные?</summary>
+                            <p>
+                                Мы агрегируем данные из ЕГРН, ФГИС ТП, ИСОГД,
+                                лесного реестра, а также анализируем актуальные
+                                спутниковые снимки с помощью компьютерного
+                                зрения.
+                            </p>
+                        </details>
+                        <details>
+                            <summary>Имеет ли отчет юридическую силу?</summary>
+                            <p>
+                                Отчет является аналитическим инструментом для
+                                принятия решений (Due Diligence). Для
+                                официальных судебных исков или получения ГПЗУ мы
+                                предоставляем пошаговый алгоритм действий в
+                                тарифе «Юрист».
+                            </p>
+                        </details>
+                        <details>
+                            <summary>Как быстро формируется отчет?</summary>
+                            <p>
+                                Базовый анализ занимает до 10 минут. Глубокая
+                                инвестиционная модель с финрасчетами — до 30
+                                минут.
+                            </p>
+                        </details>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <div class="site-footer__grid">
+                    <div>
+                        <a class="logo" href="index.html"
+                            ><span class="logo__mark">◈</span> Гео Разум</a
+                        >
+                        <p class="small">Цифровой интеллект территорий.</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#how">О сервисе</a>
+                        <a href="#tariffs">Тарифы</a>
+                        <a href="#b2b">Для бизнеса</a>
+                        <a href="#b2b">API</a>
+                        <a
+                            href="report-demo.html"
+                            target="_blank"
+                            rel="noopener"
+                            >Пример отчета</a
+                        >
+                        <a href="#faq">Политика конфиденциальности</a>
+                        <a href="#faq">Оферта</a>
+                    </div>
+                    <div>
+                        <p class="small">Контакты</p>
+                        <p>
+                            <a href="mailto:support@georazum.ru"
+                                >support@georazum.ru</a
+                            ><br /><a href="tel:+78000000000"
+                                >8 (800) 000-00-00</a
+                            >
+                        </p>
+                    </div>
+                </div>
+                <p class="footer-copy">
+                    © 2026 Гео Разум. Цифровой интеллект территорий.
+                </p>
+            </div>
+        </footer>
+
+        <div
+            class="modal"
+            id="modal-login"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-login-title"
+        >
+            <div class="modal__panel">
+                <h3 id="modal-login-title">Вход в личный кабинет</h3>
+                <p class="muted">
+                    Личный кабинет появится в следующем релизе. Сейчас отчеты
+                    приходят на почту, указанную при оформлении заказа.
+                </p>
+                <button
+                    class="btn btn--accent btn--wide"
+                    type="button"
+                    data-close-modal
+                >
+                    Понятно
+                </button>
+            </div>
         </div>
-        <div class="insight">
-          <p class="insight__label">Критический риск в концепции</p>
-          <p>«Ресторан на 2 посадочных места физически не может обслуживать 89 гостей глэмпинга. Выручка не подтверждена физикой. Рекомендуется увеличить посадку до 22 мест или сменить формат на фудтрак.»</p>
-          <p class="small muted">Из инвестиционного раздела отчета: CAPEX 109,2 млн ₽ · NPV 27,3 млн ₽ · IRR 21,6% · окупаемость 96 месяцев.</p>
-        </div>
-      </div>
-      <p style="margin-top:24px"><a class="btn btn--ghost" href="report-demo.html" target="_blank" rel="noopener">Посмотреть пример полного отчета (PDF)</a></p>
-    </div>
-  </section>
 
-  <!-- 3.5 B2B / B2G -->
-  <section class="section section--alt" id="b2b">
-    <div class="container">
-      <div class="section__head">
-        <h2>Управляете тысячами гектаров или портфелем активов?</h2>
-        <p class="muted">Подключите модули «Гео Разум Агро», «ЭкоКонтроль» или «Земельный Банк» через API. Мониторинг зарастания земель, поиск заброшенных объектов и оценка инфраструктуры в реальном времени.</p>
-      </div>
-      <form class="form-grid" data-lead-form novalidate>
-        <div class="form-field">
-          <label for="lead-name">Ваше имя</label>
-          <input class="field" id="lead-name" name="lead-name" type="text" autocomplete="name">
-        </div>
-        <div class="form-field">
-          <label for="lead-contact">Email / Телефон</label>
-          <input class="field" id="lead-contact" name="lead-contact" type="text" autocomplete="email">
-        </div>
-        <div class="form-field">
-          <label for="lead-company">Название компании / Ведомства</label>
-          <input class="field" id="lead-company" name="lead-company" type="text" autocomplete="organization">
-        </div>
-        <div class="form-field" style="justify-content:end">
-          <button class="btn btn--accent btn--lg" type="submit">Обсудить интеграцию и API</button>
-        </div>
-      </form>
-      <p class="form-note" data-note role="status"></p>
-    </div>
-  </section>
-
-  <!-- 3.6 FAQ -->
-  <section class="section" id="faq">
-    <div class="container">
-      <div class="section__head">
-        <h2>FAQ</h2>
-      </div>
-      <div class="faq">
-        <details open>
-          <summary>Откуда вы берете данные?</summary>
-          <p>Мы агрегируем данные из ЕГРН, ФГИС ТП, ИСОГД, лесного реестра, а также анализируем актуальные спутниковые снимки с помощью компьютерного зрения.</p>
-        </details>
-        <details>
-          <summary>Имеет ли отчет юридическую силу?</summary>
-          <p>Отчет является аналитическим инструментом для принятия решений (Due Diligence). Для официальных судебных исков или получения ГПЗУ мы предоставляем пошаговый алгоритм действий в тарифе «Юрист».</p>
-        </details>
-        <details>
-          <summary>Как быстро формируется отчет?</summary>
-          <p>Базовый анализ занимает до 10 минут. Глубокая инвестиционная модель с финрасчетами — до 30 минут.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="site-footer__grid">
-      <div>
-        <a class="logo" href="index.html"><span class="logo__mark">◈</span> Гео Разум</a>
-        <p class="small">Цифровой интеллект территорий.</p>
-      </div>
-      <div class="footer-links">
-        <a href="#how">О сервисе</a>
-        <a href="#tariffs">Тарифы</a>
-        <a href="#b2b">Для бизнеса</a>
-        <a href="#b2b">API</a>
-        <a href="report-demo.html" target="_blank" rel="noopener">Пример отчета</a>
-        <a href="#faq">Политика конфиденциальности</a>
-        <a href="#faq">Оферта</a>
-      </div>
-      <div>
-        <p class="small">Контакты</p>
-        <p><a href="mailto:support@georazum.ru">support@georazum.ru</a><br><a href="tel:+78000000000">8 (800) 000-00-00</a></p>
-      </div>
-    </div>
-    <p class="footer-copy">© 2026 Гео Разум. Цифровой интеллект территорий.</p>
-  </div>
-</footer>
-
-<div class="modal" id="modal-login" role="dialog" aria-modal="true" aria-labelledby="modal-login-title">
-  <div class="modal__panel">
-    <h3 id="modal-login-title">Вход в личный кабинет</h3>
-    <p class="muted">Личный кабинет появится в следующем релизе. Сейчас отчеты приходят на почту, указанную при оформлении заказа.</p>
-    <button class="btn btn--accent btn--wide" type="button" data-close-modal>Понятно</button>
-  </div>
-</div>
-
-<script src="app.js"></script>
-</body>
+        <script src="vendor/wow.min.js"></script>
+        <script src="app.js"></script>
+    </body>
 </html>
