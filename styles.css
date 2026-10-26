@@ -374,19 +374,6 @@ svg {
     grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
     align-items: start;
 }
-.insight {
-    padding: 22px;
-    border-radius: var(--radius);
-    border: 1px solid #f0dcc2;
-    background: #fff8ef;
-}
-.insight__label {
-    color: var(--amber);
-    font-weight: 700;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
 
 /* Формы */
 .form-grid {
