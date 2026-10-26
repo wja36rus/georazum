@@ -201,6 +201,47 @@ svg {
     align-items: center;
     gap: 10px;
 }
+.header-auth {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.header-auth [hidden] {
+    display: none !important;
+}
+.header-auth__name {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 5px 14px 5px 10px;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--ink);
+    background: #f2f9f5;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    text-decoration: none;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.header-auth__name::before {
+    content: "👤";
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    font-size: 13px;
+}
+.header-auth__name:hover {
+    border-color: var(--accent);
+    color: var(--accent-dk);
+}
 .burger {
     display: none;
     flex-direction: column;
@@ -822,6 +863,33 @@ svg {
     margin-bottom: 12px;
 }
 .modal__panel .btn + .btn {
+    margin-top: 10px;
+}
+
+/* ЛК: быстрый выбор суммы пополнения */
+.chips {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 4px;
+}
+.chip {
+    font: inherit;
+    font-weight: 700;
+    padding: 10px;
+    border: 2px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+}
+.chip:hover {
+    border-color: #b9cdc0;
+}
+.chip.is-active {
+    border-color: var(--accent);
+    background: #f2f9f5;
+}
+.card .btn + .btn {
     margin-top: 10px;
 }
 

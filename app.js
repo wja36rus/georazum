@@ -84,6 +84,14 @@ const formatExpiry = (v) => {
 };
 
 /* ---------- Интерфейс (jQuery) ---------- */
+let lastFocus = null;
+
+/* Закрывает все открытые модалки и возвращает фокус туда, откуда они открыты. */
+function closeModals() {
+  $(".modal.is-open").removeClass("is-open");
+  if (lastFocus) lastFocus.focus();
+}
+
 function initUI() {
   initNav();
   initReveal();
@@ -91,6 +99,8 @@ function initUI() {
   initHero();
   initLeadForm();
   initWizard();
+  initTopup();
+  initAuth();
 }
 
 function initNav() {
@@ -131,11 +141,7 @@ function initReveal() {
 function initModals() {
   const $openers = $("[data-open-modal]");
   if (!$openers.length) return;
-  let lastFocus = null;
-  const closeAll = () => {
-    $(".modal.is-open").removeClass("is-open");
-    if (lastFocus) lastFocus.focus();
-  };
+  const closeAll = closeModals;
   $openers.on("click", function () {
     const $modal = $("#modal-" + $(this).data("openModal"));
     if (!$modal.length) return;
@@ -207,6 +213,19 @@ function initWizard() {
     email: "",
   };
 
+  /* Авторизованный пользователь платит с баланса: поля уже известны,
+     шаг оплаты в goTo пропускается. */
+  const user = loadUser();
+  if (user && user.name) {
+    $root.find('[data-field="name"]').val(user.name);
+    $root.find('[data-field="email"]').val(user.email);
+    $root.find('[data-field="phone"]').val(MOCK_USER_PHONE);
+    $root.find('[data-step="4"] [data-next]').text("Оформить заказ →");
+  } else {
+    /* Неавторизованному на экране успеха кнопка ЛК не нужна. */
+    $root.find("[data-success-cabinet]").hide();
+  }
+
   const $steps = $root.find("[data-step]");
   const $progressText = $root.find("[data-progress-text]");
   const $progressBar = $root.find("[data-progress-bar]");
@@ -266,7 +285,12 @@ function initWizard() {
 
   const goTo = (n, opts) => {
     const silent = !!(opts && opts.silent);
-    state.step = Math.min(6, Math.max(1, n));
+    let target = Math.min(6, Math.max(1, n));
+    /* Оплата картой авторизованному не показывается: с шага 4 сразу успех.
+       Проверка живая — вход прямо на странице заказа тоже переключает режим. */
+    const skipP = !!(loadUser() && loadUser().name);
+    if (skipP && target === 5) target = n > state.step ? 6 : 4;
+    state.step = target;
     $steps.each(function () {
       $(this).toggleClass("is-hidden", +this.dataset.step !== state.step);
     });
@@ -359,6 +383,143 @@ function initWizard() {
 
   refresh();
   goTo(params.get("step") === "3" ? 3 : 1, { silent: true });
+}
+
+/* ЛК: пополнение баланса (клиентская имитация) */
+function initTopup() {
+  const $box = $("[data-topup]");
+  if (!$box.length) return;
+  const $balance = $("[data-balance]");
+  const $history = $("[data-payments]");
+  const $note = $box.find("[data-topup-note]");
+  const $card = $box.find('[data-field="card"]');
+  const $expiry = $box.find('[data-field="expiry"]');
+  const $amount = $box.find("[data-amount]");
+  let sum = 0;
+
+  $box.on("click", (e) => {
+    const $chip = $(e.target).closest("[data-sum]");
+    if (!$chip.length) return;
+    sum = +$chip[0].dataset.sum;
+    $amount.val(sum.toLocaleString("ru-RU"));
+    $box.find("[data-sum]").each(function () {
+      $(this).toggleClass("is-active", this === $chip[0]);
+    });
+  });
+  $box.on("input", "[data-amount]", function () {
+    this.value = digits(this.value).slice(0, 7);
+    $box.find("[data-sum]").removeClass("is-active");
+    sum = +this.value || 0;
+  });
+  $box.on("submit", (e) => {
+    e.preventDefault();
+    if (sum < 100) {
+      $note.addClass("is-error").text("Укажите сумму пополнения от 100 ₽.");
+      return;
+    }
+    if (digits($card.val()).length !== 16 || !isExpiryValid($expiry.val())) {
+      $note
+        .addClass("is-error")
+        .text("Проверьте карту: 16 цифр номера и срок действия ММ/ГГ.");
+      return;
+    }
+    const date = new Date().toLocaleDateString("ru-RU");
+    if ($history.length) {
+      $history.prepend(
+        "<tr><td>" +
+          date +
+          "</td><td>Пополнение баланса</td>" +
+          '<td class="sum sum--plus">+' +
+          rub(sum) +
+          '</td><td><span class="tag tag--ok">Зачислен</span></td></tr>',
+      );
+    }
+    if ($balance.length) {
+      const next = parseInt($balance.data("balance"), 10) + sum;
+      $balance.data("balance", next).text(rub(next));
+    }
+    $note
+      .removeClass("is-error")
+      .text("Счёт пополнен: +" + rub(sum) + ". Средства уже на балансе.");
+    $amount.val("");
+    $card.val("");
+    $expiry.val("");
+    $box.find("[data-sum]").removeClass("is-active");
+    sum = 0;
+    closeModals();
+  });
+
+  const mask = (sel, fn) => {
+    $box.find(sel).on("input", function () {
+      this.value = fn(this.value);
+    });
+  };
+  mask('[data-field="card"]', formatCard);
+  mask('[data-field="expiry"]', formatExpiry);
+}
+
+/* ---------- Авторизация: localStorage (клиентская имитация) ---------- */
+const AUTH_KEY = "georazum.user";
+/* Имя и фамилия, телефон — мок: это авторизация, а не регистрация. */
+const MOCK_USER_NAME = "Иван Иванов";
+const MOCK_USER_PHONE = "+7 (900) 123-45-67";
+
+function loadUser() {
+  try {
+    const raw = localStorage.getItem(AUTH_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+const saveUser = (user) => localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+const clearUser = () => localStorage.removeItem(AUTH_KEY);
+
+function initAuth() {
+  const $guest = $("[data-auth-guest]");
+  const $user = $("[data-auth-user]");
+  if (!$guest.length && !$user.length) return;
+
+  const render = () => {
+    const u = loadUser();
+    const logged = !!(u && u.name);
+    $guest[0] && $guest[0].toggleAttribute("hidden", logged);
+    $user[0] && $user[0].toggleAttribute("hidden", !logged);
+    if (!logged) return;
+    $("[data-auth-name]").text(u.name);
+    $("[data-profile-name]").text(u.name);
+    $("[data-profile-email]").text(u.email);
+  };
+  render();
+
+  /* Вход из модалки на главной: сохраняем и идем в ЛК. */
+  $("[data-login-submit]").on("click", function () {
+    const email = $("#login-email").val().trim();
+    const $note = $("[data-login-note]");
+    if (!isEmail(email)) {
+      $note.addClass("is-error").text("Укажите корректный email.");
+      return;
+    }
+    saveUser({ name: MOCK_USER_NAME, email });
+    /* На странице заказа после входа остаёмся оформлять заказ, иначе — в ЛК. */
+    if ($("[data-wizard]").length) {
+      $("[data-login-note]").text(
+        "Вы вошли. Оформляйте заказ без оплаты картой.",
+      );
+      closeModals();
+      render();
+    } else {
+      location.href = "cabinet.html";
+    }
+  });
+
+  /* Выход: чистим localStorage и предлагаем авторизоваться заново. */
+  $("[data-logout]").on("click", function () {
+    clearUser();
+    if (location.pathname.indexOf("cabinet") !== -1)
+      location.href = "index.html";
+    else render();
+  });
 }
 
 if (typeof document !== "undefined" && typeof jQuery !== "undefined") {

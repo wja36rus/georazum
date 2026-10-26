@@ -1,204 +1,435 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Личный кабинет — Гео Разум</title>
-<meta name="description" content="Личный кабинет Гео Разум: баланс, история запросов и платежей (демо-данные).">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Личный кабинет — Гео Разум</title>
+        <meta
+            name="description"
+            content="Личный кабинет Гео Разум: баланс, история запросов и платежей (демо-данные)."
+        />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container site-header__inner">
+                <a class="logo" href="index.html"
+                    ><span class="logo__mark">◈</span> Гео Разум</a
+                >
+                <nav class="nav" data-nav aria-label="Основное меню">
+                    <a href="index.html#how">О сервисе</a>
+                    <a href="index.html#tariffs">Тарифы</a>
+                    <a href="index.html#b2b">Для бизнеса</a>
+                    <a href="index.html#faq">FAQ</a>
+                </nav>
+                <div class="header-actions">
+                    <div class="header-auth" data-auth>
+                        <a
+                            class="btn btn--ghost"
+                            href="index.html"
+                            data-auth-guest
+                            hidden
+                            >Войти</a
+                        >
+                        <span class="header-auth__user" data-auth-user hidden>
+                            <a
+                                class="header-auth__name"
+                                href="cabinet.html"
+                                data-auth-name
+                                >Иван Иванов</a
+                            >
+                            <button
+                                class="btn btn--ghost"
+                                type="button"
+                                data-logout
+                            >
+                                Выйти
+                            </button>
+                        </span>
+                    </div>
+                    <a class="btn btn--accent" href="order.html"
+                        >Получить отчет</a
+                    >
+                    <button
+                        class="burger"
+                        type="button"
+                        data-burger
+                        aria-expanded="false"
+                        aria-label="Открыть меню"
+                    >
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+        </header>
 
-<header class="site-header">
-  <div class="container site-header__inner">
-    <a class="logo" href="index.html"><span class="logo__mark">◈</span> Гео Разум</a>
-    <nav class="nav" data-nav aria-label="Основное меню">
-      <a href="index.html#how">О сервисе</a>
-      <a href="index.html#tariffs">Тарифы</a>
-      <a href="index.html#b2b">Для бизнеса</a>
-      <a href="index.html#faq">FAQ</a>
-    </nav>
-    <div class="header-actions">
-      <a class="btn btn--accent" href="order.html">Получить отчет</a>
-      <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Открыть меню">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </div>
-</header>
+        <main class="section">
+            <div class="container">
+                <nav class="crumbs" aria-label="Хлебные крошки">
+                    <a class="crumbs__link" href="index.html">Главная</a>
+                    <span aria-hidden="true">/</span>
+                    <span>Личный кабинет</span>
+                </nav>
+                <h1>Личный кабинет</h1>
+                <p class="muted" style="margin-bottom: 24px">
+                    Демо-страница: все данные вымышленные и не сохраняются.
+                </p>
 
-<main class="section">
-  <div class="container">
-    <nav class="crumbs" aria-label="Хлебные крошки">
-      <a class="crumbs__link" href="index.html">Главная</a>
-      <span aria-hidden="true">/</span>
-      <span>Личный кабинет</span>
-    </nav>
-    <h1>Личный кабинет</h1>
-    <p class="muted" style="margin-bottom: 24px">Демо-страница: все данные вымышленные и не сохраняются.</p>
+                <div class="cabinet">
+                    <aside class="cabinet__side">
+                        <!-- Данные человека -->
+                        <div class="card">
+                            <div class="profile__avatar" aria-hidden="true">
+                                ИИ
+                            </div>
+                            <h2 data-profile-name>Иван Иванов</h2>
+                            <p class="muted" data-profile-email>ivan@mail.ru</p>
+                            <dl class="profile">
+                                <dt>Телефон</dt>
+                                <dd>+7 (900) 123-45-67</dd>
+                                <dt>ИНН</dt>
+                                <dd>366212345678</dd>
+                                <dt>Регион</dt>
+                                <dd>Воронежская область</dd>
+                                <dt>Роль</dt>
+                                <dd>Инвестор / Девелопер</dd>
+                                <dt>Статус</dt>
+                                <dd>
+                                    <span class="tag tag--ok"
+                                        >Постоянный клиент</span
+                                    >
+                                </dd>
+                            </dl>
+                            <button
+                                class="btn btn--ghost btn--wide"
+                                type="button"
+                                data-logout
+                                style="margin-top: 14px"
+                            >
+                                Выйти из аккаунта
+                            </button>
+                        </div>
 
-    <div class="cabinet">
-      <aside class="cabinet__side">
-        <!-- Данные человека -->
-        <div class="card">
-          <div class="profile__avatar" aria-hidden="true">ИИ</div>
-          <h2>Иван Иванов</h2>
-          <p class="muted">ivan@mail.ru</p>
-          <dl class="profile">
-            <dt>Телефон</dt>
-            <dd>+7 (900) 123-45-67</dd>
-            <dt>ИНН</dt>
-            <dd>366212345678</dd>
-            <dt>Регион</dt>
-            <dd>Воронежская область</dd>
-            <dt>Роль</dt>
-            <dd>Инвестор / Девелопер</dd>
-            <dt>Статус</dt>
-            <dd><span class="tag tag--ok">Постоянный клиент</span></dd>
-          </dl>
+                        <!-- Баланс -->
+                        <div class="card">
+                            <p class="muted">Баланс счёта</p>
+                            <p class="balance__sum" data-balance="14510">
+                                14 510 ₽
+                            </p>
+                            <p class="small muted">
+                                Пополнение — имитация. Средства тратятся на
+                                отчёты и модули.
+                            </p>
+                            <button
+                                class="btn btn--ghost btn--wide"
+                                type="button"
+                                data-open-modal="topup"
+                            >
+                                Пополнить счёт
+                            </button>
+                            <a
+                                class="btn btn--accent btn--wide"
+                                href="order.html"
+                                >Заказать отчёт →</a
+                            >
+                        </div>
+                    </aside>
+
+                    <div class="cabinet__main">
+                        <!-- История запросов -->
+                        <section class="card">
+                            <h2>История запросов</h2>
+                            <div class="table-wrap">
+                                <table class="tbl">
+                                    <thead>
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Участок</th>
+                                            <th>Тариф</th>
+                                            <th>Статус</th>
+                                            <th>Отчёт</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>03.10.2026</td>
+                                            <td>
+                                                <b>36:25:6945030:776</b><br />
+                                                <span class="muted"
+                                                    >Воронежская обл., Рамонский
+                                                    р-н</span
+                                                >
+                                            </td>
+                                            <td>Инвестор</td>
+                                            <td>
+                                                <span class="tag tag--ok"
+                                                    >Готов</span
+                                                >
+                                            </td>
+                                            <td>
+                                                <a
+                                                    class="link-arrow"
+                                                    href="report-demo.html"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    >PDF</a
+                                                >
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>21.09.2026</td>
+                                            <td>
+                                                <b>36:16:3405742:189</b><br />
+                                                <span class="muted"
+                                                    >Воронежская обл.,
+                                                    Новоусманский р-н</span
+                                                >
+                                            </td>
+                                            <td>Дачник</td>
+                                            <td>
+                                                <span class="tag tag--ok"
+                                                    >Готов</span
+                                                >
+                                            </td>
+                                            <td>
+                                                <a
+                                                    class="link-arrow"
+                                                    href="report-demo.html"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                    >PDF</a
+                                                >
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>14.09.2026</td>
+                                            <td>
+                                                <b>36:34:1823050:441</b><br />
+                                                <span class="muted"
+                                                    >Воронежская обл.,
+                                                    Острогожский р-н</span
+                                                >
+                                            </td>
+                                            <td>Юрист</td>
+                                            <td>
+                                                <span class="tag tag--gray"
+                                                    >Возврат</span
+                                                >
+                                            </td>
+                                            <td>—</td>
+                                        </tr>
+                                        <tr>
+                                            <td>24.10.2026</td>
+                                            <td>
+                                                <b>36:25:6945030:776</b><br />
+                                                <span class="muted"
+                                                    >Воронежская обл., Рамонский
+                                                    р-н</span
+                                                >
+                                            </td>
+                                            <td>Комбо</td>
+                                            <td>
+                                                <span class="tag tag--warn"
+                                                    >В работе</span
+                                                >
+                                            </td>
+                                            <td>—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                        <!-- История платежей -->
+                        <section class="card">
+                            <h2>История платежей</h2>
+                            <div class="table-wrap">
+                                <table class="tbl">
+                                    <thead>
+                                        <tr>
+                                            <th>Дата</th>
+                                            <th>Описание</th>
+                                            <th>Сумма</th>
+                                            <th>Статус</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-payments>
+                                        <tr>
+                                            <td>03.10.2026</td>
+                                            <td>
+                                                Отчёт «Инвестор / Девелопер»
+                                            </td>
+                                            <td class="sum">−6 990 ₽</td>
+                                            <td>
+                                                <span class="tag tag--ok"
+                                                    >Оплачен</span
+                                                >
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>21.09.2026</td>
+                                            <td>
+                                                Отчёт «Дачник / Частный
+                                                покупатель»
+                                            </td>
+                                            <td class="sum">−2 990 ₽</td>
+                                            <td>
+                                                <span class="tag tag--ok"
+                                                    >Оплачен</span
+                                                >
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>14.09.2026</td>
+                                            <td>
+                                                Возврат по заказу № 1024 (тариф
+                                                «Юрист»)
+                                            </td>
+                                            <td class="sum sum--plus">
+                                                +4 490 ₽
+                                            </td>
+                                            <td>
+                                                <span class="tag tag--ok"
+                                                    >Зачислен</span
+                                                >
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>02.09.2026</td>
+                                            <td>Пополнение баланса</td>
+                                            <td class="sum sum--plus">
+                                                +20 000 ₽
+                                            </td>
+                                            <td>
+                                                <span class="tag tag--ok"
+                                                    >Зачислен</span
+                                                >
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="container">
+                <div class="site-footer__grid">
+                    <div>
+                        <a class="logo" href="index.html"
+                            ><span class="logo__mark">◈</span> Гео Разум</a
+                        >
+                        <p class="small">Цифровой интеллект территорий.</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="index.html#how">О сервисе</a>
+                        <a href="index.html#tariffs">Тарифы</a>
+                        <a href="index.html#b2b">Для бизнеса</a>
+                        <a
+                            href="report-demo.html"
+                            target="_blank"
+                            rel="noopener"
+                            >Пример отчета</a
+                        >
+                        <a href="cabinet.html">Личный кабинет</a>
+                    </div>
+                    <div>
+                        <p class="small">Контакты</p>
+                        <p>
+                            <a href="mailto:support@georazum.ru"
+                                >support@georazum.ru</a
+                            ><br /><a href="tel:+78000000000"
+                                >8 (800) 000-00-00</a
+                            >
+                        </p>
+                    </div>
+                </div>
+                <p class="footer-copy">
+                    © 2026 Гео Разум. Цифровой интеллект территорий.
+                </p>
+            </div>
+        </footer>
+
+        <div
+            class="modal"
+            id="modal-topup"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-topup-title"
+        >
+            <form class="modal__panel" data-topup>
+                <h3 id="modal-topup-title">Пополнение баланса</h3>
+                <p class="small muted" style="margin-bottom: 12px">
+                    Выберите сумму или введите свою. Оплата имитируется, деньги
+                    никуда не списываются.
+                </p>
+                <div class="chips">
+                    <button class="chip" type="button" data-sum="1000">
+                        1 000 ₽
+                    </button>
+                    <button class="chip" type="button" data-sum="5000">
+                        5 000 ₽
+                    </button>
+                    <button class="chip" type="button" data-sum="10000">
+                        10 000 ₽
+                    </button>
+                    <button class="chip" type="button" data-sum="50000">
+                        50 000 ₽
+                    </button>
+                </div>
+                <div class="form-field">
+                    <label for="topup-amount">Своя сумма, ₽</label>
+                    <input
+                        class="field"
+                        id="topup-amount"
+                        name="amount"
+                        inputmode="numeric"
+                        placeholder="2 000"
+                        data-amount
+                    />
+                </div>
+                <div class="form-field">
+                    <label for="topup-card">Номер карты</label>
+                    <input
+                        class="field"
+                        id="topup-card"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="0000 0000 0000 0000"
+                        autocomplete="cc-number"
+                        data-field="card"
+                    />
+                </div>
+                <div class="form-field">
+                    <label for="topup-expiry">Срок действия</label>
+                    <input
+                        class="field"
+                        id="topup-expiry"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="ММ/ГГ"
+                        autocomplete="cc-exp"
+                        data-field="expiry"
+                    />
+                </div>
+                <p class="form-note" data-topup-note aria-live="polite"></p>
+                <button class="btn btn--accent btn--wide" type="submit">
+                    Пополнить
+                </button>
+                <button
+                    class="btn btn--ghost btn--wide"
+                    type="button"
+                    data-close-modal
+                >
+                    Отмена
+                </button>
+            </form>
         </div>
 
-        <!-- Баланс -->
-        <div class="card">
-          <p class="muted">Баланс счёта</p>
-          <p class="balance__sum">14 510 ₽</p>
-          <p class="small muted">Пополнение — имитация. Средства тратятся на отчёты и модули.</p>
-          <a class="btn btn--accent btn--wide" href="order.html">Заказать отчёт →</a>
-        </div>
-      </aside>
-
-      <div class="cabinet__main">
-        <!-- История запросов -->
-        <section class="card">
-          <h2>История запросов</h2>
-          <div class="table-wrap">
-            <table class="tbl">
-              <thead>
-                <tr>
-                  <th>Дата</th>
-                  <th>Участок</th>
-                  <th>Тариф</th>
-                  <th>Статус</th>
-                  <th>Отчёт</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>03.10.2026</td>
-                  <td>
-                    <b>36:25:6945030:776</b><br>
-                    <span class="muted">Воронежская обл., Рамонский р-н</span>
-                  </td>
-                  <td>Инвестор</td>
-                  <td><span class="tag tag--ok">Готов</span></td>
-                  <td><a class="link-arrow" href="report-demo.html" target="_blank" rel="noopener">PDF</a></td>
-                </tr>
-                <tr>
-                  <td>21.09.2026</td>
-                  <td>
-                    <b>36:16:3405742:189</b><br>
-                    <span class="muted">Воронежская обл., Новоусманский р-н</span>
-                  </td>
-                  <td>Дачник</td>
-                  <td><span class="tag tag--ok">Готов</span></td>
-                  <td><a class="link-arrow" href="report-demo.html" target="_blank" rel="noopener">PDF</a></td>
-                </tr>
-                <tr>
-                  <td>14.09.2026</td>
-                  <td>
-                    <b>36:34:1823050:441</b><br>
-                    <span class="muted">Воронежская обл., Острогожский р-н</span>
-                  </td>
-                  <td>Юрист</td>
-                  <td><span class="tag tag--gray">Возврат</span></td>
-                  <td>—</td>
-                </tr>
-                <tr>
-                  <td>24.10.2026</td>
-                  <td>
-                    <b>36:25:6945030:776</b><br>
-                    <span class="muted">Воронежская обл., Рамонский р-н</span>
-                  </td>
-                  <td>Комбо</td>
-                  <td><span class="tag tag--warn">В работе</span></td>
-                  <td>—</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- История платежей -->
-        <section class="card">
-          <h2>История платежей</h2>
-          <div class="table-wrap">
-            <table class="tbl">
-              <thead>
-                <tr>
-                  <th>Дата</th>
-                  <th>Описание</th>
-                  <th>Сумма</th>
-                  <th>Статус</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>03.10.2026</td>
-                  <td>Отчёт «Инвестор / Девелопер»</td>
-                  <td class="sum">−6 990 ₽</td>
-                  <td><span class="tag tag--ok">Оплачен</span></td>
-                </tr>
-                <tr>
-                  <td>21.09.2026</td>
-                  <td>Отчёт «Дачник / Частный покупатель»</td>
-                  <td class="sum">−2 990 ₽</td>
-                  <td><span class="tag tag--ok">Оплачен</span></td>
-                </tr>
-                <tr>
-                  <td>14.09.2026</td>
-                  <td>Возврат по заказу № 1024 (тариф «Юрист»)</td>
-                  <td class="sum sum--plus">+4 490 ₽</td>
-                  <td><span class="tag tag--ok">Зачислен</span></td>
-                </tr>
-                <tr>
-                  <td>02.09.2026</td>
-                  <td>Пополнение баланса</td>
-                  <td class="sum sum--plus">+20 000 ₽</td>
-                  <td><span class="tag tag--ok">Зачислен</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-</main>
-
-<footer class="site-footer">
-  <div class="container">
-    <div class="site-footer__grid">
-      <div>
-        <a class="logo" href="index.html"><span class="logo__mark">◈</span> Гео Разум</a>
-        <p class="small">Цифровой интеллект территорий.</p>
-      </div>
-      <div class="footer-links">
-        <a href="index.html#how">О сервисе</a>
-        <a href="index.html#tariffs">Тарифы</a>
-        <a href="index.html#b2b">Для бизнеса</a>
-        <a href="report-demo.html" target="_blank" rel="noopener">Пример отчета</a>
-        <a href="cabinet.html">Личный кабинет</a>
-      </div>
-      <div>
-        <p class="small">Контакты</p>
-        <p><a href="mailto:support@georazum.ru">support@georazum.ru</a><br><a href="tel:+78000000000">8 (800) 000-00-00</a></p>
-      </div>
-    </div>
-    <p class="footer-copy">© 2026 Гео Разум. Цифровой интеллект территорий.</p>
-  </div>
-</footer>
-
-<script src="vendor/jquery.min.js"></script>
-<script src="app.js"></script>
-</body>
+        <script src="vendor/jquery.min.js"></script>
+        <script src="app.js"></script>
+    </body>
 </html>

@@ -23,13 +23,31 @@
                     <a href="index.html#faq">FAQ</a>
                 </nav>
                 <div class="header-actions">
-                    <button
-                        class="btn btn--ghost"
-                        type="button"
-                        data-open-modal="login"
-                    >
-                        Войти
-                    </button>
+                    <div class="header-auth" data-auth>
+                        <button
+                            class="btn btn--ghost"
+                            type="button"
+                            data-open-modal="login"
+                            data-auth-guest
+                        >
+                            Войти
+                        </button>
+                        <span class="header-auth__user" data-auth-user hidden>
+                            <a
+                                class="header-auth__name"
+                                href="cabinet.html"
+                                data-auth-name
+                                >Иван Иванов</a
+                            >
+                            <button
+                                class="btn btn--ghost"
+                                type="button"
+                                data-logout
+                            >
+                                Выйти
+                            </button>
+                        </span>
+                    </div>
                     <a class="btn btn--accent" href="order.html"
                         >Получить отчет</a
                     >
@@ -428,7 +446,10 @@
                                 <a class="btn btn--ghost" href="index.html"
                                     >Вернуться на главную</a
                                 >
-                                <a class="btn btn--accent" href="cabinet.html"
+                                <a
+                                    class="btn btn--accent"
+                                    href="cabinet.html"
+                                    data-success-cabinet
                                     >Перейти в Личный кабинет</a
                                 >
                             </div>
@@ -525,9 +546,14 @@
                 <p class="small muted">
                     Вход имитируется: введите любые данные и нажмите «Войти».
                 </p>
-                <a class="btn btn--accent btn--wide" href="cabinet.html"
-                    >Войти в кабинет →</a
+                <p class="form-note" data-login-note aria-live="polite"></p>
+                <button
+                    class="btn btn--accent btn--wide"
+                    type="button"
+                    data-login-submit
                 >
+                    Войти в кабинет →
+                </button>
                 <button
                     class="btn btn--ghost btn--wide"
                     type="button"
