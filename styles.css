@@ -269,6 +269,25 @@ svg {
     color: #9db3a6;
     font-size: 14.5px;
 }
+.hero-map {
+    position: absolute;
+    right: -30px;
+    top: 0;
+    z-index: 0;
+    height: 100%;
+    opacity: 0.55;
+    pointer-events: none;
+}
+.hero .container {
+    position: relative;
+    z-index: 1;
+}
+.sat-mock {
+    width: 100%;
+    margin: 4px 0 16px;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+}
 
 /* Шаги */
 .steps {
@@ -287,16 +306,27 @@ svg {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
 }
-.step-card__num {
+.step-card__icon {
     display: grid;
     place-items: center;
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
     margin-bottom: 12px;
-    border-radius: 10px;
+    border-radius: 11px;
     background: #e7f4ec;
     color: var(--accent-dk);
-    font-weight: 700;
+}
+.step-card__icon svg {
+    width: 22px;
+    height: 22px;
+}
+.step-card:nth-child(2) .step-card__icon {
+    background: #e9eff8;
+    color: #3d6fb5;
+}
+.step-card:nth-child(3) .step-card__icon {
+    background: #fdf0dc;
+    color: var(--amber);
 }
 
 /* Карточки ролей */
@@ -847,6 +877,9 @@ svg {
         display: flex;
     }
     .header-actions .btn:not(.btn--accent) {
+        display: none;
+    }
+    .hero-map {
         display: none;
     }
     .section {

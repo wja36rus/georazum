@@ -78,6 +78,89 @@
                         снимкам. Данные актуальны на 2026 год.
                     </p>
                 </div>
+
+                <!-- Декоративная карта рельефа в hero (скрывается на мобильных) -->
+                <svg class="hero-map" viewBox="0 0 640 520" aria-hidden="true">
+                    <g
+                        stroke="#8fc79f"
+                        stroke-width="1.2"
+                        fill="none"
+                        opacity="0.5"
+                    >
+                        <path
+                            d="M-40 90 C60 40 120 130 200 100 S360 40 460 90 S600 130 680 80"
+                        />
+                        <path
+                            d="M-40 130 C60 80 120 170 200 140 S360 80 460 130 S600 170 680 120"
+                        />
+                        <path
+                            d="M-40 170 C60 120 120 210 200 180 S360 120 460 170 S600 210 680 160"
+                        />
+                        <path
+                            d="M-40 210 C60 160 120 250 200 220 S360 160 460 210 S600 250 680 200"
+                        />
+                        <path
+                            d="M-40 250 C60 200 120 290 200 260 S360 200 460 250 S600 290 680 240"
+                        />
+                        <path
+                            d="M-40 290 C60 240 120 330 200 300 S360 240 460 290 S600 330 680 280"
+                        />
+                    </g>
+                    <g fill="#2f6b4c" opacity="0.75">
+                        <path d="M46 118 60 92 76 118Z" />
+                        <path d="M70 148 86 118 104 148Z" />
+                        <path d="M30 176 50 146 70 176Z" />
+                        <path d="M96 176 116 144 136 176Z" />
+                        <path d="M52 204 72 172 92 204Z" />
+                        <path d="M300 196 318 170 338 196Z" />
+                        <path d="M332 226 350 198 370 226Z" />
+                        <path d="M282 254 300 228 320 254Z" />
+                    </g>
+                    <path
+                        d="M-40 470 C120 430 180 350 300 340 C420 330 480 250 680 200"
+                        fill="none"
+                        stroke="#6fa8b8"
+                        stroke-width="5"
+                        opacity="0.55"
+                        stroke-linecap="round"
+                    />
+                    <path
+                        d="M-40 390 C130 380 260 300 400 320 C520 336 590 280 680 280"
+                        fill="none"
+                        stroke="#e8d9a8"
+                        stroke-width="3"
+                        stroke-dasharray="10 8"
+                        opacity="0.45"
+                    />
+                    <polygon
+                        points="340,140 520,118 548,252 358,268"
+                        fill="#0f8a5f"
+                        fill-opacity="0.45"
+                        stroke="#7fe0ae"
+                        stroke-width="2.5"
+                    />
+                    <circle cx="340" cy="140" r="3.5" fill="#7fe0ae" />
+                    <circle cx="520" cy="118" r="3.5" fill="#7fe0ae" />
+                    <circle cx="548" cy="252" r="3.5" fill="#7fe0ae" />
+                    <circle cx="358" cy="268" r="3.5" fill="#7fe0ae" />
+                    <g transform="translate(452 168)">
+                        <path
+                            d="M0 42 C-19 25 -29 10 -29 -3 A29 29 0 0 1 29 -3 C29 10 19 25 0 42 Z"
+                            fill="#c9791f"
+                        />
+                        <circle cx="0" cy="-3" r="11" fill="#fff" />
+                        <circle cx="0" cy="-3" r="5" fill="#8a5310" />
+                    </g>
+                    <g
+                        fill="#8aa89a"
+                        opacity="0.7"
+                        font-family="Segoe UI, sans-serif"
+                        font-size="13"
+                    >
+                        <path d="M600 32 608 52 600 46 592 52Z" />
+                        <text x="600" y="22" text-anchor="middle">N</text>
+                    </g>
+                </svg>
             </section>
 
             <!-- 3.2 Как это работает -->
@@ -88,7 +171,26 @@
                     </div>
                     <ol class="steps">
                         <li class="step-card wow fadeInUp">
-                            <span class="step-card__num">1</span>
+                            <span class="step-card__icon" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <rect
+                                        x="3.5"
+                                        y="3.5"
+                                        width="10.5"
+                                        height="10.5"
+                                        rx="2"
+                                    />
+                                    <path d="M14.5 14.5 21 21" />
+                                    <circle cx="8" cy="8" r="2.2" />
+                                </svg>
+                            </span>
                             <h3>Укажите участок</h3>
                             <p class="muted">
                                 Введите кадастровый номер или выберите точку на
@@ -99,7 +201,24 @@
                             class="step-card wow fadeInUp"
                             data-wow-delay="0.12s"
                         >
-                            <span class="step-card__num">2</span>
+                            <span class="step-card__icon" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                >
+                                    <circle cx="12" cy="12" r="8.5" />
+                                    <circle cx="12" cy="12" r="4.8" />
+                                    <circle
+                                        cx="12"
+                                        cy="12"
+                                        r="1.1"
+                                        fill="currentColor"
+                                        stroke="none"
+                                    />
+                                </svg>
+                            </span>
                             <h3>Выберите вашу цель</h3>
                             <p class="muted">
                                 Система подберет данные под вашу задачу: покупка
@@ -111,7 +230,20 @@
                             class="step-card wow fadeInUp"
                             data-wow-delay="0.24s"
                         >
-                            <span class="step-card__num">3</span>
+                            <span class="step-card__icon" aria-hidden="true">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                >
+                                    <path d="M7 3.5h7l4 4V21H7Z" />
+                                    <path d="M14 3.5v4h4" />
+                                    <path d="m10.5 14.5 1.8 1.8 3.2-3.4" />
+                                </svg>
+                            </span>
                             <h3>Получите PDF</h3>
                             <p class="muted">
                                 Нейросеть анализирует участок и через 10 минут
@@ -242,6 +374,186 @@
                     </div>
                     <div class="split">
                         <div class="wow fadeInLeft">
+                            <!-- Иллюстрация спутникового анализа -->
+                            <svg
+                                class="sat-mock"
+                                viewBox="0 0 640 380"
+                                role="img"
+                                aria-label="Спутниковый анализ участка: приаэродромная зона, очаг борщевика, свободная площадь"
+                            >
+                                <defs>
+                                    <linearGradient
+                                        id="satbg"
+                                        x1="0"
+                                        y1="0"
+                                        x2="1"
+                                        y2="1"
+                                    >
+                                        <stop offset="0" stop-color="#182b21" />
+                                        <stop offset="1" stop-color="#0d1a15" />
+                                    </linearGradient>
+                                </defs>
+                                <rect
+                                    width="640"
+                                    height="380"
+                                    fill="url(#satbg)"
+                                />
+                                <g fill="#24402f">
+                                    <circle cx="60" cy="90" r="34" />
+                                    <circle cx="110" cy="70" r="26" />
+                                    <circle cx="152" cy="102" r="30" />
+                                    <circle cx="82" cy="152" r="24" />
+                                    <circle cx="132" cy="142" r="20" />
+                                    <circle cx="560" cy="80" r="30" />
+                                    <circle cx="604" cy="122" r="26" />
+                                    <circle cx="542" cy="142" r="22" />
+                                    <circle cx="82" cy="332" r="28" />
+                                    <circle cx="132" cy="322" r="24" />
+                                    <circle cx="50" cy="258" r="22" />
+                                    <circle cx="592" cy="300" r="32" />
+                                    <circle cx="542" cy="332" r="26" />
+                                    <circle cx="618" cy="210" r="22" />
+                                </g>
+                                <g fill="#33523e">
+                                    <circle cx="72" cy="222" r="26" />
+                                    <circle cx="118" cy="232" r="20" />
+                                    <circle cx="562" cy="222" r="24" />
+                                    <circle cx="602" cy="262" r="20" />
+                                </g>
+                                <path
+                                    d="M0 258 C170 248 250 188 420 198 S610 250 640 238"
+                                    stroke="#101f17"
+                                    stroke-width="16"
+                                    fill="none"
+                                />
+                                <path
+                                    d="M0 258 C170 248 250 188 420 198 S610 250 640 238"
+                                    stroke="#3d5a46"
+                                    stroke-width="8"
+                                    fill="none"
+                                />
+                                <rect
+                                    x="252"
+                                    y="42"
+                                    width="286"
+                                    height="230"
+                                    rx="10"
+                                    fill="#c9791f"
+                                    fill-opacity="0.09"
+                                    stroke="#c9791f"
+                                    stroke-width="2"
+                                    stroke-dasharray="9 7"
+                                />
+                                <polygon
+                                    points="300,90 470,80 490,210 320,225"
+                                    fill="#2fbf85"
+                                    fill-opacity="0.16"
+                                    stroke="#2fbf85"
+                                    stroke-width="2.5"
+                                />
+                                <path
+                                    d="M286 90 h28 M300 76 v28"
+                                    stroke="#7fe0ae"
+                                    stroke-width="1.2"
+                                    opacity="0.85"
+                                />
+                                <circle
+                                    cx="150"
+                                    cy="170"
+                                    r="34"
+                                    fill="#c45a4e"
+                                    fill-opacity="0.22"
+                                />
+                                <circle
+                                    cx="150"
+                                    cy="170"
+                                    r="34"
+                                    fill="none"
+                                    stroke="#c45a4e"
+                                    stroke-width="2"
+                                />
+                                <circle
+                                    cx="150"
+                                    cy="170"
+                                    r="3"
+                                    fill="#c45a4e"
+                                />
+                                <g
+                                    font-family="Segoe UI, sans-serif"
+                                    font-size="11"
+                                >
+                                    <rect
+                                        x="28"
+                                        y="16"
+                                        width="184"
+                                        height="22"
+                                        rx="11"
+                                        fill="#c9791f"
+                                    />
+                                    <text
+                                        x="120"
+                                        y="31"
+                                        text-anchor="middle"
+                                        fill="#241a06"
+                                    >
+                                        приаэродромная зона
+                                    </text>
+                                    <rect
+                                        x="322"
+                                        y="182"
+                                        width="150"
+                                        height="22"
+                                        rx="11"
+                                        fill="#0b6b4a"
+                                    />
+                                    <text
+                                        x="397"
+                                        y="197"
+                                        text-anchor="middle"
+                                        fill="#eaf4ee"
+                                    >
+                                        свободно 9 691 м²
+                                    </text>
+                                    <rect
+                                        x="84"
+                                        y="208"
+                                        width="132"
+                                        height="22"
+                                        rx="11"
+                                        fill="#8a3a30"
+                                    />
+                                    <text
+                                        x="150"
+                                        y="223"
+                                        text-anchor="middle"
+                                        fill="#fff"
+                                    >
+                                        очаг борщевика 0,4 га
+                                    </text>
+                                    <text
+                                        x="624"
+                                        y="370"
+                                        text-anchor="end"
+                                        fill="#7e9587"
+                                        font-size="10"
+                                    >
+                                        СНИМОК: 06.2026 · КВ 0,5 м
+                                    </text>
+                                </g>
+                                <g stroke="#7e9587" opacity="0.8">
+                                    <path d="M28 368 h42" stroke-width="1.5" />
+                                    <path d="M28 365 v6 M70 365 v6" />
+                                </g>
+                                <text
+                                    x="34"
+                                    y="358"
+                                    fill="#7e9587"
+                                    font-family="Segoe UI, sans-serif"
+                                    font-size="9"
+                                >
+                                    80 м
+                                </text>
+                            </svg>
                             <p>
                                 Обычная выписка ЕГРН покажет только границы. Гео
                                 Разум анализирует спутниковые снимки, генпланы и
