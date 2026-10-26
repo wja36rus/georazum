@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пример отчета — участок 36:25:6945030:776 | Гео Разум</title>
+<meta name="description" content="Демо-отчет Гео Разум: ограничения, инфраструктура и инвестиционная концепция по участку 36:25:6945030:776.">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .report { max-width: 880px; margin-inline: auto; padding: 32px; background: #fff; border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+  .report__top { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 2px solid var(--ink); padding-bottom: 14px; margin-bottom: 24px; }
+  .report h1 { font-size: 28px; }
+  .report h2 { font-size: 21px; margin-top: 30px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .report table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .report th, .report td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  .report th { width: 46%; color: var(--muted); font-weight: 500; }
+  .report .kpi { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin-top: 12px; }
+  .report .kpi div { padding: 14px; background: #f2f9f5; border-radius: 12px; }
+  .report .kpi b { display: block; font-size: 20px; }
+  @media print {
+    .no-print, .site-header, .site-footer { display: none !important; }
+    body { background: #fff; }
+    .section { padding: 0; }
+    .container { width: auto; }
+    .report { border: 0; box-shadow: none; border-radius: 0; padding: 0; max-width: none; }
+    .report h2 { break-after: avoid; }
+    table, .kpi { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="logo" href="index.html"><span class="logo__mark">◈</span> Гео Разум</a>
+    <nav class="nav" data-nav aria-label="Основное меню">
+      <a href="index.html#how">О сервисе</a>
+      <a href="index.html#tariffs">Тарифы</a>
+      <a href="index.html#b2b">Для бизнеса</a>
+      <a href="index.html#faq">FAQ</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn--ghost" href="index.html">На главную</a>
+      <a class="btn btn--accent" href="order.html">Заказать отчет</a>
+      <button class="burger" type="button" data-burger aria-expanded="false" aria-label="Открыть меню">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="section">
+  <div class="container">
+    <p class="no-print" style="margin-bottom:16px">
+      <button class="btn btn--accent" type="button" onclick="window.print()">Сохранить как PDF</button>
+      <span class="small muted">Откроется системный диалог печати — выберите «Сохранить как PDF».</span>
+    </p>
+
+    <article class="report">
+      <div class="report__top">
+        <div>
+          <p class="muted small">Аналитический отчет · Due Diligence</p>
+          <h1>Лесной ретрит «Тихая поляна»</h1>
+          <p class="muted">Демонстрационный отчет. Формирование: 10 минут.</p>
+        </div>
+        <div class="small muted">
+          Гео Разум<br>support@georazum.ru<br>8 (800) 000-00-00
+        </div>
+      </div>
+
+      <h2>1. Данные участка</h2>
+      <table>
+        <tr><th>Кадастровый номер</th><td>36:25:6945030:776</td></tr>
+        <tr><th>Адрес</th><td>Воронежская область, Рамонский район, урочище «Подгоренская дача»</td></tr>
+        <tr><th>Площадь</th><td>11 203 м² (1,1 га)</td></tr>
+        <tr><th>Кадастровая стоимость</th><td>6 412 485 ₽</td></tr>
+        <tr><th>Категория</th><td>Земли лесного фонда</td></tr>
+        <tr><th>ВРИ</th><td>Осуществление рекреационной деятельности</td></tr>
+      </table>
+
+      <h2>2. Инфраструктура</h2>
+      <table>
+        <tr><th>Дорога</th><td>99,9 м</td></tr>
+        <tr><th>Электричество</th><td>262,2 м (РП-10 кВ № 3-27)</td></tr>
+        <tr><th>Газ</th><td>194,5 м</td></tr>
+        <tr><th>Вода / Канализация</th><td>80,9 м / 708,1 м</td></tr>
+      </table>
+
+      <h2>3. Ограничения и правовой режим</h2>
+      <p class="tag">100% участка — ограничения</p>
+      <p>Приаэродромная территория и зона охраняемого объекта распространяются на всю площадь участка: застройка возможна только после согласования и снятия ограничений.</p>
+      <table>
+        <tr><th>Свободная площадь для застройки</th><td>9 691 м²</td></tr>
+        <tr><th>Категория земель</th><td>Земли лесного фонда — перевод земель обязателен</td></tr>
+      </table>
+
+      <h2>4. Инвестиционная концепция</h2>
+      <p>Лесной ретрит «Тихая поляна»: глэмпинг на 89 мест + ресторан.</p>
+      <div class="kpi">
+        <div><b>109,2 млн ₽</b><span class="small muted">CAPEX</span></div>
+        <div><b>27,3 млн ₽</b><span class="small muted">NPV</span></div>
+        <div><b>21,6%</b><span class="small muted">IRR</span></div>
+        <div><b>96 мес.</b><span class="small muted">Окупаемость</span></div>
+      </div>
+
+      <h2>5. Критический риск</h2>
+      <p>«Ресторан на 2 посадочных места физически не может обслуживать 89 гостей глэмпинга. Выручка не подтверждена физикой. Рекомендуется увеличить посадку до 22 мест или сменить формат на фудтрак.»</p>
+
+      <h2>6. Что делать дальше</h2>
+      <p class="muted">Полная версия отчета включает дорожную карту из 10 шагов по снятию ограничений, чек-лист документов для ИСОГД и лесничества, а также контакты сетевых организаций. <a class="link-arrow" href="order.html?role=investor">Заказать полный отчет →</a></p>
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer no-print">
+  <div class="container">
+    <p class="footer-copy" style="margin:0">© 2026 Гео Разум. Цифровой интеллект территорий. Демонстрационный отчет, не является юридическим документом.</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
