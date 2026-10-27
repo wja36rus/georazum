@@ -1,0 +1,15 @@
+{
+  "name": "georazum-api",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Гео Разум — мок REST API (авторизация, участки, заказы, платежи, лиды)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "swagger-ui-express": "^5.0.1"
+  }
+}

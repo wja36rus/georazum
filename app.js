@@ -101,6 +101,7 @@ function initUI() {
   initWizard();
   initTopup();
   initAuth();
+  initCabinet();
 }
 
 function initNav() {
@@ -192,12 +193,20 @@ function initLeadForm() {
         .addClass("is-error");
       return;
     }
-    $note
-      .removeClass("is-error")
-      .text(
-        "Заявка отправлена. Менеджер по интеграциям свяжется с вами в рабочее время.",
-      );
-    $form[0].reset();
+    api("/api/leads", {
+      method: "POST",
+      body: { name, contact, company },
+    }).then((r) => {
+      /* Офлайн-фолбэк: сервер не запущен — считаем заявку отправленной. */
+      $note
+        .removeClass("is-error")
+        .text(
+          r.ok && r.data.message
+            ? r.data.message
+            : "Заявка отправлена. Менеджер по интеграциям свяжется с вами в рабочее время.",
+        );
+      $form[0].reset();
+    });
   });
 }
 
@@ -219,7 +228,7 @@ function initWizard() {
   if (user && user.name) {
     $root.find('[data-field="name"]').val(user.name);
     $root.find('[data-field="email"]').val(user.email);
-    $root.find('[data-field="phone"]').val(MOCK_USER_PHONE);
+    $root.find('[data-field="phone"]').val(user.phone || MOCK_USER_PHONE);
     $root.find('[data-step="4"] [data-next]').text("Оформить заказ →");
   } else {
     /* Неавторизованному на экране успеха кнопка ЛК не нужна. */
@@ -356,7 +365,40 @@ function initWizard() {
         $errorBox.text(err).trigger("focus");
         return;
       }
-      goTo(state.step + 1);
+      const logged = !!(loadUser() && loadUser().name);
+      const final = logged && state.step === 4 ? 6 : state.step + 1;
+      if (final !== 6) {
+        goTo(state.step + 1);
+        return;
+      }
+      /* Последний шаг: создаем заказ в API. При недоступности сервера
+         (offline) показываем экран успеха, как в клиентской имитации. */
+      const submit = $next[0];
+      submit.disabled = true;
+      api("/api/orders", {
+        method: "POST",
+        body: {
+          name: $root.find('[data-field="name"]').val().trim(),
+          email: state.email,
+          phone: $root.find('[data-field="phone"]').val().trim(),
+          roleId: state.role,
+          moduleIds: state.modules,
+          parcelId: "36:25:6945030:776",
+          payment: logged ? "balance" : "card",
+        },
+      }).then((r) => {
+        submit.disabled = false;
+        if (r.ok || r.offline) {
+          goTo(state.step + 1);
+          return;
+        }
+        /* 402 — не хватает баланса, 400 — данные. Ошибка ниже поля с кнопкой. */
+        $errorBox
+          .text(
+            r.data.error || "Не удалось оформить заказ. Попробуйте ещё раз.",
+          )
+          .trigger("focus");
+      });
       return;
     }
     if ($(e.target).closest("[data-prev]").length) goTo(state.step - 1);
@@ -423,30 +465,65 @@ function initTopup() {
         .text("Проверьте карту: 16 цифр номера и срок действия ММ/ГГ.");
       return;
     }
-    const date = new Date().toLocaleDateString("ru-RU");
-    if ($history.length) {
-      $history.prepend(
-        "<tr><td>" +
-          date +
-          "</td><td>Пополнение баланса</td>" +
-          '<td class="sum sum--plus">+' +
-          rub(sum) +
-          '</td><td><span class="tag tag--ok">Зачислен</span></td></tr>',
-      );
+    const done = (balance, payment, offline) => {
+      if (!offline && payment) {
+        if ($history.length)
+          $history.prepend(
+            "<tr><td>" +
+              payment.date +
+              "</td><td>" +
+              payment.desc +
+              "</td><td class='sum sum--plus'>+" +
+              rub(payment.amount) +
+              "</td><td><span class='tag tag--ok'>" +
+              payment.status +
+              "</span></td></tr>",
+          );
+      } else if ($history.length) {
+        const date = new Date().toLocaleDateString("ru-RU");
+        $history.prepend(
+          "<tr><td>" +
+            date +
+            "</td><td>Пополнение баланса</td>" +
+            "<td class='sum sum--plus'>+" +
+            rub(sum) +
+            "</td><td><span class='tag tag--ok'>Зачислен</span></td></tr>",
+        );
+      }
+      if ($balance.length) {
+        const next = offline
+          ? parseInt($balance.data("balance"), 10) + sum
+          : balance;
+        $balance.data("balance", next).text(rub(next));
+      }
+      $note
+        .removeClass("is-error")
+        .text("Счёт пополнен: +" + rub(sum) + ". Средства уже на балансе.");
+      $amount.val("");
+      $card.val("");
+      $expiry.val("");
+      $box.find("[data-sum]").removeClass("is-active");
+      sum = 0;
+      closeModals();
+    };
+    const u = loadUser();
+    if (u && u.token) {
+      api("/api/payments/topup", {
+        method: "POST",
+        body: {
+          amount: sum,
+          card: digits($card.val()),
+          expiry: digits($expiry.val()),
+        },
+      }).then((r) => {
+        if (r.ok) done(r.data.balance, r.data.payment, false);
+        else if (!r.offline && r.data.error)
+          $note.addClass("is-error").text(r.data.error);
+        else done(null, null, true);
+      });
+    } else {
+      done(null, null, true);
     }
-    if ($balance.length) {
-      const next = parseInt($balance.data("balance"), 10) + sum;
-      $balance.data("balance", next).text(rub(next));
-    }
-    $note
-      .removeClass("is-error")
-      .text("Счёт пополнен: +" + rub(sum) + ". Средства уже на балансе.");
-    $amount.val("");
-    $card.val("");
-    $expiry.val("");
-    $box.find("[data-sum]").removeClass("is-active");
-    sum = 0;
-    closeModals();
   });
 
   const mask = (sel, fn) => {
@@ -475,6 +552,28 @@ function loadUser() {
 const saveUser = (user) => localStorage.setItem(AUTH_KEY, JSON.stringify(user));
 const clearUser = () => localStorage.removeItem(AUTH_KEY);
 
+/* ---------- API: Express-сервер (api/express). При недоступности сервера
+   api() возвращает { ok:false, offline:true } — сайт живёт на локальных моках. ---------- */
+const API_BASE = "http://127.0.0.1:3001";
+
+function api(path, opts) {
+  const method = (opts && opts.method) || "GET";
+  const body = opts && opts.body;
+  const headers = { "Content-Type": "application/json" };
+  const u = loadUser();
+  if (u && u.token) headers.Authorization = "Bearer " + u.token;
+  return fetch(API_BASE + path, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  })
+    .then(async (res) => {
+      const data = await res.json().catch(() => ({}));
+      return { ok: res.ok, status: res.status, data };
+    })
+    .catch(() => ({ ok: false, offline: true }));
+}
+
 function initAuth() {
   const $guest = $("[data-auth-guest]");
   const $user = $("[data-auth-user]");
@@ -489,10 +588,25 @@ function initAuth() {
     $("[data-auth-name]").text(u.name);
     $("[data-profile-name]").text(u.name);
     $("[data-profile-email]").text(u.email);
+    if (u.phone) $("[data-profile-phone]").text(u.phone);
   };
   render();
 
-  /* Вход из модалки на главной: сохраняем и идем в ЛК. */
+  /* Есть токен — обновляем профиль с сервера (best-effort, офлайн не мешает). */
+  const u0 = loadUser();
+  if (u0 && u0.token) {
+    api("/api/me").then((r) => {
+      if (r.ok && r.data.user) {
+        const merged = Object.assign({}, loadUser(), r.data.user, {
+          token: u0.token,
+        });
+        saveUser(merged);
+        render();
+      }
+    });
+  }
+
+  /* Вход из модалки: сначала API, при офлайне — локальный мок. */
   $("[data-login-submit]").on("click", function () {
     const email = $("#login-email").val().trim();
     const $note = $("[data-login-note]");
@@ -500,25 +614,102 @@ function initAuth() {
       $note.addClass("is-error").text("Укажите корректный email.");
       return;
     }
-    saveUser({ name: MOCK_USER_NAME, email });
-    /* На странице заказа после входа остаёмся оформлять заказ, иначе — в ЛК. */
-    if ($("[data-wizard]").length) {
-      $("[data-login-note]").text(
-        "Вы вошли. Оформляйте заказ без оплаты картой.",
-      );
-      closeModals();
-      render();
-    } else {
-      location.href = "cabinet.html";
-    }
+    api("/api/login", { method: "POST", body: { email } }).then((r) => {
+      if (r.ok && r.data.token)
+        saveUser(Object.assign({ token: r.data.token }, r.data.user));
+      else saveUser({ name: MOCK_USER_NAME, email, phone: MOCK_USER_PHONE });
+      /* На странице заказа после входа остаёмся оформлять заказ, иначе — в ЛК. */
+      if ($("[data-wizard]").length) {
+        $note.text("Вы вошли. Оформляйте заказ без оплаты картой.");
+        closeModals();
+        render();
+      } else {
+        location.href = "cabinet.html";
+      }
+    });
   });
 
   /* Выход: чистим localStorage и предлагаем авторизоваться заново. */
   $("[data-logout]").on("click", function () {
-    clearUser();
-    if (location.pathname.indexOf("cabinet") !== -1)
-      location.href = "index.html";
-    else render();
+    const done = () => {
+      clearUser();
+      if (location.pathname.indexOf("cabinet") !== -1)
+        location.href = "index.html";
+      else render();
+    };
+    const u = loadUser();
+    if (u && u.token) api("/api/logout", { method: "POST" }).then(done);
+    else done();
+  });
+}
+
+/* ЛК: баланс и истории тянутся из API. Офлайн — статичная разметка остается. */
+function initCabinet() {
+  if (location.pathname.indexOf("cabinet") === -1) return;
+  const u = loadUser();
+  if (!u || !u.token) return;
+  api("/api/balance").then((r) => {
+    if (!r.ok) return;
+    const $b = $("[data-balance]");
+    if ($b.length) $b.data("balance", r.data.balance).text(rub(r.data.balance));
+  });
+  api("/api/orders").then((r) => {
+    if (!r.ok) return;
+    const $tb = $("tbody[data-orders]");
+    if (!$tb.length) return;
+    $tb.html(
+      r.data.orders
+        .map(
+          (o) =>
+            "<tr><td>" +
+            o.date +
+            "</td><td><b>" +
+            o.parcel +
+            '</b><br /><span class="muted">' +
+            o.address +
+            "</span></td><td>" +
+            o.tariff +
+            '</td><td><span class="tag tag--' +
+            (o.status === "Готов"
+              ? "ok"
+              : o.status === "Возврат"
+                ? "gray"
+                : "warn") +
+            '">' +
+            o.status +
+            "</span></td><td>" +
+            (o.status === "Готов"
+              ? '<a class="link-arrow" href="report-demo.html" target="_blank" rel="noopener">PDF</a>'
+              : "—") +
+            "</td></tr>",
+        )
+        .join(""),
+    );
+  });
+  api("/api/payments").then((r) => {
+    if (!r.ok) return;
+    const $tb = $("[data-payments]");
+    if (!$tb.length) return;
+    $tb.html(
+      r.data.payments
+        .map(
+          (p) =>
+            "<tr><td>" +
+            p.date +
+            "</td><td>" +
+            p.desc +
+            '</td><td class="sum' +
+            (p.amount > 0 ? " sum--plus" : "") +
+            '">' +
+            (p.amount > 0 ? "+" : "−") +
+            " " +
+            Math.abs(p.amount).toLocaleString("ru-RU") +
+            " ₽</td><td><span class='tag tag--ok'>" +
+            p.status +
+            "</span></td></tr>",
+        )
+        .join(""),
+    );
   });
 }
 
