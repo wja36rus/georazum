@@ -16,12 +16,6 @@
                 <a class="logo" href="index.html"
                     ><span class="logo__mark">◈</span> Гео Разум</a
                 >
-                <nav class="nav" data-nav aria-label="Основное меню">
-                    <a href="index.html#how">О сервисе</a>
-                    <a href="index.html#tariffs">Тарифы</a>
-                    <a href="index.html#b2b">Для бизнеса</a>
-                    <a href="index.html#faq">FAQ</a>
-                </nav>
                 <div class="header-actions">
                     <div class="header-auth" data-auth>
                         <button
@@ -51,15 +45,6 @@
                     <a class="btn btn--accent" href="order.html"
                         >Получить отчет</a
                     >
-                    <button
-                        class="burger"
-                        type="button"
-                        data-burger
-                        aria-expanded="false"
-                        aria-label="Открыть меню"
-                    >
-                        <span></span><span></span><span></span>
-                    </button>
                 </div>
             </div>
         </header>
@@ -323,14 +308,8 @@
                                 checked
                             />
                             <span
-                                >Я согласен с
-                                <a class="link-arrow" href="index.html#faq"
-                                    >политикой обработки персональных данных</a
-                                >
-                                и
-                                <a class="link-arrow" href="index.html#faq"
-                                    >офертой</a
-                                >.</span
+                                >Я согласен с политикой обработки персональных
+                                данных и офертой.</span
                             >
                         </label>
                         <div class="step__actions">
@@ -443,26 +422,18 @@
                                 <b data-success-email>ivan@mail.ru</b>.
                             </p>
                             <div class="success__actions">
-                                <a class="btn btn--ghost" href="index.html"
-                                    >Вернуться на главную</a
-                                >
                                 <a
                                     class="btn btn--accent"
+                                    href="report-demo.html"
+                                    >Посмотреть отчёт</a
+                                >
+                                <a
+                                    class="btn btn--ghost"
                                     href="cabinet.html"
                                     data-success-cabinet
-                                    >Перейти в Личный кабинет</a
+                                    >Личный кабинет</a
                                 >
                             </div>
-                            <p class="small muted" style="margin-top: 18px">
-                                Пример готового отчета:
-                                <a
-                                    class="link-arrow"
-                                    href="report-demo.html"
-                                    target="_blank"
-                                    rel="noopener"
-                                    >демо PDF</a
-                                >
-                            </p>
                         </div>
                     </section>
 
@@ -476,44 +447,6 @@
             </div>
         </main>
 
-        <footer class="site-footer">
-            <div class="container">
-                <div class="site-footer__grid">
-                    <div>
-                        <a class="logo" href="index.html"
-                            ><span class="logo__mark">◈</span> Гео Разум</a
-                        >
-                        <p class="small">Цифровой интеллект территорий.</p>
-                    </div>
-                    <div class="footer-links">
-                        <a href="index.html#how">О сервисе</a>
-                        <a href="index.html#tariffs">Тарифы</a>
-                        <a href="index.html#b2b">Для бизнеса</a>
-                        <a
-                            href="report-demo.html"
-                            target="_blank"
-                            rel="noopener"
-                            >Пример отчета</a
-                        >
-                        <a href="cabinet.html">Личный кабинет</a>
-                    </div>
-                    <div>
-                        <p class="small">Контакты</p>
-                        <p>
-                            <a href="mailto:support@georazum.ru"
-                                >support@georazum.ru</a
-                            ><br /><a href="tel:+78000000000"
-                                >8 (800) 000-00-00</a
-                            >
-                        </p>
-                    </div>
-                </div>
-                <p class="footer-copy">
-                    © 2026 Гео Разум. Цифровой интеллект территорий.
-                </p>
-            </div>
-        </footer>
-
         <div
             class="modal"
             id="modal-login"
@@ -522,7 +455,7 @@
             aria-labelledby="modal-login-title"
         >
             <div class="modal__panel">
-                <h3 id="modal-login-title">Вход в личный кабинет</h3>
+                <h3 id="modal-login-title">Вход</h3>
                 <div class="form-field">
                     <label for="login-email">Email</label>
                     <input
@@ -552,7 +485,7 @@
                     type="button"
                     data-login-submit
                 >
-                    Войти в кабинет →
+                    Войти →
                 </button>
                 <button
                     class="btn btn--ghost btn--wide"

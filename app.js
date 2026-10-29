@@ -618,13 +618,13 @@ function initAuth() {
       if (r.ok && r.data.token)
         saveUser(Object.assign({ token: r.data.token }, r.data.user));
       else saveUser({ name: MOCK_USER_NAME, email, phone: MOCK_USER_PHONE });
-      /* На странице заказа после входа остаёмся оформлять заказ, иначе — в ЛК. */
+      /* На странице заказа после входа остаёмся оформлять заказ, иначе — к оформлению. */
       if ($("[data-wizard]").length) {
         $note.text("Вы вошли. Оформляйте заказ без оплаты картой.");
         closeModals();
         render();
       } else {
-        location.href = "cabinet.html";
+        location.href = "order.html";
       }
     });
   });

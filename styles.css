@@ -1206,3 +1206,14 @@ body {
     transform: none !important;
     animation: none !important;
 }
+
+/* Шапка без меню: действия прижаты вправо */
+.header-actions {
+    margin-left: auto;
+}
+
+@media (max-width: 860px) {
+    .header-actions .btn:not(.btn--accent) {
+        display: inline-flex;
+    }
+}
