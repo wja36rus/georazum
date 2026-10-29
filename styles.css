@@ -1063,3 +1063,146 @@ svg {
         flex: 1 1 100%;
     }
 }
+
+/* ===== Серый макет: без цветов и картинок, сетка и вёрстка сохранены ===== */
+:root {
+    --paper: #e9e9e9;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #5f5f5f;
+    --line: #cfcfcf;
+    --accent: #8a8a8a;
+    --accent-dk: #6f6f6f;
+    --amber: #8a8a8a;
+    --dark: #333333;
+}
+
+body {
+    background: var(--paper);
+}
+
+/* Кнопки: primary серые, остальные белые */
+.btn {
+    background: #fff;
+}
+.btn--accent {
+    background: var(--accent);
+}
+
+/* Картинки и значки убраны */
+.hero-map,
+.sat-mock,
+.map-mock,
+.role-card__icon,
+.step-card__icon,
+.success__icon,
+.logo__mark,
+.header-auth__name::before {
+    display: none;
+}
+
+/* Шапка */
+.header-auth__name {
+    background: #fff;
+}
+
+/* Hero */
+.hero {
+    background: var(--paper);
+    color: var(--ink);
+}
+.hero__sub,
+.hero-note {
+    color: var(--muted);
+}
+
+/* Сетка карточек */
+.role-card:nth-child(2),
+.role-card:nth-child(4) {
+    border-top-color: var(--line);
+}
+
+/* Поля и формы */
+.field {
+    background: #fff;
+}
+.form-error {
+    color: #444;
+}
+
+/* Футер */
+.site-footer {
+    background: var(--dark);
+    color: #c7c7c7;
+}
+.site-footer a {
+    color: #c7c7c7;
+}
+.site-footer a:hover {
+    color: #fff;
+}
+.footer-copy {
+    border-top-color: #4a4a4a;
+}
+
+/* Прогресс, теги, чипы, пики, модули */
+.bar {
+    background: #dcdcdc;
+}
+.tag,
+.tag--ok,
+.tag--warn,
+.tag--gray {
+    background: #e2e2e2;
+    color: #444;
+}
+.chip:hover,
+.pick:hover,
+.module:hover {
+    border-color: #aaa;
+}
+.chip.is-active,
+.pick.is-active,
+.module:has(input:checked) {
+    border-color: var(--accent);
+    background: #e7e7e7;
+}
+.pick[data-role="investor"].is-active {
+    background: #e7e7e7;
+    border-color: var(--accent);
+}
+.total {
+    background: #e7e7e7;
+}
+.profile__avatar {
+    background: var(--accent);
+}
+.table-wrap .sum--plus {
+    color: #1a1a1a;
+}
+
+/* Демо-отчёт */
+.report .kpi div {
+    background: #e7e7e7;
+}
+.report__map {
+    display: none;
+}
+
+/* ===== Максимально простая вёрстка: без скруглений, теней и анимаций ===== */
+*,
+*::before,
+*::after {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+.site-header {
+    background: #fff;
+    backdrop-filter: none;
+}
+.js-anim .wow {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+}
