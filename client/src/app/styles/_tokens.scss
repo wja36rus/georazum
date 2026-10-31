@@ -1,0 +1,66 @@
+/* Дизайн-токены «Гео Разум». Основные цвета: голубой + зелёный. */
+
+:root {
+    /* Фирменные цвета */
+    --blue: #1f9ad6;
+    --blue-dark: #1677b3;
+    --blue-soft: #e8f4fb;
+    --green: #2e9e5b;
+    --green-dark: #237a46;
+    --green-soft: #e7f5ec;
+    --grad: linear-gradient(90deg, #1f9ad6, #2e9e5b);
+
+    /* Поверхности */
+    --bg: #f2f5f8;
+    --card: #ffffff;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+
+    /* Текст */
+    --text: #1c2632;
+    --muted: #66727f;
+
+    /* Сайдбар */
+    --sidebar: #232f3e;
+    --sidebar-2: #1b2531;
+    --sidebar-text: #aeb9c7;
+    --sidebar-active: #2f3e52;
+
+    /* Семантика */
+    --danger: #e05252;
+    --danger-soft: #fdeaea;
+    --warn: #d98b1f;
+    --warn-soft: #fdf3e3;
+
+    /* Геометрия */
+    --radius: 6px;
+    --z-header: 100;
+    --radius-lg: 10px;
+    --shadow:
+        0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+    --shadow-md: 0 4px 14px rgba(16, 24, 40, 0.08);
+    --font: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --sidebar-w: 280px;
+}
+
+/* Статусы заказов: тон по статусу */
+.badge-tone--gray {
+    background: #eceff3;
+    color: #55606d;
+}
+.badge-tone--blue {
+    background: var(--blue-soft);
+    color: var(--blue-dark);
+}
+.badge-tone--green {
+    background: var(--green-soft);
+    color: var(--green-dark);
+}
+.badge-tone--red {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+.badge-tone--warn {
+    background: var(--warn-soft);
+    color: var(--warn);
+}

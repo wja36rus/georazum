@@ -1,0 +1,48 @@
+/* Стили виджетов админки */
+
+.admin-filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-filters .input { max-width: 320px; }
+.admin-filters .select { max-width: 200px; }
+
+.admin-details {
+  font-size: 13px;
+}
+
+.admin-details__summary {
+  cursor: pointer;
+  color: var(--blue);
+  font-weight: 600;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+.admin-details__summary::-webkit-details-marker { display: none; }
+.admin-details__summary:hover { color: var(--blue-dark); }
+
+.admin-user-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 360px;
+  padding: 8px 0;
+}
+
+.admin-user-orders__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: #f7f9fb;
+  border-radius: var(--radius);
+}

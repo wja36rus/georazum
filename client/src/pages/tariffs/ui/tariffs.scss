@@ -1,0 +1,79 @@
+/* Таблица сравнения тарифов */
+
+.tariffs {
+  max-width: 960px;
+}
+
+.tariffs__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  font-size: 14px;
+}
+
+.tariffs__table th,
+.tariffs__table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tariffs__table thead th { background: #f7f9fb; text-align: center; }
+.tariffs__table tbody tr:last-child td { border-bottom: none; }
+
+.tariffs__param-col { min-width: 220px; color: var(--muted); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
+
+.tariffs__level-col {
+  min-width: 180px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.tariffs__badge {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  border: 2px solid;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.tariffs__level-col--s .tariffs__badge { color: var(--blue); border-color: var(--blue); }
+.tariffs__level-col--m .tariffs__badge { color: var(--green); border-color: var(--green); }
+.tariffs__level-col--l .tariffs__badge { color: var(--warn); border-color: var(--warn); }
+
+.tariffs__price {
+  font-size: 13px;
+  color: var(--blue-dark);
+  margin-top: 4px;
+}
+
+.tariffs__yes { color: var(--green); }
+.tariffs__no { color: #c6cdd6; }
+
+.tariffs__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+}
+.tariffs__list li { position: relative; padding-left: 14px; }
+.tariffs__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--grad);
+}

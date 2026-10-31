@@ -1,0 +1,25 @@
+/* Страница «Контакты» */
+
+.contacts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+  align-items: start;
+  max-width: 960px;
+}
+@media (max-width: 760px) {
+  .contacts-grid { grid-template-columns: 1fr; }
+}
+
+.contacts-info__row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14.5px;
+}
+.contacts-info__row:last-child { border-bottom: none; }
+.contacts-info__row svg { color: var(--blue); flex: 0 0 auto; margin-top: 3px; }
+.contacts-info__row .muted { font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; }
+.contacts-info__row a { font-weight: 600; }

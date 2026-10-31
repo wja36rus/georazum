@@ -1,0 +1,16 @@
+/* Точка входа глобальных стилей. Подключаются все слои дизайн-системы. */
+
+@use "./tokens";
+@use "./base";
+@use "./ui";
+
+/* Микро-утилиты */
+.text-center { text-align: center; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+
+@media (max-width: 620px) {
+  h1 { font-size: 26px; }
+  h2 { font-size: 20px; }
+  .section { padding: 36px 0; }
+}

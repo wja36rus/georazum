@@ -1,0 +1,67 @@
+/* Карточка заказа в ЛК */
+
+.order-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+.order-card__level {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  border: 2px solid;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 15px;
+  background: var(--card);
+}
+
+.order-card__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.order-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.order-card__id {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--text);
+}
+.order-card__id:hover { color: var(--blue-dark); }
+
+.order-card__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 4px 20px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.order-card__grid b { color: var(--text); font-weight: 600; }
+
+.order-card__actions {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (max-width: 780px) {
+  .order-card { flex-wrap: wrap; }
+  .order-card__grid { grid-template-columns: 1fr 1fr; }
+  .order-card__actions { flex-direction: row; flex-wrap: wrap; }
+}
+@media (max-width: 480px) {
+  .order-card__grid { grid-template-columns: 1fr; }
+}

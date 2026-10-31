@@ -1,0 +1,83 @@
+/* Карточка уровня анализа (S/M/L) */
+
+.level-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+}
+
+.level-card__badge {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 2px;
+}
+
+.level-card__name {
+  margin: 0 0 4px;
+  font-size: 19px;
+}
+
+.level-card__tagline {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.level-card__meta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 16px;
+  margin: 0 0 10px;
+  font-size: 13.5px;
+}
+
+.level-card__meta dt {
+  color: var(--muted);
+}
+
+.level-card__meta dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+}
+
+.level-card__price {
+  color: var(--blue-dark);
+  font-size: 17px;
+}
+
+.level-card__list {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 13.5px;
+}
+
+.level-card__list li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.level-card__list svg {
+  color: var(--green);
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.level-card__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.level-card__link {
+  font-size: 13px;
+  color: var(--blue);
+  font-weight: 600;
+}

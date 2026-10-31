@@ -1,0 +1,15 @@
+{
+  "name": "georazum-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Гео Разум — backend: авторизация, уровни S/M/L, заказы, оплата, генерация отчётов, админка",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

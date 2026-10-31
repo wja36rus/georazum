@@ -1,0 +1,514 @@
+/* UI-кит: кнопки, формы, карточки, бейджи, таблицы, табы, таймлайн, спиннер. */
+
+/* ---------- Кнопки ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    background: var(--blue);
+    color: #fff;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+.btn:hover {
+    background: var(--blue-dark);
+    color: #fff;
+}
+.btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn--accent {
+    background: var(--grad);
+}
+.btn--accent:hover {
+    background: linear-gradient(90deg, var(--blue-dark), var(--green-dark));
+}
+
+.btn--green {
+    background: var(--green);
+}
+.btn--green:hover {
+    background: var(--green-dark);
+}
+
+.btn--ghost {
+    background: var(--card);
+    border-color: var(--border-strong);
+    color: var(--text);
+}
+.btn--ghost:hover {
+    background: #f5f8fa;
+    color: var(--text);
+}
+
+.btn--danger {
+    background: var(--danger);
+}
+.btn--danger:hover {
+    background: #c93a3a;
+}
+
+.btn--outline-danger {
+    background: var(--card);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+.btn--outline-danger:hover {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
+
+.btn--sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+.btn--lg {
+    padding: 13px 26px;
+    font-size: 16px;
+}
+.btn--block {
+    width: 100%;
+}
+.btn--link {
+    background: none;
+    border: none;
+    color: var(--blue);
+    padding: 4px 0;
+    font-weight: 600;
+    font-size: 14px;
+}
+.btn--link:hover {
+    color: var(--blue-dark);
+    background: none;
+}
+
+/* ---------- Формы ---------- */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+.field__label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+}
+.field__hint {
+    font-size: 13px;
+    color: var(--muted);
+}
+.field__error {
+    font-size: 13px;
+    color: var(--danger);
+}
+
+.input,
+.textarea,
+.select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--card);
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+.input:focus,
+.textarea:focus,
+.select:focus {
+    outline: none;
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-soft);
+}
+.input--error,
+.textarea--error {
+    border-color: var(--danger);
+}
+.textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.checkbox {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 14px;
+    cursor: pointer;
+}
+.checkbox input {
+    margin-top: 3px;
+    accent-color: var(--blue);
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.auth-card {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 28px;
+}
+.auth-card .page-title {
+    font-size: 24px;
+}
+
+/* ---------- Карточки ---------- */
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.card--pad {
+    padding: 20px;
+}
+.card-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.card-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+}
+
+/* ---------- Бейджи статусов ---------- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+.badge__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* ---------- Алерты ---------- */
+.alert {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+}
+.alert--info {
+    background: var(--blue-soft);
+    color: #11547c;
+}
+.alert--success {
+    background: var(--green-soft);
+    color: #1b5e38;
+}
+.alert--error {
+    background: var(--danger-soft);
+    color: #a12727;
+}
+.alert--warn {
+    background: var(--warn-soft);
+    color: #8a5c10;
+}
+.alert--error b,
+.alert--info b,
+.alert--success b,
+.alert--warn b {
+    font-weight: 700;
+}
+
+/* ---------- Таблицы ---------- */
+.table-wrap {
+    overflow-x: auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 640px;
+}
+.table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: #f7f9fb;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    font-weight: 700;
+    white-space: nowrap;
+}
+.table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+.table tr:last-child td {
+    border-bottom: none;
+}
+.table tr:hover td {
+    background: #fafcfe;
+}
+
+/* ---------- Табы ---------- */
+.tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+.tabs__tab {
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.tabs__tab:hover {
+    color: var(--blue);
+}
+.tabs__tab--active {
+    color: var(--blue-dark);
+    border-bottom-color: var(--blue);
+}
+
+/* ---------- Таймлайн статусов ---------- */
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 8px 0 20px;
+}
+.timeline__step {
+    position: relative;
+    padding: 0 0 22px 34px;
+    color: var(--muted);
+    font-size: 14px;
+}
+.timeline__step::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d5dce4;
+    border: 2px solid var(--card);
+    z-index: 1;
+}
+.timeline__step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: 20px;
+    bottom: -4px;
+    width: 2px;
+    background: var(--border);
+}
+.timeline__step--done {
+    color: var(--text);
+}
+.timeline__step--done::before {
+    background: var(--green);
+}
+.timeline__step--current {
+    color: var(--text);
+    font-weight: 700;
+}
+.timeline__step--current::before {
+    background: var(--blue);
+    box-shadow: 0 0 0 4px var(--blue-soft);
+}
+.timeline__step--error::before {
+    background: var(--danger);
+}
+.timeline__at {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+/* ---------- Спиннер ---------- */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--blue-soft);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 48px 0;
+    color: var(--muted);
+}
+
+/* ---------- Пустые состояния ---------- */
+.empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+}
+.empty__icon {
+    margin: 0 auto 12px;
+    color: #b7c0ca;
+}
+.empty__title {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+/* ---------- Статистика (админка) ---------- */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+@media (max-width: 900px) {
+    .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 620px) {
+    .stat-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+}
+.stat-card__label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+.stat-card__value {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+.stat-card__hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+/* Полоса уровня (админка, распределение заказов) */
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.bar-row__label {
+    width: 130px;
+    color: var(--muted);
+}
+.bar-row__track {
+    flex: 1;
+    height: 10px;
+    background: #e8edf2;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.bar-row__fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--grad);
+}
+
+/* ---------- Печать ---------- */
+.no-print {
+}
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    body {
+        background: #fff;
+    }
+    .print-area {
+        box-shadow: none;
+        border: none;
+    }
+}
+
+/* ---------- Градиентный текст ---------- */
+.grad-text {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}

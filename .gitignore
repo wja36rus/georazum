@@ -1,1 +1,10 @@
-api/express/node_modules/
+# Зависимости
+server/node_modules/
+client/node_modules/
+
+# Сборка
+client/dist/
+
+# Окружение
+.env
+.env.local

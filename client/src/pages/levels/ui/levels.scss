@@ -1,0 +1,100 @@
+/* Страница «Уровни» */
+
+.levels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 860px;
+}
+
+.levels-block {
+  padding: 24px;
+  scroll-margin-top: 80px;
+}
+
+.levels-block__head {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.levels-block__badge {
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 52px;
+  border: 2px solid currentColor;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.levels-block__detail {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14.5px;
+}
+
+.levels-block__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  background: #f7f9fb;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+@media (max-width: 720px) {
+  .levels-block__grid { grid-template-columns: 1fr 1fr; }
+}
+
+.levels-block__label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.levels-block__price { color: var(--blue-dark); }
+
+.levels-block__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+@media (max-width: 720px) {
+  .levels-block__cols { grid-template-columns: 1fr; }
+}
+
+.levels-block__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+.levels-block__list li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.levels-block__list svg { color: var(--green); flex: 0 0 auto; margin-top: 2px; }
+
+.levels-block__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.levels-block__actions .btn--accent { margin-left: auto; }
+.levels-block__actions .btn--ghost { color: var(--muted); }
+.levels-block__actions .btn--ghost:hover { color: var(--text); }

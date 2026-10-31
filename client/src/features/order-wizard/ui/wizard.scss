@@ -1,0 +1,190 @@
+/* Виззард оформления заказа */
+
+.wizard {
+    max-width: 860px;
+    margin: 0 auto;
+}
+
+.wizard-steps {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+}
+
+.wizard-steps__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: max-content;
+    color: var(--muted);
+}
+
+.wizard-steps__num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e8edf2;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex: 0 0 auto;
+}
+
+.wizard-steps__item.is-active .wizard-steps__num {
+    background: var(--blue);
+    color: #fff;
+}
+.wizard-steps__item.is-done .wizard-steps__num {
+    background: var(--green);
+    color: #fff;
+}
+.wizard-steps__item.is-active .wizard-steps__label {
+    color: var(--text);
+    font-weight: 700;
+}
+.wizard-steps__label {
+    font-size: 13px;
+    white-space: nowrap;
+}
+.wizard-steps__line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    margin: 0 4px;
+    min-width: 14px;
+}
+.wizard-steps__item.is-done .wizard-steps__line {
+    background: var(--green);
+}
+
+/* Карточка найденного участка */
+.parcel-card {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--green);
+    border-radius: var(--radius);
+    background: var(--green-soft);
+}
+.parcel-card__address {
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+.parcel-card__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    font-size: 14px;
+}
+.parcel-card__restrictions {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--warn);
+}
+
+/* Выбор уровня */
+.level-select {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 8px 0 16px;
+}
+@media (max-width: 760px) {
+    .level-select {
+        grid-template-columns: 1fr;
+    }
+}
+.level-select__item {
+    text-align: left;
+    padding: 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.level-select__item:hover {
+    border-color: var(--blue);
+}
+.level-select__item.is-active {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-soft);
+}
+.level-select__item.is-disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+.level-select__top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.level-select__badge {
+    font-weight: 800;
+    font-size: 18px;
+}
+.level-select__tag {
+    font-size: 13px;
+    color: var(--muted);
+}
+.level-select__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: auto;
+}
+.level-select__meta b {
+    color: var(--text);
+    font-size: 17px;
+}
+.level-select__off {
+    font-size: 12px;
+    color: var(--warn);
+    font-weight: 700;
+}
+
+/* Документ оферты в шаге 4 */
+.offer-doc {
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    background: #fafcfe;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+/* Сводка заказа */
+.summary {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+.summary__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+}
+.summary__row:last-child {
+    border-bottom: none;
+}
+.summary__row--total {
+    background: var(--blue-soft);
+    font-size: 16px;
+}

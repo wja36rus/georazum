@@ -1,0 +1,45 @@
+/* Страница оплаты */
+
+.pay-page {
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 760px) {
+  .pay-page { grid-template-columns: 1fr; }
+}
+
+.pay-page__info { padding: 20px; }
+.pay-page__form { padding: 20px; }
+
+.pay-page__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.pay-page__row:last-child { border-bottom: none; }
+
+.pay-page__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding: 14px 16px;
+  background: var(--blue-soft);
+  border-radius: var(--radius);
+}
+.pay-page__total span { font-weight: 700; }
+.pay-page__total b { font-size: 22px; color: var(--blue-dark); }
+
+.pay-note {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+  max-width: 640px;
+}

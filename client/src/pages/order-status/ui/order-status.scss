@@ -1,0 +1,65 @@
+/* Страница статуса заказа */
+
+.order-status {
+  max-width: 960px;
+}
+
+.order-status__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.order-status__cols { gap: 20px; }
+
+.order-status__dl {
+  margin: 0;
+  font-size: 14px;
+}
+.order-status__dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.order-status__dl > div:last-child { border-bottom: none; }
+.order-status__dl dt { color: var(--muted); }
+.order-status__dl dd { margin: 0; font-weight: 600; text-align: right; }
+
+/* Прогресс-бар по статусам */
+.progress-bar {
+  display: flex;
+  gap: 3px;
+  margin: 12px 0 6px;
+}
+.progress-bar__seg {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  background: #e8edf2;
+}
+.progress-bar__seg.is-passed { background: var(--blue); }
+.progress-bar__seg.is-current { background: var(--grad); }
+
+.order-status__progress-label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.order-status__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.order-status__final {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}

@@ -1,0 +1,126 @@
+/* Личный кабинет */
+
+.cabinet-hello {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cabinet-hello__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--grad);
+  color: #fff;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.cabinet-stats { margin-bottom: 20px; }
+.cabinet-stats .stat-card { padding: 14px 16px; }
+.cabinet-stats .stat-card__value { font-size: 22px; }
+.cabinet-stats .stat-card__label { font-size: 11px; }
+
+.cabinet-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.cabinet-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+.cabinet-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cabinet-events {
+  margin-top: 24px;
+  max-width: 480px;
+}
+
+/* Отчёты */
+.cabinet-reports {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 700px;
+}
+.cabinet-report {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.cabinet-report__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.cabinet-report__main { flex: 1; min-width: 0; }
+.cabinet-report__id {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+}
+
+/* Документы */
+.cabinet-docs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 560px;
+}
+.cabinet-doc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cabinet-doc:hover { border-color: var(--blue); box-shadow: var(--shadow-md); color: var(--text); }
+.cabinet-doc svg:first-child { color: var(--blue-dark); flex: 0 0 auto; }
+.cabinet-doc > span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* Профиль */
+.cabinet-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 720px;
+}
+
+/* Поддержка */
+.cabinet-support {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .cabinet-support { grid-template-columns: 1fr; }
+}
