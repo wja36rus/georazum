@@ -1,55 +1,70 @@
 .footer {
-  background: var(--card);
-  border-top: 1px solid var(--border);
-  margin-top: auto;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+    padding: 20px 0 20px 0;
 }
 
 .footer__grid {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
-  gap: 32px;
-  padding: 40px 20px 24px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+    gap: 32px;
+    padding: 40px 20px 24px;
 }
 
 .footer__col {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
 }
 
 .footer__title {
-  font-weight: 700;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 12px;
-  color: var(--muted);
+    font-weight: 700;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 12px;
+    color: var(--muted);
 }
 
 .footer__col a:not(.footer__contact) {
-  color: var(--text);
+    color: var(--text);
 }
-.footer__col a:not(.footer__contact):hover { color: var(--blue-dark); }
+.footer__col a:not(.footer__contact):hover {
+    color: var(--blue-dark);
+}
 
 .footer__contact {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.45;
+    color: var(--text);
+    overflow-wrap: anywhere;
 }
-.footer__contact:hover { color: var(--blue-dark); }
+.footer__contact svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.footer__contact:hover {
+    color: var(--blue-dark);
+}
 
 .footer__bottom {
-  border-top: 1px solid var(--border);
-  padding: 14px 20px;
-  font-size: 13px;
-  color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+    font-size: 13px;
+    color: var(--muted);
 }
 
 @media (max-width: 900px) {
-  .footer__grid { grid-template-columns: 1fr 1fr; }
+    .footer__grid {
+        grid-template-columns: 1fr 1fr;
+    }
 }
 @media (max-width: 560px) {
-  .footer__grid { grid-template-columns: 1fr; }
+    .footer__grid {
+        grid-template-columns: 1fr;
+    }
 }
