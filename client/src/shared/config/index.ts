@@ -1,5 +1,11 @@
 /* Глобальные константы и конфигурация клиента. */
 
+/**
+ * Базовый адрес API. Значение подставляется на сборке из env (DefinePlugin):
+ * пустая строка — тот же origin (dev-прокси `/api` → 4000).
+ */
+export const API_BASE = process.env.API_URL ?? "";
+
 export const API_PREFIX = "/api";
 
 export const STORAGE_KEYS = {

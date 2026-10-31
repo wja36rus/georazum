@@ -1,10 +1,14 @@
 import { defineConfig } from "@rspack/cli";
-import { HtmlRspackPlugin, CopyRspackPlugin } from "@rspack/core";
+import { HtmlRspackPlugin, CopyRspackPlugin, DefinePlugin } from "@rspack/core";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === "production";
+
+/* Деплой на GitHub Pages: базовый путь /repo/ и адрес API из CI-переменных. */
+const basePath = process.env.BASE_PATH ?? "/";
+const apiUrl = process.env.API_URL ?? "";
 
 export default defineConfig({
   mode: isProd ? "production" : "development",
@@ -17,7 +21,7 @@ export default defineConfig({
     filename: "assets/[name].[contenthash].js",
     chunkFilename: "assets/[name].[contenthash].js",
     clean: true,
-    publicPath: "/",
+    publicPath: basePath,
   },
   optimization: {
     runtimeChunk: "single",
@@ -79,6 +83,9 @@ export default defineConfig({
     new HtmlRspackPlugin({ template: path.resolve(dirname, "index.html") }),
     new CopyRspackPlugin({
       patterns: [{ from: path.resolve(dirname, "public"), to: "" }],
+    }),
+    new DefinePlugin({
+      "process.env.API_URL": JSON.stringify(apiUrl),
     }),
   ],
   devServer: {

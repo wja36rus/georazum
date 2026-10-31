@@ -8,11 +8,11 @@ SaaS-сервис формирования **аналитического зак
 
 ## Стек
 
-| Часть | Технологии |
-| --- | --- |
-| Backend | Node.js + Express (чистый JS), in-memory БД, scrypt-пароли, мок-генерация отчётов |
-| Frontend | React 19 + TypeScript (strict) + **Rspack**, FSD, SCSS (дизайн-токены), SVG-иконки как React-компоненты, react-router-dom v7, Vitest (unit) |
-| Сборка/тесты | `@rspack/cli` + swc-loader · типчек `tsc --noEmit` · Vitest + jsdom |
+| Часть        | Технологии                                                                                                                                  |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend      | Node.js + Express (чистый JS), in-memory БД, scrypt-пароли, мок-генерация отчётов                                                           |
+| Frontend     | React 19 + TypeScript (strict) + **Rspack**, FSD, SCSS (дизайн-токены), SVG-иконки как React-компоненты, react-router-dom v7, Vitest (unit) |
+| Сборка/тесты | `@rspack/cli` + swc-loader · типчек `tsc --noEmit` · Vitest + jsdom                                                                         |
 
 Дизайн — по референсу дашборда, основные цвета **голубой и зелёный**
 (палитра в [`context/design.md`](context/design.md)).
@@ -60,9 +60,9 @@ cd client && npm run build     # продакшен-сборка в client/dist
 
 ## Демо-доступы
 
-| Роль | Логин | Пароль |
-| --- | --- | --- |
-| Пользователь | `ivan@mail.ru` | `demo1234` |
+| Роль          | Логин               | Пароль     |
+| ------------- | ------------------- | ---------- |
+| Пользователь  | `ivan@mail.ru`      | `demo1234` |
 | Администратор | `admin@georazum.ru` | `admin123` |
 
 ### Что можно проверить руками
@@ -93,3 +93,36 @@ cd client && npm run build     # продакшен-сборка в client/dist
 - [`AGENTS/AGENTS.md`](AGENTS/AGENTS.md) — локальные правила для ИИ-агентов.
 - [`context/`](context/) — база знаний: проект, архитектура, API, дизайн,
   роадмап.
+
+## Деплой
+
+GitHub Pages отдаёт только статику, поэтому бэкенд разворачивается отдельно
+(бесплатно: Render / Railway / Fly.io). Схема:
+
+```
+https://<user>.github.io/georazum/  (React — GitHub Pages)
+        └── fetch → https://<api-host>/api/...  (Express — Render/Railway)
+```
+
+### 1. Бэкенд (Render и т.п.)
+
+- Создать Web Service из репозитория, root directory `server`,
+  build: `npm install`, start: `npm start`.
+- Render сам задаёт `PORT` (код читает `process.env.PORT`). CORS уже включён
+  (`app.use(cors())`).
+- ВАЖНО: БД in-memory — данные сбрасываются при рестарте/сне бесплатного
+  хоста. Для демо нормально.
+
+### 2. Фронтенд (GitHub Pages)
+
+- В настройках репозитория: Settings → Pages → Source: **GitHub Actions**.
+- В репозитории задать переменную `API_URL` (Settings → Secrets and
+  variables → Actions → Variables): адрес развёрнутого API, например
+  `https://georazum-api.onrender.com` (без `/api` — префикс добавляет клиент).
+- Workflow `.github/workflows/deploy-pages.yml` соберёт клиент
+  (`BASE_PATH=/georazum/`, `API_URL` из переменной) и задеплоит на Pages при
+  пуше в `main` (или вручную через Actions → Deploy client → Run workflow).
+- SPA-роуты работают благодаря `404.html` = копии `index.html`.
+
+Локальная разработка не меняется: без env-переменных `BASE_PATH=/` и
+`API_URL=""` (тот же origin, прокси `/api` → 4000).
