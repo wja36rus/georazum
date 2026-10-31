@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { LogoFull } from "@/shared/icons";
 import { useAuth } from "@/app/providers/auth";
 import { Button } from "@/shared/ui/Button";
@@ -18,6 +18,7 @@ const NAV = [
 
 export function Header() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   return (
@@ -27,13 +28,18 @@ export function Header() {
           <LogoFull size={30} />
         </Link>
 
-        <nav className={"header__nav" + (open ? " header__nav--open" : "")} aria-label="Основное меню">
+        <nav
+          className={"header__nav" + (open ? " header__nav--open" : "")}
+          aria-label="Основное меню"
+        >
           {NAV.map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
               end={n.to === "/"}
-              className={({ isActive }) => "header__link" + (isActive ? " is-active" : "")}
+              className={({ isActive }) =>
+                "header__link" + (isActive ? " is-active" : "")
+              }
               onClick={() => setOpen(false)}
             >
               {n.label}
@@ -44,7 +50,10 @@ export function Header() {
         <div className="header__actions">
           {user ? (
             <>
-              <Link to={user.role === "admin" ? "/admin" : "/cabinet"} className="header__cab">
+              <Link
+                to={user.role === "admin" ? "/admin" : "/cabinet"}
+                className="header__cab"
+              >
                 Личный кабинет
               </Link>
               <Button variant="ghost" size="sm" onClick={signOut}>
@@ -56,14 +65,18 @@ export function Header() {
               <Link to="/login" className="header__cab">
                 Войти
               </Link>
-              <Button size="sm" onClick={() => (window.location.href = "/register")}>
+              <Button size="sm" onClick={() => navigate("/register")}>
                 Регистрация
               </Button>
             </>
           )}
         </div>
 
-        <button className="header__burger" onClick={() => setOpen((v) => !v)} aria-label="Меню">
+        <button
+          className="header__burger"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Меню"
+        >
           {open ? <IconClose size={22} /> : <IconMenu size={22} />}
         </button>
       </div>

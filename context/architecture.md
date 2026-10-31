@@ -72,12 +72,27 @@ CSS-переменными), иконки — SVG как React-компонен�
 
 ### Конфигурация
 
-| Файл               | Роль                                                                                                                                                                                                                                                                                                                                    |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `rspack.config.ts` | Entry `src/app/index.tsx`, alias `@ → src`, SWC-loader для `tsx?`, sass, HtmlRspackPlugin, CopyRspackPlugin, devServer :5173 с `historyApiFallback` и прокси `/api → 127.0.0.1:4000`. Code-splitting: `optimization.runtimeChunk: "single"` + `splitChunks` (чанки `react`, `router`, `vendor`), `performance.maxEntrypointSize: 400КБ` |
-| `tsconfig.json`    | Strict, `noUnusedLocals`, `paths {"@/*": ["src/*"]}`, JSX `react-jsx`                                                                                                                                                                                                                                                                   |
-| `vitest.config.ts` | jsdom, setup `shared/testing/setup.ts`, alias `@`                                                                                                                                                                                                                                                                                       |
-| `index.html`       | Шаблон HtmlRspackPlugin, заголовок «Гео Разум»                                                                                                                                                                                                                                                                                          |
+| Файл               | Роль                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rspack.config.ts` | Entry `src/app/index.tsx`, alias `@ → src`, SWC-loader для `tsx?`, sass, HtmlRspackPlugin, CopyRspackPlugin, devServer :5173 с `historyApiFallback` и прокси `/api → 127.0.0.1:4000`. Code-splitting: `optimization.runtimeChunk: "single"` + `splitChunks` (чанки `react`, `router`, `vendor`), `performance.maxEntrypointSize: 400КБ`. DefinePlugin: `process.env.API_URL` и `process.env.BASE_PATH` (из env/.env) |
+| `tsconfig.json`    | Strict, `noUnusedLocals`, `paths {"@/*": ["src/*"]}`, JSX `react-jsx`                                                                                                                                                                                                                                                                                                                                                |
+| `vitest.config.ts` | jsdom, setup `shared/testing/setup.ts`, alias `@`                                                                                                                                                                                                                                                                                                                                                                    |
+| `index.html`       | Шаблон HtmlRspackPlugin, заголовок «Гео Разум»                                                                                                                                                                                                                                                                                                                                                                       |
+
+### Маршрутизация и деплой на GitHub Pages
+
+- `<BrowserRouter>` создаётся в `src/app/index.tsx` с `basename = BASE_PATH || undefined`
+  (`BASE_PATH` — из `shared/config`, прокидывается DefinePlugin из `process.env.BASE_PATH`).
+- В dev `BASE_PATH=/` → `basename` пустой — адреса как раньше. На Pages CI задаёт
+  `BASE_PATH=/georazum/` → маршруты живут под `/georazum/`, Link/navigate/`<Navigate>`
+  работают автоматически.
+- Жёсткие переходы вне роутера (полная перезагрузка на 401 в `app/providers/auth.tsx`,
+  `window.open` отчёта в `features/order-actions/ui/actions.tsx`) префиксуют `BASE_PATH`
+  вручную (в `Header.tsx`/`LevelCard.tsx` используют `useNavigate`).
+- SPA-фолбэк: CI-воркфлоу копирует `dist/index.html` → `dist/404.html`; GitHub Pages
+  отдаёт его (статус 404, но HTML приложения) для неизвестных путей.
+- Локальный .env c `BASE_PATH=/` и `API_URL=` (пусто) — gitignored;
+  шаблон — `client/.env.example`.
 
 ### Команды
 

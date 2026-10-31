@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/shared/ui/Button";
 import { IconCheck } from "@/shared/icons";
 import { fmtPrice } from "@/shared/lib/format";
@@ -20,14 +20,25 @@ const ACCENT: Record<NonNullable<LevelCardProps["accent"]>, string> = {
   warn: "#d98b1f",
 };
 
-export function LevelCard({ level, accent = "blue", action = "order", compact }: LevelCardProps) {
+export function LevelCard({
+  level,
+  accent = "blue",
+  action = "order",
+  compact,
+}: LevelCardProps) {
   const color = ACCENT[accent];
+  const navigate = useNavigate();
   return (
-    <article className="level-card card" style={{ borderTop: "3px solid " + color }}>
+    <article
+      className="level-card card"
+      style={{ borderTop: "3px solid " + color }}
+    >
       <div className="level-card__badge" style={{ color }}>
         {level.id.toUpperCase()}
       </div>
-      <h3 className="level-card__name">{level.name.replace(/^[SML] — /, "")}</h3>
+      <h3 className="level-card__name">
+        {level.name.replace(/^[SML] — /, "")}
+      </h3>
       <p className="level-card__tagline">{level.tagline}</p>
 
       <dl className="level-card__meta">
@@ -52,18 +63,23 @@ export function LevelCard({ level, accent = "blue", action = "order", compact }:
       )}
 
       <div className="level-card__actions">
-        <Link to={"/levels#level-" + level.id} className="btn btn--ghost btn--sm">
+        <Link
+          to={"/levels#level-" + level.id}
+          className="btn btn--ghost btn--sm"
+        >
           Подробнее
         </Link>
         <Button
           size="sm"
-          onClick={() => (window.location.href = "/order?level=" + level.id)}
+          onClick={() => navigate("/order?level=" + level.id)}
           disabled={level.available === false}
         >
           {level.available === false ? "Недоступен" : "Заказать"}
         </Button>
       </div>
-      {action === "link" && <div className="level-card__link">Подробнее про уровень →</div>}
+      {action === "link" && (
+        <div className="level-card__link">Подробнее про уровень →</div>
+      )}
     </article>
   );
 }

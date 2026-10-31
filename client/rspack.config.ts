@@ -91,6 +91,7 @@ export default defineConfig({
     }),
     new DefinePlugin({
       "process.env.API_URL": JSON.stringify(apiUrl),
+      "process.env.BASE_PATH": JSON.stringify(basePath),
     }),
   ],
   devServer: {

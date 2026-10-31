@@ -1,5 +1,13 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { STORAGE_KEYS } from "@/shared/config";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { STORAGE_KEYS, BASE_PATH } from "@/shared/config";
 import { setUnauthorizedHandler } from "@/shared/api/client";
 import type { User } from "@/entities/user/api";
 
@@ -28,7 +36,9 @@ function readStoredUser(): User | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(STORAGE_KEYS.token));
+  const [token, setToken] = useState<string | null>(() =>
+    localStorage.getItem(STORAGE_KEYS.token),
+  );
   const [user, setUserState] = useState<User | null>(() => readStoredUser());
   const [ready, setReady] = useState(false);
 
@@ -36,7 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setUnauthorizedHandler(() => {
       signOut();
-      window.location.assign("/login");
+      /* Полная перезагрузка с учётом базового пути (подпапка на GitHub Pages). */
+      window.location.assign(BASE_PATH + "/login");
     });
     return () => setUnauthorizedHandler(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -86,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth должен использоваться внутри AuthProvider");
+  if (!ctx)
+    throw new Error("useAuth должен использоваться внутри AuthProvider");
   return ctx;
 }

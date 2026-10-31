@@ -6,6 +6,13 @@
  */
 export const API_BASE = process.env.API_URL ?? "";
 
+/**
+ * Базовый путь развёртывания (подпапка GitHub Pages). Значение подставляется
+ * на сборке из env (DefinePlugin): пустая строка — корень домена (локальная
+ * разработка), "/georazum" — GitHub Pages. Нормализован: без завершающего слеша.
+ */
+export const BASE_PATH = (process.env.BASE_PATH ?? "").replace(/\/+$/, "");
+
 export const API_PREFIX = "/api";
 
 export const STORAGE_KEYS = {

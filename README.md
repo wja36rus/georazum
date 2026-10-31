@@ -123,6 +123,9 @@ https://<user>.github.io/georazum/  (React — GitHub Pages)
   (`BASE_PATH=/georazum/`, `API_URL` из переменной) и задеплоит на Pages при
   пуше в `main` (или вручную через Actions → Deploy client → Run workflow).
 - SPA-роуты работают благодаря `404.html` = копии `index.html`.
+- `<BrowserRouter basename>` берётся из `BASE_PATH` (встраивается DefinePlugin):
+  на Pages `BASE_PATH=/georazum/` → все маршруты и переходы — строго под
+  `/georazum/`, перезагрузка любой страницы работает, без 404.
 
 Локальная разработка не меняется: без env-переменных `BASE_PATH=/` и
 `API_URL=""` (тот же origin, прокси `/api` → 4000).
