@@ -78,6 +78,9 @@ client/src/
 - Иконки: **SVG как React-компоненты** в `shared/icons/*.tsx` (не картинками).
 - Тесты рядом с кодом: `*.test.ts(x)`, Vitest + jsdom.
 - `noUnusedLocals` строгий: при правках сразу гонять `npm run typecheck`.
+- Сборка читает `client/.env` (dotenv в `rspack.config.ts`): `API_URL` и
+  `BASE_PATH`. `.env` в git не коммитится — образец в `.env.example`.
+  В CI переменные задаются в workflow (`vars.API_URL`).
 - `fmtPrice` через `toLocaleString("ru-RU")` даёт NBSP-разделитель (U+00A0) —
   не «чинить» под обычный пробел, тесты это нормализуют.
 - `phoneHref` возвращает `tel:+` + только цифры.

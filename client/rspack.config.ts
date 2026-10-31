@@ -2,11 +2,16 @@ import { defineConfig } from "@rspack/cli";
 import { HtmlRspackPlugin, CopyRspackPlugin, DefinePlugin } from "@rspack/core";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { config as loadEnv } from "dotenv";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+/* Поддержка client/.env (не перезаписывает уже заданные переменные окружения). */
+loadEnv({ path: path.resolve(dirname, ".env") });
+
 const isProd = process.env.NODE_ENV === "production";
 
-/* Деплой на GitHub Pages: базовый путь /repo/ и адрес API из CI-переменных. */
+/* Деплой на GitHub Pages: базовый путь /repo/ и адрес API (из .env или CI-переменных). */
 const basePath = process.env.BASE_PATH ?? "/";
 const apiUrl = process.env.API_URL ?? "";
 

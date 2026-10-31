@@ -126,3 +126,16 @@ https://<user>.github.io/georazum/  (React — GitHub Pages)
 
 Локальная разработка не меняется: без env-переменных `BASE_PATH=/` и
 `API_URL=""` (тот же origin, прокси `/api` → 4000).
+
+### Локальные сборки через `.env`
+
+Клиент читает `client/.env` (через dotenv в `rspack.config.ts`):
+
+```
+# client/.env (в git не коммитится; пример — client/.env.example)
+API_URL=https://georazum-api.onrender.com   # пусто = тот же origin (dev-прокси)
+BASE_PATH=/georazum/                        # для деплоя в подпапку Pages
+```
+
+Уже заданные системные переменные окружения имеют приоритет над `.env`.
+Для CI переменные задаются в GitHub Actions (`vars.API_URL` в workflow).
