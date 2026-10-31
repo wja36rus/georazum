@@ -5,27 +5,29 @@
 
 ## Статус
 
-| Блок                              | Статус   | Комментарий                                                                  |
-| --------------------------------- | -------- | ---------------------------------------------------------------------------- |
-| Backend (Express API)             | ✅ Готов | Все роуты, валидация, админка, уведомления                                   |
-| Smoke-тест `server/test.js`       | ✅ 32/32 | `cd server && npm test`                                                      |
-| Демо-данные (сид)                 | ✅       | Иван + админ + 2 заказа + платежи                                            |
-| Frontend (React 19 + TS + Rspack) | ✅ Готов | FSD, SCSS, SVG-компоненты, маршруты, визард, ЛК, админка                     |
-| Typecheck клиента                 | ✅       | `cd client && npm run typecheck` (strict, 0 ошибок)                          |
-| Unit-тесты клиента (Vitest)       | ✅ 37/37 | 6 файлов: validators, format, api/client, order/model, cardForm, StatusBadge |
-| Сборка клиента                    | ✅       | `cd client && npm run build` (rspack build, 0 warning)                       |
-| Code-splitting                    | ✅       | Ленивые страницы (`React.lazy` + Suspense), vendor-чанки react/router/vendor |
-| README в корне                    | ✅       | Написан: запуск, демо-доступы, ограничения                                   |
-| `.gitignore`                      | ✅       | `node_modules/`, `dist/`, `.env`                                             |
-| AGENTS/context                    | ✅       | Папки с правилами и базой знаний, актуализированы под готовый клиент         |
+| Блок                              | Статус   | Комментарий                                                                                                                    |
+| --------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Backend (Express API)             | ✅ Готов | Все роуты, валидация, админка, уведомления                                                                                     |
+| Smoke-тест `server/test.js`       | ✅ 32/32 | `cd server && npm test`                                                                                                        |
+| Демо-данные (сид)                 | ✅       | Иван + админ + 2 заказа + платежи                                                                                              |
+| Frontend (React 19 + TS + Rspack) | ✅ Готов | FSD, SCSS, SVG-компоненты, маршруты, визард, ЛК, админка                                                                       |
+| Typecheck клиента                 | ✅       | `cd client && npm run typecheck` (strict, 0 ошибок)                                                                            |
+| Unit-тесты клиента (Vitest)       | ✅ 42/42 | 7 файлов: validators, format, api/client, order/model, cardForm, StatusBadge, mock/handlers                                    |
+| Сборка клиента                    | ✅       | `cd client && npm run build` (rspack build, 0 warning)                                                                         |
+| Code-splitting                    | ✅       | Ленивые страницы (`React.lazy` + Suspense), vendor-чанки react/router/vendor                                                   |
+| Мок-режим на статике              | ✅ 42/42 | Продакшен-сборка без `API_URL` включает `USE_MOCKS`: сайт работает на GitHub Pages без бэкенда (`client/src/shared/api/mock/`) |
+| README в корне                    | ✅       | Написан: запуск, демо-доступы, ограничения                                                                                     |
+| `.gitignore`                      | ✅       | `node_modules/`, `dist/`, `.env`                                                                                               |
+| AGENTS/context                    | ✅       | Папки с правилами и базой знаний, актуализированы под готовый клиент                                                           |
 
 ## Что осталось (порядок работ)
 
 1. **Проект функционально завершён** для прототипа. Дальнейшие шаги — только по
    явной просьбе пользователя:
-   - деплой: фронт — GitHub Actions → Pages (workflow уже подготовлен,
-     `client/.github` нет — workflow в корне репо). Осталось: поднять API на
-     Render/Railway и задать переменную `API_URL` в репозитории;
+   - деплой: фронт — GitHub Actions → Pages (workflow в корне репо). Сейчас
+     статика на Pages работает **автономно на моках** (без API), т.к. `API_URL`
+     не задан. Поднять API на Render/Railway и задать `API_URL` — тогда сайт
+     переключится на реальный бэкенд автоматически;
    - реальные интеграции вместо моков (платёжный провайдер, кадастровые
      источники, SMTP, PostgreSQL + Redis, JWT, BullMQ) — только по просьбе.
 2. Обновлять эти документы при изменениях архитектуры/API/дизайна.
@@ -33,8 +35,10 @@
 ## Как проверять
 
 - Backend: `cd server && npm test` (32 ✅).
-- Frontend: `cd client && npm run typecheck && npm test` (37 ✅) и
+- Frontend: `cd client && npm run typecheck && npm test` (42 ✅) и
   `npm run build`.
+- Мок-режим: продакшен-сборка без `API_URL` (`build`) — сайт работает без
+  сервера: логин демо-аккаунтов, заказы, оплата, отчёты, админка.
 - Ручной сценарий: регистрация/вход → заказ → оплата → генерация → отчёт
   (печать); админка (`/admin`).
 

@@ -54,7 +54,7 @@ npm run dev        # http://127.0.0.1:5173 (прокси /api → 4000)
 ```sh
 cd server && npm test          # smoke-тест API: 32/32
 cd client && npm run typecheck # tsc --noEmit: 0 ошибок
-cd client && npm test          # Vitest: 37/37
+cd client && npm test          # Vitest: 42/42
 cd client && npm run build     # продакшен-сборка в client/dist
 ```
 
@@ -113,6 +113,16 @@ https://<user>.github.io/georazum/  (React — GitHub Pages)
 - ВАЖНО: БД in-memory — данные сбрасываются при рестарте/сне бесплатного
   хоста. Для демо нормально.
 
+### 1а. Демо без бэкенда (режим моков)
+
+Сайт на статике работает **и без развёрнутого API**: продакшен-сборка без
+`API_URL` автоматически включает мок-режим (`USE_MOCKS`) — все данные
+(уровни, участки, пользователи, заказы, отчёты) живут в памяти браузера,
+нужен только GitHub Pages. Работает логин/регистрация, заказы, оплата
+(карта-отказ `0000…` → 402), генерация, ЛК и админка. Как только зададите
+`API_URL` — сайт автоматически переключится на реальный бэкенд
+(флаг `USE_MOCKS` при необходимости: `client/src/shared/api/mock/`).
+
 ### 2. Фронтенд (GitHub Pages)
 
 - В настройках репозитория: Settings → Pages → Source: **GitHub Actions**.
@@ -136,8 +146,9 @@ https://<user>.github.io/georazum/  (React — GitHub Pages)
 
 ```
 # client/.env (в git не коммитится; пример — client/.env.example)
-API_URL=https://georazum-api.onrender.com   # пусто = тот же origin (dev-прокси)
+API_URL=https://georazum-api.onrender.com   # пусто = моки в prod-сборке / dev-прокси
 BASE_PATH=/georazum/                        # для деплоя в подпапку Pages
+USE_MOCKS=                                  # (опц.) true/false — принудительно
 ```
 
 Уже заданные системные переменные окружения имеют приоритет над `.env`.

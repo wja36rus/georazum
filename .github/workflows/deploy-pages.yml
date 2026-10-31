@@ -39,7 +39,9 @@ jobs:
           NODE_ENV: production
           # Базовый путь репозитория: https://<user>.github.io/georazum/
           BASE_PATH: /georazum/
-          # Адрес развёрнутого API (Render/Railway и т.п.). Укажите свой URL!
+          # Адрес развёрнутого API (Render/Railway и т.п.). Если не задан —
+          # сборка автоматически использует моки (USE_MOCKS), и сайт работает
+          # на статике без бэкенда. Укажите свой URL, чтобы включить API:
           API_URL: ${{ vars.API_URL }}
         run: npm run build
 

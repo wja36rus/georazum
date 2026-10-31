@@ -15,6 +15,18 @@ const isProd = process.env.NODE_ENV === "production";
 const basePath = process.env.BASE_PATH ?? "/";
 const apiUrl = process.env.API_URL ?? "";
 
+/*
+ * Мок-режим без бэкенда: статический хостинг (GitHub Pages) не может запустить
+ * Express, поэтому для демо данные подставляются в браузере. Логика:
+ *   - USE_MOCKS=true  — всегда моки;
+ *   - USE_MOCKS=false — всегда реальный API;
+ *   - не задано: продакшен-сборка без API_URL — моки; dev — реальный API
+ *     (прокси /api → 4000), т.е. локальная разработка не меняется.
+ */
+const explicitMocks = process.env.USE_MOCKS;
+const useMocks =
+  explicitMocks !== undefined ? explicitMocks === "true" : isProd && !apiUrl;
+
 export default defineConfig({
   mode: isProd ? "production" : "development",
   context: dirname,
@@ -92,6 +104,7 @@ export default defineConfig({
     new DefinePlugin({
       "process.env.API_URL": JSON.stringify(apiUrl),
       "process.env.BASE_PATH": JSON.stringify(basePath),
+      "process.env.USE_MOCKS": JSON.stringify(useMocks),
     }),
   ],
   devServer: {

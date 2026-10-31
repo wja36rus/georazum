@@ -25,7 +25,7 @@ SaaS-сервис «Гео Разум» — аналитическое закл�
 | `cd client && npm run dev`       | Rspack dev-server :5173, HMR, прокси `/api` → 4000 |
 | `cd client && npm run build`     | Продакшен-сборка в `client/dist`                   |
 | `cd client && npm run typecheck` | `tsc --noEmit` (strict, `noUnusedLocals`)          |
-| `cd client && npm test`          | Vitest run (37 тестов, jsdom)                      |
+| `cd client && npm test`          | Vitest run (42 теста, jsdom)                       |
 
 ## Дизайн (обязательно)
 
@@ -78,9 +78,13 @@ client/src/
 - Иконки: **SVG как React-компоненты** в `shared/icons/*.tsx` (не картинками).
 - Тесты рядом с кодом: `*.test.ts(x)`, Vitest + jsdom.
 - `noUnusedLocals` строгий: при правках сразу гонять `npm run typecheck`.
-- Сборка читает `client/.env` (dotenv в `rspack.config.ts`): `API_URL` и
-  `BASE_PATH`. `.env` в git не коммитится — образец в `.env.example`.
-  В CI переменные задаются в workflow (`vars.API_URL`).
+- Сборка читает `client/.env` (dotenv в `rspack.config.ts`): `API_URL`,
+  `BASE_PATH`, опц. `USE_MOCKS`. `.env` в git не коммитится — образец в
+  `.env.example`. В CI переменные задаются в workflow (`vars.API_URL`).
+- **Мок-режим** (`client/src/shared/api/mock/`): продакшен-сборка **без
+  `API_URL`** сама включает моки → сайт на GitHub Pages работает без бэкенда.
+  `USE_MOCKS=true/false` — принудительно. В `client.ts` ветка моков — отдельный
+  чанк через `import()`. Моки — зеркало сервера (db/report/app).
 - `fmtPrice` через `toLocaleString("ru-RU")` даёт NBSP-разделитель (U+00A0) —
   не «чинить» под обычный пробел, тесты это нормализуют.
 - `phoneHref` возвращает `tel:+` + только цифры.
@@ -136,7 +140,7 @@ client/src/
 
 1. `cd server && npm test` — все проверки зелёные (32/32).
 2. Если трогал клиент: `cd client && npm run typecheck` (0 ошибок),
-   `npm test` (37/37) и `npm run build` без ошибок.
+   `npm test` (42/42) и `npm run build` без ошибок.
 3. Диагностики: без новых ошибок/предупреждений в изменённых файлах.
 
 Порты: API — 4000, dev-сервер — 5173. Если заняты — переиспользовать уже

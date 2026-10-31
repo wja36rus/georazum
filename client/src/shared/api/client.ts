@@ -1,5 +1,13 @@
 import { STORAGE_KEYS, API_BASE } from "../config";
 
+/*
+ * Мок-режим: отвечает данными прямо в браузере без бэкенда.
+ * Значение встраивает DefinePlugin (литерал true/false); в тестах/dev,
+ * где подстановки нет, переменной просто не существует → моки выключены.
+ */
+const mockFlag = process.env.USE_MOCKS as unknown;
+const USE_MOCKS = mockFlag === true || mockFlag === "true";
+
 /** Ошибка API с HTTP-статусом. status=0 — сетевой сбой. */
 export class ApiError extends Error {
   readonly status: number;
@@ -41,13 +49,34 @@ export async function api<T>(
     token === undefined ? localStorage.getItem(STORAGE_KEYS.token) : token;
   if (t) headers.Authorization = "Bearer " + t;
 
+  const payload = body === undefined ? undefined : JSON.stringify(body);
+
+  /* Мок-режим: локальная имитация API без сети (статический хостинг). */
+  if (USE_MOCKS) {
+    const { mockFetch } = await import("./mock/handlers");
+    const { status, data } = await mockFetch(path, {
+      method,
+      headers,
+      body: payload,
+      signal,
+    });
+    if (status === 401) onUnauthorized?.();
+    if (status >= 400) {
+      const msg =
+        (data as { error?: string } | null)?.error ??
+        "Ошибка запроса (" + status + ").";
+      throw new ApiError(status, msg);
+    }
+    return data as T;
+  }
+
   let res: Response;
   try {
     res = await fetch(API_BASE + path, {
       method,
       headers,
       signal,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: payload,
     });
   } catch {
     throw new ApiError(
