@@ -25,7 +25,13 @@ const STATUSES = [
   "Требуется вмешательство специалиста",
 ];
 
-const ACTIVE = ["Оплачен", "Передан в обработку", "Сбор исходных данных", "Выполняется анализ", "Формируется PDF"];
+const ACTIVE = [
+  "Оплачен",
+  "Передан в обработку",
+  "Сбор исходных данных",
+  "Выполняется анализ",
+  "Формируется PDF",
+];
 
 const fmt = (d) =>
   d.toLocaleDateString("ru-RU") +
@@ -54,7 +60,9 @@ function notify(userId, type, text) {
 }
 
 function notifyAdmins(type, text) {
-  db.users.filter((u) => u.role === "admin").forEach((a) => notify(a.id, type, text));
+  db.users
+    .filter((u) => u.role === "admin")
+    .forEach((a) => notify(a.id, type, text));
 }
 
 /* Мок отправки письма — в проде SMTP/сервис рассылки (п. 9.3, 14 ТЗ) */
@@ -94,13 +102,28 @@ function startGeneration(order) {
   db.generationQueue.unshift(job);
 
   pushStatus(order, "Передан в обработку");
-  if (user) notify(user.id, "order", "Заказ " + order.id + " передан в аналитический модуль.");
-  if (user) sendEmail(user, "Гео Разум: заказ " + order.id + " принят", "Мы начали обработку заказа " + order.id + ".");
+  if (user)
+    notify(
+      user.id,
+      "order",
+      "Заказ " + order.id + " передан в аналитический модуль.",
+    );
+  if (user)
+    sendEmail(
+      user,
+      "Гео Разум: заказ " + order.id + " принят",
+      "Мы начали обработку заказа " + order.id + ".",
+    );
 
   const step = (delay, status) => {
     const t = setTimeout(() => {
       const current = db.orders.find((o) => o.id === order.id);
-      if (!current || current.status === "Готово" || current.status === "Ошибка генерации") return;
+      if (
+        !current ||
+        current.status === "Готово" ||
+        current.status === "Ошибка генерации"
+      )
+        return;
       pushStatus(current, status);
       job.status = status;
     }, delay);
@@ -118,15 +141,33 @@ function startGeneration(order) {
     job.status = "Готово";
     job.finishedAt = new Date();
     if (user) {
-      notify(user.id, "order", "Отчёт по заказу " + order.id + " готов: доступен в разделе «Мои отчёты».");
+      notify(
+        user.id,
+        "order",
+        "Отчёт по заказу " +
+          order.id +
+          " готов: доступен в разделе «Мои отчёты».",
+      );
       sendEmail(
         user,
-        "Гео Разум: отчёт по участку " + current.parcel.cadastral + " готов",
-        "Здравствуйте, " + user.firstName + "! Анализ завершён. Уровень " + current.level.toUpperCase() +
-          ". Скачать отчёт: /order/" + current.id + "/report. Личный кабинет: /cabinet.",
+        (current.parcels || [current.parcel]).length > 1
+          ? "Гео Разум: отчёт по участкам готов"
+          : "Гео Разум: отчёт по участку " +
+              current.parcel.cadastral +
+              " готов",
+        "Здравствуйте, " +
+          user.firstName +
+          "! Анализ завершён. Уровень " +
+          current.level.toUpperCase() +
+          ". Скачать отчёт: /order/" +
+          current.id +
+          "/report. Личный кабинет: /cabinet.",
       );
     }
-    notifyAdmins("system", "Генерация по заказу " + order.id + " завершена успешно.");
+    notifyAdmins(
+      "system",
+      "Генерация по заказу " + order.id + " завершена успешно.",
+    );
   }, 4200);
   (timers.get(order.id) || []).push(finish);
   timers.set(order.id, timers.get(order.id) || [finish]);
@@ -146,4 +187,13 @@ function retryGeneration(order) {
   return order;
 }
 
-module.exports = { STATUSES, ACTIVE, pushStatus, startGeneration, retryGeneration, notify, notifyAdmins, fmt };
+module.exports = {
+  STATUSES,
+  ACTIVE,
+  pushStatus,
+  startGeneration,
+  retryGeneration,
+  notify,
+  notifyAdmins,
+  fmt,
+};

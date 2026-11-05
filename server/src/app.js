@@ -9,7 +9,14 @@
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
-const { db, hash, verify, CADASTRAL_RE } = require("./db");
+const {
+  db,
+  hash,
+  verify,
+  CADASTRAL_RE,
+  ADJACENT,
+  distanceBetween,
+} = require("./db");
 const { buildReport } = require("./report");
 const {
   STATUSES,
@@ -46,24 +53,30 @@ const publicUser = (u) => ({
 
 const levelsPublic = () => Object.values(db.levels).map((l) => ({ ...l }));
 
-const orderSummary = (o) => ({
-  id: o.id,
-  cadastral: o.parcel.cadastral,
-  level: o.level,
-  levelName: (db.levels[o.level] || {}).name || o.level,
-  price: o.price,
-  status: o.status,
-  createdAt: o.createdAt,
-  paidAt: o.paidAt || null,
-  reportId: o.reportId || null,
-});
+const orderSummary = (o) => {
+  const parcels = o.parcels || [o.parcel];
+  return {
+    id: o.id,
+    cadastral: parcels[0].cadastral,
+    parcelCount: parcels.length,
+    level: o.level,
+    levelName: (db.levels[o.level] || {}).name || o.level,
+    price: o.price,
+    status: o.status,
+    createdAt: o.createdAt,
+    paidAt: o.paidAt || null,
+    reportId: o.reportId || null,
+  };
+};
 
 const orderFull = (o) => {
   const payment =
     [...db.payments].reverse().find((p) => p.orderId === o.id) || null;
   return {
     ...orderSummary(o),
+    parcels: o.parcels || [o.parcel],
     parcel: o.parcel,
+    customer: o.customer || null,
     params: o.params || {},
     offer: o.offer,
     statusHistory: o.statusHistory,
@@ -110,6 +123,56 @@ const requireAdmin = (req, res, next) =>
 const findOrder = (id) => db.orders.find((o) => o.id === id);
 const ownsOrder = (user, order) =>
   user.role === "admin" || order.userId === user.id;
+
+/* ---------- Участки: проверка списка (п. 2.1, 2.4 User Journey) ---------- */
+
+const uniqueCadastrals = (list) =>
+  Array.from(new Set(list.map((s) => String(s).trim()).filter(Boolean)));
+
+function resolveParcels(raw) {
+  const cadastrals = uniqueCadastrals(raw);
+  if (cadastrals.length === 0)
+    return {
+      parcels: [],
+      error: { status: 400, error: "Укажите хотя бы один кадастровый номер." },
+    };
+  if (cadastrals.length > 10)
+    return {
+      parcels: [],
+      error: { status: 400, error: "Максимум 10 участков в одном заказе." },
+    };
+  for (const c of cadastrals) {
+    if (!CADASTRAL_RE.test(c))
+      return {
+        parcels: [],
+        error: {
+          status: 400,
+          error:
+            "Кадастровый номер " +
+            c +
+            " должен быть в формате XX:XX:XXXXXXX:XXX.",
+        },
+      };
+    if (!db.parcels[c])
+      return {
+        parcels: [],
+        error: {
+          status: 404,
+          error:
+            "Участок " +
+            c +
+            " не найден в доступных источниках. Проверьте номер.",
+        },
+      };
+  }
+  return { parcels: cadastrals.map((c) => db.parcels[c]) };
+}
+
+/** Суммарная площадь совокупности участков, «N м²». */
+function totalAreaOf(parcels) {
+  const sum = parcels.reduce((acc, p) => acc + (p.areaSqm || 0), 0);
+  return sum.toLocaleString("ru-RU") + " м²";
+}
 
 /* ---------- Личный счёт (кошелёк) ---------- */
 
@@ -442,6 +505,42 @@ app.get("/api/parcels/:cadastral", requireAuth, (req, res) => {
   res.json({ parcel });
 });
 
+/* Взаимное расположение 2+ участков (п. 2.4 User Journey). */
+app.post("/api/parcels/mutual", requireAuth, (req, res) => {
+  const b = req.body || {};
+  const raw = Array.isArray(b.cadastrals) ? b.cadastrals : [b.cadastral];
+  const { parcels, error } = resolveParcels(raw);
+  if (error) return res.status(error.status).json({ error: error.error });
+
+  const pairs = [];
+  for (let i = 0; i < parcels.length; i++) {
+    for (let j = i + 1; j < parcels.length; j++) {
+      const a = parcels[i].cadastral;
+      const bNum = parcels[j].cadastral;
+      const adjacent = (ADJACENT[a] || []).includes(bNum);
+      const m = adjacent ? 0 : distanceBetween(a, bNum);
+      pairs.push({
+        a,
+        b: bNum,
+        adjacent,
+        distance: adjacent
+          ? ""
+          : m >= 1000
+            ? (m / 1000).toFixed(1) + " км"
+            : m + " м",
+      });
+    }
+  }
+  const allAdjacent = pairs.every((p) => p.adjacent);
+  res.json({
+    parcels,
+    totalArea: totalAreaOf(parcels),
+    count: parcels.length,
+    allAdjacent,
+    pairs,
+  });
+});
+
 /* ---------- Заказы (п. 6, 7, 8 ТЗ) ---------- */
 
 const cardValid = (card) => {
@@ -467,18 +566,13 @@ const cardValid = (card) => {
 
 app.post("/api/orders", requireAuth, (req, res) => {
   const b = req.body || {};
-  const cadastral = String(b.cadastral || "").trim();
   const levelId = String(b.level || "").toLowerCase();
 
-  if (!CADASTRAL_RE.test(cadastral))
-    return res.status(400).json({
-      error: "Кадастровый номер должен быть в формате XX:XX:XXXXXXX:XXX.",
-    });
-  const parcel = db.parcels[cadastral];
-  if (!parcel)
-    return res
-      .status(404)
-      .json({ error: "Участок не найден. Платная генерация не запущена." });
+  /* Один участок (старый формат) или несколько (п. 2.1 User Journey). */
+  const rawList = Array.isArray(b.cadastrals) ? b.cadastrals : [b.cadastral];
+  const { parcels, error } = resolveParcels(rawList);
+  if (error) return res.status(error.status).json({ error: error.error });
+
   const level = db.levels[levelId];
   if (!level)
     return res
@@ -498,10 +592,15 @@ app.post("/api/orders", requireAuth, (req, res) => {
         ".",
     });
 
+  const customer = b.customer || null;
+  if (customer && !String(customer.email).trim())
+    return res.status(400).json({ error: "Email заказчика обязателен." });
+
   const order = {
     id: "GR-" + db.seq.order++,
     userId: req.user.id,
-    parcel,
+    parcels,
+    parcel: parcels[0],
     level: level.id,
     price: level.price,
     status: "Ожидает оплаты",
@@ -509,7 +608,14 @@ app.post("/api/orders", requireAuth, (req, res) => {
       { status: "Заказ создан", at: fmt(new Date()) },
       { status: "Ожидает оплаты", at: fmt(new Date()) },
     ],
-    params: level.id === "l" ? { ...(b.params || {}) } : {},
+    params:
+      level.id === "s"
+        ? {}
+        : {
+            ...b.params,
+            ...(customer ? { customerEmail: String(customer.email) } : {}),
+          },
+    customer,
     offer: { version: db.offer.version, acceptedAt: fmt(new Date()) },
     createdAt: fmt(new Date()),
     paidAt: null,

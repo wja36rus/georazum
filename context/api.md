@@ -82,11 +82,11 @@ duration, audience, includes[], results[]` (+ `investorFields[]` для l).
 Ответ: `{ parcel: { cadastral, address, area, areaSqm, cadastralValue, category, vri,
 restrictions[] } }`.
 
-### POST /api/parcels/mutual — auth (только в мок-режиме)
+### POST /api/parcels/mutual — auth
 
-Проверка взаимного расположения участков (п. 2.2 User Journey). Реализован
-только в клиентских моках (`client/src/shared/api/mock/handlers.ts`), на
-реальном сервере отсутствует.
+Проверка взаимного расположения участков (п. 2.2 User Journey). Реализован в
+клиентских моках (`client/src/shared/api/mock/handlers.ts`) и на реальном
+сервере (`server/src/app.js`) — паритет по п. 2.4 User Journey.
 
 Тело: `{ cadastrals: string[] }` (2+).
 Ответ: `{ parcels, totalArea: "N м²", count, allAdjacent: boolean, pairs:
@@ -98,15 +98,14 @@ restrictions[] } }`.
 ### POST /api/orders — auth
 
 Тело: `cadastral` (один участок) **или** `cadastrals: string[]` (несколько,
-п. 2.1 User Journey; моки поддерживают оба формата, реальный сервер — только
-`cadastral`), `level` (`s|m|l`), `offerAccepted: true`, `offerVersion`
-(= `db.offer.version`), `customer?` (данные заказчика: `{type: "person" |
-"ip" | "company", email, ...}`, моки), `params?` (объект; для M/L — анкета,
-для L — инвест-поля).
+п. 2.1 User Journey; моки и сервер поддерживают оба формата), `level`
+(`s|m|l`), `offerAccepted: true`, `offerVersion` (= `db.offer.version`),
+`customer?` (данные заказчика: `{type: "person" | "ip" | "company", email,
+...}`), `params?` (объект; для M/L — анкета, для L — инвест-поля).
 Ошибки: 400 формат/не найден/оферта не принята/уровень недоступен; 409 —
 устаревшая версия оферты; 404 — участок не найден (генерация не запускается).
 Ответ `201`: `{ order: orderFull }` со статусом «Ожидает оплаты»; у заказа
-`parcel` = первый участок, `parcels[]` (моки) — все.
+`parcel` = первый участок, `parcels[]` — все (как в моках, так и на сервере).
 
 ### GET /api/orders — auth
 

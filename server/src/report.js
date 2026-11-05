@@ -7,9 +7,10 @@
  */
 
 function baseSections(parcel, level) {
-  const restrictions = parcel.restrictions && parcel.restrictions.length
-    ? parcel.restrictions.join("; ")
-    : "не выявлены";
+  const restrictions =
+    parcel.restrictions && parcel.restrictions.length
+      ? parcel.restrictions.join("; ")
+      : "не выявлены";
   return [
     {
       title: "1. Правовой статус",
@@ -26,7 +27,9 @@ function baseSections(parcel, level) {
       body: [
         "Площадь участка: " + parcel.area + ".",
         "Допустимые параметры застройки определяются ПЗЗ муниципалитета и градостроительным регламентом территориальной зоны.",
-        "Ориентировочный коэффициент застройки — 0,15, предельная высотность — до 12 м (уровень " + level.toUpperCase() + ").",
+        "Ориентировочный коэффициент застройки — 0,15, предельная высотность — до 12 м (уровень " +
+          level.toUpperCase() +
+          ").",
         "Перед началом проектирования требуется получение ГПЗУ.",
       ],
     },
@@ -92,8 +95,14 @@ function lSections(order) {
     {
       title: "9. Инвестиционный потенциал",
       body: [
-        "Направление проекта по заданию инвестора: " + (p.direction || "не указано") + ".",
-        "Бюджет: " + (p.budget || "не указан") + "; целевая доходность: " + (p.yield || "не указана") + ".",
+        "Направление проекта по заданию инвестора: " +
+          (p.direction || "не указано") +
+          ".",
+        "Бюджет: " +
+          (p.budget || "не указан") +
+          "; целевая доходность: " +
+          (p.yield || "не указана") +
+          ".",
         "Локация обладает потенциалом развития рекреационного и гостиничного направления.",
         "Спрос в сегменте загородного отдыха растёт на 12–18% в год (оценка по открытым данным рынка).",
       ],
@@ -112,7 +121,9 @@ function lSections(order) {
       body: [
         "CAPEX: 109,2 млн ₽. NPV (10 лет, ставка 18%): 27,3 млн ₽.",
         "IRR: 21,6%. Срок окупаемости: 96 месяцев.",
-        "Целевой срок окупаемости по заданию: " + (p.payback || "не указан") + ".",
+        "Целевой срок окупаемости по заданию: " +
+          (p.payback || "не указан") +
+          ".",
         "Модель предварительная и подлежит уточнению после разработки проектной документации.",
       ],
     },
@@ -137,9 +148,16 @@ function lSections(order) {
 }
 
 function buildReport(order) {
-  const sections = baseSections(order.parcel, order.level);
+  const parcels = order.parcels || [order.parcel];
+  const sections = baseSections(parcels[0], order.level);
   if (order.level === "m" || order.level === "l") sections.push(...mSections());
   if (order.level === "l") sections.push(...lSections(order));
+
+  const many = parcels.length > 1;
+  const subject = many
+    ? "по земельным участкам " + parcels.map((p) => p.cadastral).join(", ")
+    : "по земельному участку " + parcels[0].cadastral;
+  const summaryArea = many ? "" + totalAreaOf(parcels) : parcels[0].area;
 
   sections.push({
     title: sections.length + 1 + ". Рекомендации и дорожная карта",
@@ -155,18 +173,23 @@ function buildReport(order) {
   return {
     id: "R-" + order.id,
     orderId: order.id,
-    cadastral: order.parcel.cadastral,
+    cadastral: parcels[0].cadastral,
     level: order.level,
-    title: "Аналитическое заключение по земельному участку " + order.parcel.cadastral,
+    title: "Аналитическое заключение " + subject,
     generatedAt: new Date().toLocaleString("ru-RU"),
     summary: {
-      address: order.parcel.address,
-      area: order.parcel.area,
+      address: parcels[0].address,
+      area: summaryArea,
       level: order.level.toUpperCase(),
       price: order.price,
     },
     sections,
   };
+}
+
+function totalAreaOf(parcels) {
+  const sum = parcels.reduce((acc, p) => acc + (p.areaSqm || 0), 0);
+  return sum.toLocaleString("ru-RU") + " м²";
 }
 
 module.exports = { buildReport };

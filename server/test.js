@@ -122,6 +122,27 @@ async function main() {
   });
   ok("GET /api/parcels — несуществующий участок -> 404");
 
+  /* Взаимное расположение: смежные и несмежные участки */
+  const mutual = await req("POST", api("/api/parcels/mutual"), {
+    token: userToken,
+    body: { cadastrals: ["36:16:3405742:189", "36:16:3405742:190"] },
+  });
+  if (mutual.allAdjacent === true && mutual.count === 2 && mutual.totalArea)
+    ok("POST /api/parcels/mutual — смежные участки (allAdjacent=true)");
+  else fail("POST /api/parcels/mutual — смежные", JSON.stringify(mutual));
+
+  const farMutual = await req("POST", api("/api/parcels/mutual"), {
+    token: userToken,
+    body: { cadastrals: ["36:16:3405742:189", "36:25:6945030:776"] },
+  });
+  if (
+    farMutual.allAdjacent === false &&
+    farMutual.pairs[0].distance &&
+    farMutual.pairs[0].distance !== ""
+  )
+    ok("POST /api/parcels/mutual — несмежные участки с расстоянием");
+  else fail("POST /api/parcels/mutual — несмежные", JSON.stringify(farMutual));
+
   /* ---------- Логин демо-пользователя ---------- */
   const login = await req("POST", api("/api/auth/login"), {
     body: { email: "ivan@mail.ru", password: "demo1234" },
@@ -155,6 +176,38 @@ async function main() {
   if (order.order && order.order.status === "Ожидает оплаты")
     ok("POST /api/orders — заказ " + order.order.id + " создан");
   else fail("POST /api/orders — заказ создан", JSON.stringify(order));
+
+  /* Мульти-участковый заказ (массив cadastrals) */
+  const multiOrder = await req("POST", api("/api/orders"), {
+    token: tok,
+    body: {
+      cadastrals: ["36:16:3405742:189", "36:16:3405742:190"],
+      level: "m",
+      offerAccepted: true,
+      offerVersion: "1.0",
+      customer: { email: "ivan@mail.ru" },
+    },
+    status: 201,
+  });
+  if (
+    multiOrder.order.parcels.length === 2 &&
+    multiOrder.order.parcelCount === 2
+  )
+    ok("POST /api/orders — мульти-участковый заказ (2 участка)");
+  else fail("POST /api/orders — мульти", JSON.stringify(multiOrder));
+
+  /* Проверка суммарной площади через отчёт (без оплаты не начнётся генерация;
+   * проверяем формат данных в заказе и mutual). */
+  const multiParcel = await req(
+    "GET",
+    api("/api/orders/" + multiOrder.order.id),
+    {
+      token: tok,
+    },
+  );
+  if (multiParcel.order.parcels.length === 2)
+    ok("GET /api/orders/:id — мульти-участок в деталях заказа");
+  else fail("GET /api/orders/:id — мульти", JSON.stringify(multiParcel));
 
   /* ---------- Оплата ---------- */
   await req("POST", api("/api/orders/" + order.order.id + "/pay"), {
