@@ -163,4 +163,110 @@ describe("mock API (демо без бэкенда)", () => {
       .sections;
     expect(sections.length).toBeGreaterThan(5);
   });
+
+  it("взаимное расположение: смежные и несмежные участки", async () => {
+    // Логинимся на реальных таймерах, дальше контролируем время вручную.
+    const { headers } = await loginDemo();
+    vi.useFakeTimers();
+    const call = async (path: string, init: MockInit = {}) => {
+      const promise = mockFetch(path, init);
+      await vi.advanceTimersByTimeAsync(400);
+      return promise;
+    };
+
+    // Смежные участки (189 + 190): всё примыкает друг к другу.
+    const adjacent = await call("/api/parcels/mutual", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cadastrals: ["36:16:3405742:189", "36:16:3405742:190"],
+      }),
+    });
+    expect(adjacent.status).toBe(200);
+    const adjData = adjacent.data as {
+      totalArea: string;
+      count: number;
+      allAdjacent: boolean;
+      pairs: { a: string; b: string; adjacent: boolean }[];
+    };
+    expect(adjData.allAdjacent).toBe(true);
+    expect(adjData.count).toBe(2);
+    expect(adjData.pairs[0].adjacent).toBe(true);
+    expect(adjData.totalArea).toMatch(/м²/);
+
+    // Несмежные участки: 189 (район микрорайона) и 776 (другой городской район)
+    // не граничат — расстояние по мок-данным 12.4 км.
+    const far = await call("/api/parcels/mutual", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cadastrals: ["36:16:3405742:189", "36:25:6945030:776"],
+      }),
+    });
+    expect(far.status).toBe(200);
+    const farData = far.data as {
+      allAdjacent: boolean;
+      pairs: { a: string; b: string; adjacent: boolean; distance: string }[];
+    };
+    expect(farData.allAdjacent).toBe(false);
+    expect(farData.pairs[0].adjacent).toBe(false);
+    expect(farData.pairs[0].distance).toMatch(/км|м/);
+  });
+
+  it("многоучастковый заказ: кадастры массивом + данные заказчика", async () => {
+    // Логинимся на реальных таймерах, дальше контролируем время вручную.
+    const { headers } = await loginDemo();
+    vi.useFakeTimers();
+    const call = async (path: string, init: MockInit = {}) => {
+      const promise = mockFetch(path, init);
+      await vi.advanceTimersByTimeAsync(400);
+      return promise;
+    };
+
+    const created = await call("/api/orders", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cadastrals: ["36:16:3405742:189", "36:16:3405742:190"],
+        level: "m",
+        offerAccepted: true,
+        offerVersion: "1.0",
+        customer: {
+          type: "ip",
+          lastName: "Иванов",
+          firstName: "Иван",
+          inn: "123456789012",
+          ogrnip: "123456789012345",
+          email: "ivan@mail.ru",
+        },
+        params: { l_direction: "build" },
+      }),
+    });
+    expect(created.status).toBe(201);
+    const order = (
+      created.data as {
+        order: {
+          id: string;
+          parcels: { cadastral: string; areaSqm: number }[];
+          parcelCount: number;
+          customer: { type: string; email: string } | null;
+        };
+      }
+    ).order;
+    expect(order.parcels).toHaveLength(2);
+    expect(order.parcels.map((p) => p.cadastral)).toEqual([
+      "36:16:3405742:189",
+      "36:16:3405742:190",
+    ]);
+    expect(order.parcelCount).toBe(2);
+    expect(order.customer?.type).toBe("ip");
+
+    const orderId = order.id;
+    const full = await call("/api/orders/" + orderId, { headers });
+    expect(full.status).toBe(200);
+    const fullOrder = (
+      full.data as { order: { parcels: { cadastral: string }[] } }
+    ).order;
+    expect(fullOrder.parcels).toHaveLength(2);
+  });
 });

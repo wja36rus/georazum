@@ -9,8 +9,12 @@ import {
   counters,
   fmt,
   isCadastral,
+  ADJACENT,
+  distanceBetween,
+  type MockCustomer,
   type MockGenJob,
   type MockOrder,
+  type MockParcel,
   type MockPayment,
   type MockUser,
 } from "./data";
@@ -63,7 +67,8 @@ const levelsPublic = () => Object.values(db.levels).map((l) => ({ ...l }));
 
 const orderSummary = (o: MockOrder) => ({
   id: o.id,
-  cadastral: o.parcel.cadastral,
+  cadastral: o.parcels[0]?.cadastral || o.parcel.cadastral,
+  parcelCount: o.parcels.length,
   level: o.level,
   levelName: db.levels[o.level]?.name || o.level,
   price: o.price,
@@ -78,7 +83,9 @@ const orderFull = (o: MockOrder) => {
     [...db.payments].reverse().find((p) => p.orderId === o.id) || null;
   return {
     ...orderSummary(o),
+    parcels: o.parcels,
     parcel: o.parcel,
+    customer: o.customer || null,
     params: o.params || {},
     offer: o.offer,
     statusHistory: o.statusHistory,
@@ -177,6 +184,58 @@ const STATUSES = [
   "Ошибка генерации",
   "Требуется вмешательство специалиста",
 ];
+
+/* ---------- Участки: проверка взаимного расположения (п. 2.4 User Journey) ---------- */
+
+const uniqueCadastrals = (list: string[]): string[] =>
+  Array.from(new Set(list.map((s) => s.trim()).filter(Boolean)));
+
+/** Проверка списка кадастровых номеров: формат + наличие в источнике. */
+function resolveParcels(raw: string[]): {
+  parcels: MockParcel[];
+  error?: MockResponse;
+} {
+  const cadastrals = uniqueCadastrals(raw);
+  if (cadastrals.length === 0)
+    return {
+      parcels: [],
+      error: err(400, "Укажите хотя бы один кадастровый номер."),
+    };
+  if (cadastrals.length > 10)
+    return {
+      parcels: [],
+      error: err(400, "Максимум 10 участков в одном заказе."),
+    };
+  for (const c of cadastrals) {
+    if (!isCadastral(c))
+      return {
+        parcels: [],
+        error: err(
+          400,
+          "Кадастровый номер " +
+            c +
+            " должен быть в формате XX:XX:XXXXXXX:XXX.",
+        ),
+      };
+    if (!db.parcels[c])
+      return {
+        parcels: [],
+        error: err(
+          404,
+          "Участок " +
+            c +
+            " не найден в доступных источниках. Проверьте номер.",
+        ),
+      };
+  }
+  return { parcels: cadastrals.map((c) => db.parcels[c]) };
+}
+
+/** Суммарная площадь участков заказа, «N м²». */
+export const totalArea = (parcels: MockParcel[]): string => {
+  const sum = parcels.reduce((acc, p) => acc + (p.areaSqm || 0), 0);
+  return sum.toLocaleString("ru-RU") + " м²";
+};
 
 /* ---------- Генерация (зеркало generation.js, но короче по времени) ---------- */
 
@@ -492,7 +551,9 @@ function handle(req: Req): MockResponse {
       id: "DEMO",
       level: "l",
       price: db.levels.l.price,
+      parcels: [db.parcels["36:25:6945030:776"]],
       parcel: db.parcels["36:25:6945030:776"],
+      customer: null,
       params: {
         direction: "Лесной ретрит «Тихая поляна»",
         budget: "90–120 млн ₽",
@@ -514,6 +575,50 @@ function handle(req: Req): MockResponse {
   }
 
   /* Участки */
+  const mutualMatch = method === "POST" && pathname === "/api/parcels/mutual";
+  if (mutualMatch) {
+    const { error } = requireAuth(req);
+    if (error) return error;
+    const raw = Array.isArray(b.cadastrals) ? b.cadastrals : [b.cadastral];
+    const { parcels, error: resolveError } = resolveParcels(
+      (raw as string[]).map((x) => str(x)),
+    );
+    if (resolveError) return resolveError;
+
+    const pairs: {
+      a: string;
+      b: string;
+      adjacent: boolean;
+      distance: string;
+    }[] = [];
+    for (let i = 0; i < parcels.length; i++) {
+      for (let j = i + 1; j < parcels.length; j++) {
+        const a = parcels[i].cadastral;
+        const bNum = parcels[j].cadastral;
+        const adjacent = (ADJACENT[a] || []).includes(bNum);
+        const m = adjacent ? 0 : distanceBetween(a, bNum);
+        pairs.push({
+          a,
+          b: bNum,
+          adjacent,
+          distance: adjacent
+            ? ""
+            : m >= 1000
+              ? (m / 1000).toFixed(1) + " км"
+              : m + " м",
+        });
+      }
+    }
+    const allAdjacent = pairs.every((p) => p.adjacent);
+    return ok({
+      parcels,
+      totalArea: totalArea(parcels),
+      count: parcels.length,
+      allAdjacent,
+      pairs,
+    });
+  }
+
   const parcelMatch = pathname.match(/^\/api\/parcels\/([^/]+)$/);
   if (method === "GET" && parcelMatch) {
     const { error } = requireAuth(req);
@@ -537,17 +642,15 @@ function handle(req: Req): MockResponse {
   if (method === "POST" && pathname === "/api/orders") {
     const { user, error } = requireAuth(req);
     if (error) return error;
-    const cadastral = str(b.cadastral).trim();
     const levelId = str(b.level).toLowerCase();
 
-    if (!isCadastral(cadastral))
-      return err(
-        400,
-        "Кадастровый номер должен быть в формате XX:XX:XXXXXXX:XXX.",
-      );
-    const parcel = db.parcels[cadastral];
-    if (!parcel)
-      return err(404, "Участок не найден. Платная генерация не запущена.");
+    /* Один участок (старый формат) или несколько (п. 2.1 User Journey). */
+    const rawList = Array.isArray(b.cadastrals) ? b.cadastrals : [b.cadastral];
+    const { parcels, error: parcelsError } = resolveParcels(
+      (rawList as string[]).map((x) => str(x)),
+    );
+    if (parcelsError) return parcelsError;
+
     const level = db.levels[levelId as keyof typeof db.levels];
     if (!level) return err(400, "Выберите уровень анализа S, M или L.");
     if (level.available === false)
@@ -562,10 +665,15 @@ function handle(req: Req): MockResponse {
           ".",
       );
 
+    const customer = (b.customer as MockCustomer | undefined) ?? null;
+    if (customer && !str(customer.email).trim())
+      return err(400, "Email заказчика обязателен.");
+
     const order: MockOrder = {
       id: counters.nextOrder(),
       userId: user.id,
-      parcel,
+      parcels,
+      parcel: parcels[0],
       level: level.id,
       price: level.price,
       status: "Ожидает оплаты",
@@ -574,9 +682,13 @@ function handle(req: Req): MockResponse {
         { status: "Ожидает оплаты", at: fmt() },
       ],
       params:
-        level.id === "l"
-          ? { ...((b.params as Record<string, string>) || {}) }
-          : {},
+        level.id === "s"
+          ? {}
+          : {
+              ...((b.params as Record<string, string>) || {}),
+              ...(customer ? { customerEmail: str(customer.email) } : {}),
+            },
+      customer,
       offer: { version: db.offer.version, acceptedAt: fmt() },
       createdAt: fmt(),
       paidAt: null,

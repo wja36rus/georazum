@@ -7,28 +7,63 @@ import type { MockOrder, MockParcel, MockReport } from "./data";
 
 type Section = { title: string; body: string[] };
 
-function baseSections(parcel: MockParcel, level: string): Section[] {
+/** Суммарная площадь участков заказа, «N м²». */
+const totalAreaOf = (parcels: MockParcel[]): string => {
+  const sum = parcels.reduce((acc, p) => acc + (p.areaSqm || 0), 0);
+  return sum.toLocaleString("ru-RU") + " м²";
+};
+
+function baseSections(parcels: MockParcel[], level: string): Section[] {
+  const first = parcels[0];
+  const many = parcels.length > 1;
   const restrictions =
-    parcel.restrictions.length > 0
-      ? parcel.restrictions.join("; ")
+    first.restrictions.length > 0
+      ? first.restrictions.join("; ")
       : "не выявлены";
+  const parcelsList = parcels
+    .map(
+      (p) =>
+        "— " +
+        p.cadastral +
+        ", " +
+        p.address +
+        ", " +
+        p.area +
+        (p.vri ? ", ВРИ: " + p.vri : ""),
+    )
+    .join("\n");
   return [
     {
       title: "1. Правовой статус",
       body: [
-        "Кадастровый номер: " + parcel.cadastral + ".",
-        "Адрес: " + parcel.address + ".",
-        "Категория земель: " + parcel.category + ". ВРИ: " + parcel.vri + ".",
-        "Кадастровая стоимость: " + parcel.cadastralValue + ".",
+        many
+          ? "Объекты анализа: " + parcels.length + " земельных участка."
+          : "Объект анализа: 1 земельный участок.",
+        many
+          ? "Участки анализа:\n" + parcelsList
+          : "Кадастровый номер: " + first.cadastral + ".",
+        "Адрес: " + first.address + ".",
+        "Категория земель: " + first.category + ". ВРИ: " + first.vri + ".",
+        "Кадастровая стоимость: " + first.cadastralValue + ".",
         "Правообладатель по открытым данным — объект в частной собственности, правопритязания не зарегистрированы.",
       ],
     },
     {
       title: "2. Градостроительные параметры",
       body: [
-        "Площадь участка: " + parcel.area + ".",
+        "Площадь участка: " +
+          first.area +
+          (many
+            ? "; суммарная площадь " +
+              parcels.length +
+              " участков — " +
+              totalAreaOf(parcels) +
+              "."
+            : "."),
         "Допустимые параметры застройки определяются ПЗЗ муниципалитета и градостроительным регламентом территориальной зоны.",
-        "Ориентировочный коэффициент застройки — 0,15, предельная высотность — до 12 м (уровень " + level.toUpperCase() + ").",
+        "Ориентировочный коэффициент застройки — 0,15, предельная высотность — до 12 м (уровень " +
+          level.toUpperCase() +
+          ").",
         "Перед началом проектирования требуется получение ГПЗУ.",
       ],
     },
@@ -94,8 +129,14 @@ function lSections(order: MockOrder): Section[] {
     {
       title: "9. Инвестиционный потенциал",
       body: [
-        "Направление проекта по заданию инвестора: " + (p.direction || "не указано") + ".",
-        "Бюджет: " + (p.budget || "не указан") + "; целевая доходность: " + (p.yield || "не указана") + ".",
+        "Направление проекта по заданию инвестора: " +
+          (p.direction || "не указано") +
+          ".",
+        "Бюджет: " +
+          (p.budget || "не указан") +
+          "; целевая доходность: " +
+          (p.yield || "не указана") +
+          ".",
         "Локация обладает потенциалом развития рекреационного и гостиничного направления.",
         "Спрос в сегменте загородного отдыха растёт на 12–18% в год (оценка по открытым данным рынка).",
       ],
@@ -114,7 +155,9 @@ function lSections(order: MockOrder): Section[] {
       body: [
         "CAPEX: 109,2 млн ₽. NPV (10 лет, ставка 18%): 27,3 млн ₽.",
         "IRR: 21,6%. Срок окупаемости: 96 месяцев.",
-        "Целевой срок окупаемости по заданию: " + (p.payback || "не указан") + ".",
+        "Целевой срок окупаемости по заданию: " +
+          (p.payback || "не указан") +
+          ".",
         "Модель предварительная и подлежит уточнению после разработки проектной документации.",
       ],
     },
@@ -139,9 +182,18 @@ function lSections(order: MockOrder): Section[] {
 }
 
 export function buildReport(order: MockOrder): MockReport {
-  const sections = baseSections(order.parcel, order.level);
+  const sections = baseSections(order.parcels, order.level);
   if (order.level === "m" || order.level === "l") sections.push(...mSections());
   if (order.level === "l") sections.push(...lSections(order));
+
+  const many = order.parcels.length > 1;
+  const subject = many
+    ? "по земельным участкам " +
+      order.parcels.map((p) => p.cadastral).join(", ")
+    : "по земельному участку " + order.parcels[0].cadastral;
+  const summaryArea = many
+    ? "" + totalAreaOf(order.parcels)
+    : order.parcels[0].area;
 
   sections.push({
     title: sections.length + 1 + ". Рекомендации и дорожная карта",
@@ -157,13 +209,13 @@ export function buildReport(order: MockOrder): MockReport {
   return {
     id: "R-" + order.id,
     orderId: order.id,
-    cadastral: order.parcel.cadastral,
+    cadastral: order.parcels[0].cadastral,
     level: order.level,
-    title: "Аналитическое заключение по земельному участку " + order.parcel.cadastral,
+    title: "Аналитическое заключение " + subject,
     generatedAt: new Date().toLocaleString("ru-RU"),
     summary: {
-      address: order.parcel.address,
-      area: order.parcel.area,
+      address: order.parcels[0].address,
+      area: summaryArea,
       level: order.level.toUpperCase(),
       price: order.price,
     },

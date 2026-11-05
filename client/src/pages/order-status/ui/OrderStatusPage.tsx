@@ -8,7 +8,11 @@ import {
   statusIndex,
 } from "@/entities/order/api";
 import { StatusBadge } from "@/widgets/status-badge/ui/StatusBadge";
-import { RetryButton, ResendButton, DownloadReportLink } from "@/features/order-actions/ui/actions";
+import {
+  RetryButton,
+  ResendButton,
+  DownloadReportLink,
+} from "@/features/order-actions/ui/actions";
 import { Alert } from "@/shared/ui/Alert";
 import { Spinner } from "@/shared/ui/Spinner";
 import { Card, CardTitle } from "@/shared/ui/Card";
@@ -32,7 +36,9 @@ export function OrderStatusPage() {
       const res = await getOrder(id);
       setOrder(res.order);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Не удалось загрузить заказ.");
+      setError(
+        err instanceof Error ? err.message : "Не удалось загрузить заказ.",
+      );
     }
   };
 
@@ -59,7 +65,9 @@ export function OrderStatusPage() {
       <div className="page">
         <div className="container">
           <Alert tone="error">{error}</Alert>
-          <Button variant="ghost" onClick={load}>Повторить</Button>
+          <Button variant="ghost" onClick={load}>
+            Повторить
+          </Button>
         </div>
       </div>
     );
@@ -79,6 +87,8 @@ export function OrderStatusPage() {
   const done = order.status === "Готово";
   const failed = isFailed(order.status);
   const awaiting = order.status === "Ожидает оплаты";
+  const parcels =
+    order.parcels && order.parcels.length > 0 ? order.parcels : [order.parcel];
 
   return (
     <div className="page">
@@ -97,7 +107,11 @@ export function OrderStatusPage() {
 
         {awaiting && (
           <Alert tone="info" title="Заказ ожидает оплаты.">
-            <Link to={"/order/" + order.id + "/pay"} className="btn btn--accent btn--sm" style={{ marginTop: 8 }}>
+            <Link
+              to={"/order/" + order.id + "/pay"}
+              className="btn btn--accent btn--sm"
+              style={{ marginTop: 8 }}
+            >
               Перейти к оплате <IconArrowRight size={14} />
             </Link>
           </Alert>
@@ -111,7 +125,8 @@ export function OrderStatusPage() {
 
         {done && (
           <Alert tone="success" title="Отчёт готов.">
-            Скачайте PDF или откройте онлайн-версию. Также мы отправили отчёт на вашу почту.
+            Скачайте PDF или откройте онлайн-версию. Также мы отправили отчёт на
+            вашу почту.
           </Alert>
         )}
 
@@ -121,11 +136,15 @@ export function OrderStatusPage() {
             <dl className="order-status__dl">
               <div>
                 <dt>Кадастровый номер</dt>
-                <dd>{order.cadastral}</dd>
+                <dd>
+                  {parcels.length > 1
+                    ? parcels.map((p) => p.cadastral).join(", ")
+                    : order.cadastral}
+                </dd>
               </div>
               <div>
                 <dt>Адрес</dt>
-                <dd>{order.parcel.address}</dd>
+                <dd>{parcels.map((p) => p.address).join("; ")}</dd>
               </div>
               <div>
                 <dt>Уровень</dt>
@@ -184,8 +203,13 @@ export function OrderStatusPage() {
                 key={i}
                 className={
                   "timeline__step" +
-                  (i === order.statusHistory.length - 1 ? " timeline__step--done" : "") +
-                  (i === order.statusHistory.length - 1 && isActiveGeneration(order.status) ? " timeline__step--current" : "") +
+                  (i === order.statusHistory.length - 1
+                    ? " timeline__step--done"
+                    : "") +
+                  (i === order.statusHistory.length - 1 &&
+                  isActiveGeneration(order.status)
+                    ? " timeline__step--current"
+                    : "") +
                   (isFailed(h.status) ? " timeline__step--error" : "")
                 }
               >

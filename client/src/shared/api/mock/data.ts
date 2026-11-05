@@ -141,18 +141,62 @@ export const LEVELS: Record<MockLevel["id"], MockLevel> = {
 export type MockParcel = {
   cadastral: string;
   address: string;
+  /** Человекочитаемая площадь, например «2 450 м² (24,5 сот.)». */
   area: string;
+  /** Площадь в квадратных метрах (для расчёта суммарной площади). */
+  areaSqm: number;
   cadastralValue: string;
   category: string;
   vri: string;
   restrictions: string[];
 };
 
+/**
+ * Смежность участков (мок): кадастровый номер → список соседних номеров.
+ * Нужно для проверки взаимного расположения (п. 2.4 User Journey).
+ */
+export const ADJACENT: Record<string, string[]> = {
+  "36:16:3405742:189": ["36:16:3405742:190", "36:16:3405742:191"],
+  "36:16:3405742:190": ["36:16:3405742:189", "36:16:3405742:191"],
+  "36:16:3405742:191": ["36:16:3405742:189", "36:16:3405742:190"],
+};
+
+/**
+ * Расстояние между несмежными участками (мок), метры.
+ * Для пар, которых нет в карте, используется детерминированная оценка.
+ */
+export const DISTANCE_M: Record<string, Record<string, number>> = {
+  "36:16:3405742:189": {
+    "36:25:6945030:776": 12400,
+    "36:34:1823050:441": 4800,
+  },
+  "36:25:6945030:776": {
+    "36:16:3405742:189": 12400,
+    "36:34:1823050:441": 21400,
+  },
+  "36:34:1823050:441": {
+    "36:16:3405742:189": 4800,
+    "36:25:6945030:776": 21400,
+  },
+};
+
+/** Детерминированная оценка расстояния между двумя не-смежными участками. */
+export function distanceBetween(a: string, b: string): number {
+  const direct = DISTANCE_M[a]?.[b];
+  if (direct) return direct;
+  let h = 0;
+  for (let i = 0; i < a.length + b.length; i++) {
+    h = (h * 31 + (a + b).charCodeAt(i)) >>> 0;
+  }
+  return 900 + (h % 4100);
+}
+
 export const PARCELS: Record<string, MockParcel> = {
   "36:25:6945030:776": {
     cadastral: "36:25:6945030:776",
     address: "Воронежская обл., Рамонский р-н, урочище «Подгоренская дача»",
     area: "11 203 м² (1,1 га)",
+    areaSqm: 11203,
     cadastralValue: "6 412 485 ₽",
     category: "Земли лесного фонда",
     vri: "Осуществление рекреационной деятельности",
@@ -162,6 +206,7 @@ export const PARCELS: Record<string, MockParcel> = {
     cadastral: "36:16:3405742:189",
     address: "Воронежская обл., Новоусманский р-н, с. Новая Усмань",
     area: "2 450 м² (24,5 сот.)",
+    areaSqm: 2450,
     cadastralValue: "1 240 000 ₽",
     category: "Земли населённых пунктов",
     vri: "Для индивидуального жилищного строительства",
@@ -171,10 +216,33 @@ export const PARCELS: Record<string, MockParcel> = {
     cadastral: "36:34:1823050:441",
     address: "Воронежская обл., Острогожский р-н, г. Острогожск",
     area: "8 120 м² (0,8 га)",
+    areaSqm: 8120,
     cadastralValue: "3 480 000 ₽",
     category: "Земли населённых пунктов",
     vri: "Малоэтажная многоквартирная жилая застройка",
     restrictions: ["Зона с особыми условиями использования"],
+  },
+  "36:16:3405742:190": {
+    cadastral: "36:16:3405742:190",
+    address:
+      "Воронежская обл., Новоусманский р-н, с. Новая Усмань, северная часть",
+    area: "3 150 м² (31,5 сот.)",
+    areaSqm: 3150,
+    cadastralValue: "1 590 000 ₽",
+    category: "Земли населённых пунктов",
+    vri: "Для индивидуального жилищного строительства",
+    restrictions: [],
+  },
+  "36:16:3405742:191": {
+    cadastral: "36:16:3405742:191",
+    address:
+      "Воронежская обл., Новоусманский р-н, с. Новая Усмань, восточная часть",
+    area: "2 880 м² (28,8 сот.)",
+    areaSqm: 2880,
+    cadastralValue: "1 450 000 ₽",
+    category: "Земли населённых пунктов",
+    vri: "Для индивидуального жилищного строительства",
+    restrictions: [],
   },
 };
 
@@ -248,15 +316,43 @@ export type MockUser = {
   deleteRequestedAt: string | null;
 };
 
+export type MockCustomer = {
+  /** Физлицо / ИП / юрлицо (шаг 4 User Journey). */
+  type: "person" | "ip" | "company";
+  // Общие
+  email: string;
+  phone?: string;
+  // Физлицо и ИП
+  firstName?: string;
+  lastName?: string;
+  middleName?: string;
+  // ИП
+  inn?: string;
+  ogrnip?: string;
+  // Юрлицо
+  companyName?: string;
+  innCompany?: string;
+  kpp?: string;
+  ogrn?: string;
+  legalAddress?: string;
+  representative?: string;
+  position?: string;
+};
+
 export type MockOrder = {
   id: string;
   userId: string;
+  /** Участки заказа (1+ по п. 2.1 User Journey). */
+  parcels: MockParcel[];
+  /** Первый участок — для обратной совместимости с одиночными заказами. */
   parcel: MockParcel;
   level: MockLevel["id"];
   price: number;
   status: string;
   statusHistory: { status: string; at: string }[];
   params: Record<string, string>;
+  /** Данные заказчика (шаги 4–5 User Journey). */
+  customer: MockCustomer | null;
   offer: { version: string; acceptedAt: string };
   createdAt: string;
   paidAt: string | null;
@@ -378,6 +474,7 @@ function seed() {
   const o1: MockOrder = {
     id: "GR-" + orderSeq++,
     userId: ivan.id,
+    parcels: [PARCELS["36:25:6945030:776"]],
     parcel: PARCELS["36:25:6945030:776"],
     level: "l",
     price: LEVELS.l.price,
@@ -407,10 +504,18 @@ function seed() {
     reportId: "R-1",
     transactionId: "txn-1001",
     generationAttempts: 1,
+    customer: {
+      type: "person",
+      firstName: "Иван",
+      lastName: "Иванов",
+      email: "ivan@mail.ru",
+      phone: "+7 (900) 123-45-67",
+    },
   };
   const o2: MockOrder = {
     id: "GR-" + orderSeq++,
     userId: ivan.id,
+    parcels: [PARCELS["36:16:3405742:189"]],
     parcel: PARCELS["36:16:3405742:189"],
     level: "s",
     price: LEVELS.s.price,
@@ -429,6 +534,13 @@ function seed() {
     reportId: null,
     transactionId: "txn-1002",
     generationAttempts: 1,
+    customer: {
+      type: "person",
+      firstName: "Иван",
+      lastName: "Иванов",
+      email: "ivan@mail.ru",
+      phone: "+7 (900) 123-45-67",
+    },
   };
   orders.push(o1, o2);
 

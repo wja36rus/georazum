@@ -25,7 +25,7 @@ SaaS-сервис «Гео Разум» — аналитическое закл�
 | `cd client && npm run dev`       | Rspack dev-server :5173, HMR, прокси `/api` → 4000 |
 | `cd client && npm run build`     | Продакшен-сборка в `client/dist`                   |
 | `cd client && npm run typecheck` | `tsc --noEmit` (strict, `noUnusedLocals`)          |
-| `cd client && npm test`          | Vitest run (42 теста, jsdom)                       |
+| `cd client && npm test`          | Vitest run (44 теста, jsdom)                       |
 
 ## Дизайн (обязательно)
 
@@ -59,7 +59,7 @@ client/src/
 ├── pages/      17 страниц по одной папке: pages/<name>/ui/<Name>Page.tsx
 ├── widgets/    header, footer, layouts/PublicLayout, sidebar/SidebarLayout, status-badge,
 │               level-card, order-card, recent-events, admin/, faq, report-view
-├── features/   auth/, order-wizard/ (5 шагов), pay/, order-actions/, feedback/, profile/, admin/forms/
+├── features/   auth/, order-wizard/ (6 шагов: участки → уровень → параметры M/L → заказчик → контакты → проверка), pay/, order-actions/, feedback/, profile/, admin/forms/
 ├── entities/   10 доменных сущностей (level, user, parcel, offer, document, order, payment,
 │               notification, report, admin)
 └── shared/     api/ (client.ts), config/, icons/ (SVG-компоненты), lib/ (format, validators),
@@ -140,7 +140,7 @@ client/src/
 
 1. `cd server && npm test` — все проверки зелёные (32/32).
 2. Если трогал клиент: `cd client && npm run typecheck` (0 ошибок),
-   `npm test` (42/42) и `npm run build` без ошибок.
+   `npm test` (44/44) и `npm run build` без ошибок.
 3. Диагностики: без новых ошибок/предупреждений в изменённых файлах.
 
 Порты: API — 4000, dev-сервер — 5173. Если заняты — переиспользовать уже

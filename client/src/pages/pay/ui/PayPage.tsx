@@ -79,7 +79,22 @@ export function PayPage() {
           <CardTitle>Заказ {order.id}</CardTitle>
           <div className="pay-page__row">
             <span className="muted">Кадастровый номер</span>
-            <b>{order.cadastral}</b>
+            <b>
+              {(order.parcels && order.parcels.length > 1
+                ? order.parcels.map((p) => p.cadastral)
+                : [order.cadastral]
+              ).join(", ")}
+            </b>
+          </div>
+          <div className="pay-page__row">
+            <span className="muted">Площадь</span>
+            <b>
+              {order.parcels && order.parcels.length > 0
+                ? order.parcels
+                    .reduce((sum, p) => sum + (p.areaSqm || 0), 0)
+                    .toLocaleString("ru-RU") + " м²"
+                : "—"}
+            </b>
           </div>
           <div className="pay-page__row">
             <span className="muted">Уровень</span>

@@ -64,15 +64,42 @@
 
 /* Карточка найденного участка */
 .parcel-card {
+    position: relative;
     margin-top: 16px;
     padding: 14px 16px;
     border: 1px solid var(--green);
     border-radius: var(--radius);
     background: var(--green-soft);
 }
+.parcel-card__remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+.parcel-card__remove:hover {
+    background: var(--danger);
+    color: #fff;
+}
+.parcel-card__num {
+    color: var(--green);
+}
 .parcel-card__address {
     font-weight: 700;
     margin-bottom: 8px;
+    padding-right: 32px;
 }
 .parcel-card__grid {
     display: grid;
@@ -84,6 +111,63 @@
     margin-top: 8px;
     font-size: 13px;
     color: var(--warn);
+}
+
+.parcel-list .parcel-card:first-child {
+    margin-top: 16px;
+}
+.parcel-list .parcel-card + .parcel-card {
+    margin-top: 10px;
+}
+
+.parcel-summary {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* Взаимное расположение (п. 2.4 User Journey) */
+.mutual {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    font-size: 14px;
+}
+.mutual--ok {
+    border-color: var(--green);
+    background: var(--green-soft);
+}
+.mutual--warn {
+    border-color: var(--warn);
+    background: #fdf8ec;
+}
+.mutual__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.mutual--ok .mutual__head {
+    color: var(--green);
+}
+.mutual--warn .mutual__head {
+    color: var(--warn);
+}
+.mutual__pairs {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: var(--muted);
 }
 
 /* Выбор уровня */
@@ -152,6 +236,166 @@
     font-size: 12px;
     color: var(--warn);
     font-weight: 700;
+}
+.level-select__details {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: auto;
+}
+.level-select__details summary {
+    cursor: pointer;
+    color: var(--blue);
+    font-weight: 600;
+}
+.level-select__details ul {
+    margin: 8px 0 4px;
+    padding-left: 18px;
+    display: grid;
+    gap: 4px;
+}
+
+/* Сравнение уровней (п. 3.4) */
+.comparison {
+    margin: 4px 0 16px;
+    font-size: 14px;
+}
+.comparison summary {
+    cursor: pointer;
+    color: var(--blue);
+    font-weight: 600;
+}
+.comparison__table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+}
+.comparison__table th,
+.comparison__table td {
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    text-align: left;
+}
+.comparison__table thead th {
+    background: var(--blue-soft);
+    font-weight: 700;
+}
+.comparison__table th:not(:first-child),
+.comparison__table td:not(:first-child) {
+    text-align: center;
+}
+
+/* Блоки анкет M/L (п. 4) */
+.q-block {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    background: var(--card);
+}
+.q-block__title {
+    margin: 0 0 4px;
+    font-size: 15px;
+}
+.q-block__hint {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--muted);
+}
+.q-block .field + .field {
+    margin-top: 12px;
+}
+.q-options {
+    display: grid;
+    gap: 8px;
+}
+.q-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+    font-size: 14px;
+    background: #fff;
+}
+.q-option:hover {
+    border-color: var(--blue);
+}
+.q-option.is-checked {
+    border-color: var(--blue);
+    background: var(--blue-soft);
+}
+.q-option input {
+    margin-top: 3px;
+}
+
+/* Тип заказчика (шаг 4) */
+.customer-type {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 8px 0 16px;
+}
+@media (max-width: 760px) {
+    .customer-type {
+        grid-template-columns: 1fr;
+    }
+}
+.customer-type__item {
+    text-align: left;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+.customer-type__item:hover {
+    border-color: var(--blue);
+}
+.customer-type__item.is-active {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px var(--blue-soft);
+}
+.customer-fields {
+    margin: 16px 0;
+}
+
+/* Согласия (шаги 5–6) */
+.consents {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+.consents .checkbox {
+    align-items: flex-start;
+}
+.consents .checkbox span {
+    font-size: 14px;
+}
+
+/* Сводка заказа */
+.summary__group {
+    border-top: 1px solid var(--border);
+}
+.summary__group-title {
+    padding: 10px 16px;
+    background: #f3f6fa;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--muted);
 }
 
 /* Документ оферты в шаге 4 */

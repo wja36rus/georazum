@@ -34,6 +34,9 @@ export function OrderCard({ order }: OrderCardProps) {
         <div className="order-card__grid">
           <span>
             <b>Кадастровый:</b> {order.cadastral}
+            {order.parcelCount && order.parcelCount > 1
+              ? ` +${order.parcelCount - 1}`
+              : ""}
           </span>
           <span>
             <b>Уровень:</b> {order.levelName}
@@ -52,7 +55,10 @@ export function OrderCard({ order }: OrderCardProps) {
           Открыть
         </Link>
         {order.status === "Ожидает оплаты" && (
-          <Link to={"/order/" + order.id + "/pay"} className="btn btn--accent btn--sm">
+          <Link
+            to={"/order/" + order.id + "/pay"}
+            className="btn btn--accent btn--sm"
+          >
             Оплатить
           </Link>
         )}

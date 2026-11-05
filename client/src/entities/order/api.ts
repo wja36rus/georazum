@@ -29,18 +29,24 @@ export const ACTIVE_GENERATION_STATUSES: OrderStatus[] = [
 ];
 
 /** Финал без отчёта: нужен ретрай. */
-export const FAILED_STATUSES: OrderStatus[] = ["Ошибка генерации", "Требуется вмешательство специалиста"];
+export const FAILED_STATUSES: OrderStatus[] = [
+  "Ошибка генерации",
+  "Требуется вмешательство специалиста",
+];
 
 export const TERMINAL_STATUSES: OrderStatus[] = ["Готово", ...FAILED_STATUSES];
 
 export const isActiveGeneration = (s: string): boolean =>
   (ACTIVE_GENERATION_STATUSES as string[]).includes(s);
 
-export const isFinished = (s: string): boolean => (TERMINAL_STATUSES as string[]).includes(s);
+export const isFinished = (s: string): boolean =>
+  (TERMINAL_STATUSES as string[]).includes(s);
 
-export const isFailed = (s: string): boolean => (FAILED_STATUSES as string[]).includes(s);
+export const isFailed = (s: string): boolean =>
+  (FAILED_STATUSES as string[]).includes(s);
 
-export const isPaid = (s: string): boolean => s !== "Заказ создан" && s !== "Ожидает оплаты";
+export const isPaid = (s: string): boolean =>
+  s !== "Заказ создан" && s !== "Ожидает оплаты";
 
 /** Порядковый номер статуса в жизненном цикле (для прогресса). */
 export const statusIndex = (s: string): number => {
@@ -55,9 +61,30 @@ export type OfferAccept = {
   acceptedAt: string;
 };
 
+/** Данные заказчика (шаги 4–5 User Journey). */
+export type CustomerInfo = {
+  type: "person" | "ip" | "company";
+  email: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  middleName?: string;
+  inn?: string;
+  ogrnip?: string;
+  companyName?: string;
+  innCompany?: string;
+  kpp?: string;
+  ogrn?: string;
+  legalAddress?: string;
+  representative?: string;
+  position?: string;
+};
+
 export type OrderSummary = {
   id: string;
   cadastral: string;
+  /** Количество участков в заказе (1+). */
+  parcelCount?: number;
   level: string;
   levelName: string;
   price: number;
@@ -85,6 +112,9 @@ export type PaymentInfo = {
 
 export type OrderFull = OrderSummary & {
   parcel: Parcel;
+  /** Все участки заказа (п. 2.1 User Journey). */
+  parcels?: Parcel[];
+  customer?: CustomerInfo | null;
   params: Record<string, string>;
   offer: OfferAccept;
   statusHistory: StatusHistoryEntry[];
@@ -94,10 +124,14 @@ export type OrderFull = OrderSummary & {
 };
 
 export type CreateOrderPayload = {
-  cadastral: string;
+  /** Кадастровые номера (1+). */
+  cadastrals: string[];
+  /** Первый номер — для обратной совместимости с сервером (одиночный заказ). */
+  cadastral?: string;
   level: string;
   offerAccepted: boolean;
   offerVersion: string;
+  customer?: CustomerInfo;
   params?: Record<string, string>;
 };
 
@@ -111,15 +145,23 @@ export type PayResult = {
 export const createOrder = (payload: CreateOrderPayload) =>
   apiPost<{ order: OrderFull }>("/api/orders", payload);
 
-export const getOrders = () => apiGet<{ orders: OrderSummary[] }>("/api/orders");
+export const getOrders = () =>
+  apiGet<{ orders: OrderSummary[] }>("/api/orders");
 
-export const getOrder = (id: string) => apiGet<{ order: OrderFull }>("/api/orders/" + encodeURIComponent(id));
+export const getOrder = (id: string) =>
+  apiGet<{ order: OrderFull }>("/api/orders/" + encodeURIComponent(id));
 
 export const payOrder = (id: string, card: CardInput) =>
-  apiPost<PayResult>("/api/orders/" + encodeURIComponent(id) + "/pay", { card });
+  apiPost<PayResult>("/api/orders/" + encodeURIComponent(id) + "/pay", {
+    card,
+  });
 
 export const retryOrder = (id: string) =>
-  apiPost<{ order: OrderFull }>("/api/orders/" + encodeURIComponent(id) + "/retry");
+  apiPost<{ order: OrderFull }>(
+    "/api/orders/" + encodeURIComponent(id) + "/retry",
+  );
 
 export const resendReport = (id: string) =>
-  apiPost<{ ok: boolean; to: string }>("/api/orders/" + encodeURIComponent(id) + "/resend-report");
+  apiPost<{ ok: boolean; to: string }>(
+    "/api/orders/" + encodeURIComponent(id) + "/resend-report",
+  );
