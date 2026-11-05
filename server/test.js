@@ -278,6 +278,104 @@ async function main() {
   await req("POST", api("/api/notifications/read"), { token: tok, body: {} });
   ok("POST /api/notifications/read — прочитано");
 
+  /* ---------- Личный счёт (кошелёк) ---------- */
+  const wallet0 = await req("GET", api("/api/wallet"), { token: tok });
+  if (
+    wallet0.balance === 15100 &&
+    wallet0.transactions.some((t) => t.type === "topup") &&
+    wallet0.transactions.some((t) => t.type === "debit")
+  )
+    ok("GET /api/wallet — баланс сида 15100 ₽ и история операций");
+  else fail("GET /api/wallet — сид", JSON.stringify(wallet0));
+
+  await req("POST", api("/api/wallet/topup"), {
+    token: tok,
+    body: { amount: 50, card: { number: "4111111111111111" } },
+    status: 400,
+  });
+  ok("POST /api/wallet/topup — сумма меньше минимума -> 400");
+
+  await req("POST", api("/api/wallet/topup"), {
+    token: tok,
+    body: {
+      amount: 1000,
+      card: {
+        number: "0000000000000000",
+        expiry: "12/30",
+        cvv: "123",
+        holder: "IVAN IVANOV",
+      },
+    },
+    status: 402,
+  });
+  ok("POST /api/wallet/topup — карта-отказ -> 402");
+
+  const topup = await req("POST", api("/api/wallet/topup"), {
+    token: tok,
+    body: {
+      amount: 1000,
+      card: {
+        number: "4111111111111111",
+        expiry: "12/30",
+        cvv: "123",
+        holder: "IVAN IVANOV",
+      },
+    },
+  });
+  if (
+    topup.balance === 16100 &&
+    topup.transaction &&
+    topup.transaction.type === "topup"
+  )
+    ok("POST /api/wallet/topup — пополнение на 1000 ₽, баланс 16100");
+  else fail("POST /api/wallet/topup", JSON.stringify(topup));
+
+  /* Оплата заказа с личного счёта */
+  const sOrder = await req("POST", api("/api/orders"), {
+    token: tok,
+    body: {
+      cadastral: "36:16:3405742:189",
+      level: "s",
+      offerAccepted: true,
+      offerVersion: "1.0",
+    },
+    status: 201,
+  });
+  const paidFromBalance = await req(
+    "POST",
+    api("/api/orders/" + sOrder.order.id + "/pay"),
+    { token: tok, body: { fromBalance: true } },
+  );
+  if (
+    paidFromBalance.balance === 16100 - 4900 &&
+    paidFromBalance.payment.method === "balance"
+  )
+    ok("POST /pay fromBalance — списание 4900 ₽, метод balance");
+  else fail("POST /pay fromBalance", JSON.stringify(paidFromBalance));
+
+  /* Недостаточно средств: уровень L (49900 ₽) при остатке 11200 */
+  const lOrder = await req("POST", api("/api/orders"), {
+    token: tok,
+    body: {
+      cadastral: "36:25:6945030:776",
+      level: "l",
+      offerAccepted: true,
+      offerVersion: "1.0",
+    },
+    status: 201,
+  });
+  await req("POST", api("/api/orders/" + lOrder.order.id + "/pay"), {
+    token: tok,
+    body: { fromBalance: true },
+    status: 400,
+  });
+  ok("POST /pay fromBalance — недостаточно средств -> 400");
+
+  const wallet1 = await req("GET", api("/api/wallet"), { token: tok });
+  if (wallet1.balance === 11200)
+    ok("GET /api/wallet — остаток 11200 ₽ после списания");
+  else fail("GET /api/wallet — остаток", JSON.stringify(wallet1));
+
   /* ---------- Админка ---------- */
   const adminLogin = await req("POST", api("/api/auth/login"), {
     body: { email: "admin@georazum.ru", password: "admin123" },
@@ -296,6 +394,32 @@ async function main() {
   if (users.users && users.users.length >= 2)
     ok("GET /api/admin/users — список пользователей");
   else fail("GET /api/admin/users", JSON.stringify(users));
+
+  const adminIvan = users.users.find((u) => u.email === "ivan@mail.ru");
+  if (adminIvan && typeof adminIvan.balance === "number")
+    ok("GET /api/admin/users — у пользователей есть баланс");
+  else fail("GET /api/admin/users — баланс", JSON.stringify(adminIvan));
+
+  const adminWallet = await req(
+    "GET",
+    api("/api/admin/users/" + adminIvan.id + "/wallet"),
+    { token: at },
+  );
+  if (
+    adminWallet.user.balance === adminIvan.balance &&
+    adminWallet.transactions.length >= 1
+  )
+    ok("GET /api/admin/users/:id/wallet — баланс и история пользователя");
+  else fail("GET /api/admin/users/:id/wallet", JSON.stringify(adminWallet));
+
+  const adminTopup = await req(
+    "POST",
+    api("/api/admin/users/" + adminIvan.id + "/topup"),
+    { token: at, body: { amount: 500 } },
+  );
+  if (adminTopup.user.balance === adminIvan.balance + 500)
+    ok("POST /api/admin/users/:id/topup — пополнение техподдержкой +500");
+  else fail("POST /api/admin/users/:id/topup", JSON.stringify(adminTopup));
 
   const newUserId = users.users.find((u) => u.email === email).id;
   await req("PATCH", api("/api/admin/users/" + newUserId + "/block"), {

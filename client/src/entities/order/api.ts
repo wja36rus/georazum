@@ -138,7 +138,12 @@ export type CreateOrderPayload = {
 export type PayResult = {
   order: OrderFull;
   payment: PaymentInfo;
+  /** Новый остаток на счёте (при оплате с личного счёта). */
+  balance?: number;
 };
+
+/** Способ оплаты: картой или с личного счёта. */
+export type PayPayload = { card: CardInput } | { fromBalance: true };
 
 /* ---------- API ---------- */
 
@@ -151,10 +156,8 @@ export const getOrders = () =>
 export const getOrder = (id: string) =>
   apiGet<{ order: OrderFull }>("/api/orders/" + encodeURIComponent(id));
 
-export const payOrder = (id: string, card: CardInput) =>
-  apiPost<PayResult>("/api/orders/" + encodeURIComponent(id) + "/pay", {
-    card,
-  });
+export const payOrder = (id: string, payload: PayPayload) =>
+  apiPost<PayResult>("/api/orders/" + encodeURIComponent(id) + "/pay", payload);
 
 export const retryOrder = (id: string) =>
   apiPost<{ order: OrderFull }>(

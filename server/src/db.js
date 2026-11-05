@@ -203,7 +203,8 @@ const db = {
   notifications: [],
   reports: {},
   emails: [],
-  seq: { user: 1, order: 1001, payment: 1001, report: 1 },
+  transactions: [],
+  seq: { user: 1, order: 1001, payment: 1001, report: 1, transaction: 1 },
   // очередь генераций (мок аналитического модуля)
   generationQueue: [],
   generationSeq: 1,
@@ -221,6 +222,7 @@ const seedUser = (firstName, lastName, email, phone, password, role) => {
     blocked: false,
     confirmed: true,
     createdAt: now(),
+    balance: 0,
   };
   db.users.push(user);
   return user;
@@ -298,6 +300,30 @@ function seed() {
     transactionId: "txn-1002",
   };
   db.orders.push(o1, o2);
+
+  /* Личный счёт Ивана: баланс и история операций (демо). */
+  ivan.balance = 15100;
+  db.transactions.push(
+    {
+      id: "T-1",
+      userId: ivan.id,
+      type: "topup",
+      amount: 20000,
+      balanceAfter: 20000,
+      description: "Пополнение счёта",
+      createdAt: "25.10.2026 10:00",
+    },
+    {
+      id: "T-2",
+      userId: ivan.id,
+      type: "debit",
+      amount: o2.price,
+      balanceAfter: 15100,
+      orderId: o2.id,
+      description: "Оплата заказа " + o2.id + " (уровень S)",
+      createdAt: o2.paidAt || "28.10.2026 09:12",
+    },
+  );
   db.payments.push(
     {
       id: "P-1001",
@@ -314,7 +340,7 @@ function seed() {
       orderId: o2.id,
       userId: ivan.id,
       amount: o2.price,
-      method: "card",
+      method: "balance",
       status: "Оплачен",
       createdAt: o2.paidAt,
       transactionId: o2.transactionId,

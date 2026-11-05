@@ -30,6 +30,7 @@ export {
   IconQuit,
   IconPlus,
   IconCard,
+  IconWallet,
   IconBell,
 } from "./nav";
 export {

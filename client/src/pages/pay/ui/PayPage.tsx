@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { getOrder, type OrderFull } from "@/entities/order/api";
+import { getOrder, payOrder, type OrderFull } from "@/entities/order/api";
+import { getWallet } from "@/entities/wallet/api";
 import { PayForm } from "@/features/pay/ui/PayForm";
 import { Alert } from "@/shared/ui/Alert";
 import { Spinner } from "@/shared/ui/Spinner";
 import { Card, CardTitle } from "@/shared/ui/Card";
 import { Button } from "@/shared/ui/Button";
+import { IconWallet } from "@/shared/icons";
 import { fmtPrice, fmtTime } from "@/shared/lib/format";
+import { ApiError } from "@/shared/api/client";
 import "./pay.scss";
 
-/** Страница оплаты заказа. */
+/** Страница оплаты заказа: картой или с личного счёта. */
 export function PayPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState<OrderFull | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+  const [payBusy, setPayBusy] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
 
   const load = async () => {
     setError(null);
@@ -32,6 +39,35 @@ export function PayPage() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
+  /* Баланс личного счёта для оплаты со счёта. */
+  useEffect(() => {
+    getWallet()
+      .then((w) => setBalance(w.balance))
+      .catch((err) =>
+        setBalanceError(
+          err instanceof Error ? err.message : "Не удалось загрузить баланс.",
+        ),
+      );
+  }, []);
+
+  async function onPayFromBalance() {
+    if (!order) return;
+    setPayError(null);
+    setPayBusy(true);
+    try {
+      await payOrder(order.id, { fromBalance: true });
+      navigate("/order/" + order.id);
+    } catch (err) {
+      setPayError(
+        err instanceof ApiError
+          ? err.message
+          : "Не удалось провести оплату со счёта.",
+      );
+    } finally {
+      setPayBusy(false);
+    }
+  }
 
   if (error && !order) {
     return (
@@ -71,6 +107,8 @@ export function PayPage() {
       </div>
     );
   }
+
+  const canPayFromBalance = balance != null && balance >= order.price;
 
   return (
     <div className="page">
@@ -114,13 +152,55 @@ export function PayPage() {
           </div>
         </div>
 
-        <Card padded className="pay-page__form">
-          <CardTitle>Оплата картой</CardTitle>
-          <PayForm
-            order={order}
-            onSuccess={() => navigate("/order/" + order.id)}
-          />
-        </Card>
+        <div className="pay-page__col">
+          <Card padded className="pay-page__form">
+            <CardTitle>Оплата картой</CardTitle>
+            <PayForm
+              order={order}
+              onSuccess={() => navigate("/order/" + order.id)}
+            />
+          </Card>
+
+          <Card padded className="pay-page__form">
+            <CardTitle>Оплата со счёта</CardTitle>
+            {balanceError && <Alert tone="error">{balanceError}</Alert>}
+            {balance == null && !balanceError && (
+              <div>
+                <Spinner /> Загружаем баланс…
+              </div>
+            )}
+            {balance != null && (
+              <>
+                {payError && <Alert tone="error">{payError}</Alert>}
+                <div className="pay-balance">
+                  <span className="muted">Текущий баланс</span>
+                  <b>{fmtPrice(balance)}</b>
+                </div>
+                {canPayFromBalance ? (
+                  <Button
+                    variant="green"
+                    block
+                    size="lg"
+                    disabled={payBusy}
+                    onClick={onPayFromBalance}
+                    icon={payBusy ? <Spinner /> : <IconWallet size={18} />}
+                  >
+                    {payBusy ? "Оплачиваем…" : "Оплатить со счёта"}
+                  </Button>
+                ) : (
+                  <Alert tone="warn" title="Недостаточно средств.">
+                    Пополните счёт в личном кабинете, чтобы оплатить заказ со
+                    счёта.
+                  </Alert>
+                )}
+                <p className="muted" style={{ fontSize: 13, marginBottom: 0 }}>
+                  Средства спишутся со счёта мгновенно.{" "}
+                  <Link to="/cabinet?tab=wallet">Пополнить счёт</Link>
+                </p>
+              </>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );

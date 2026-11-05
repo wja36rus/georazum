@@ -17,6 +17,7 @@ import {
   type MockParcel,
   type MockPayment,
   type MockUser,
+  type MockWalletTx,
 } from "./data";
 import { buildReport } from "./report";
 
@@ -171,6 +172,80 @@ const pushStatus = (order: MockOrder, status: string) => {
   order.status = status;
   return entry;
 };
+
+/* ---------- Личный счёт (кошелёк) ---------- */
+
+/** Операции пользователя: новые сверху. */
+const walletTxs = (userId: string): MockWalletTx[] =>
+  db.transactions
+    .filter((t) => t.userId === userId)
+    .slice()
+    .reverse();
+
+/** Публичное представление пользователя для админ-счётчика. */
+const walletPublic = (u: MockUser) => ({
+  id: u.id,
+  name: u.firstName + " " + u.lastName,
+  email: u.email,
+  balance: u.balance,
+});
+
+/** Валидация суммы пополнения/списания: число рублей. */
+const amountError = (v: unknown, min: number, max: number): string => {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return "Укажите сумму числом.";
+  if (n < min || n > max)
+    return (
+      "Сумма должна быть от " +
+      min.toLocaleString("ru-RU") +
+      " до " +
+      max.toLocaleString("ru-RU") +
+      " ₽."
+    );
+  return "";
+};
+
+/** Списание с личного счёта за заказ + запись операции. */
+function debitWallet(user: MockUser, order: MockOrder): MockWalletTx {
+  user.balance -= order.price;
+  const tx: MockWalletTx = {
+    id: counters.nextTx(),
+    userId: user.id,
+    type: "debit",
+    amount: order.price,
+    balanceAfter: user.balance,
+    orderId: order.id,
+    description:
+      "Оплата заказа " +
+      order.id +
+      " (уровень " +
+      order.level.toUpperCase() +
+      ")",
+    createdAt: fmt(),
+  };
+  db.transactions.unshift(tx);
+  return tx;
+}
+
+/** Пополнение личного счёта + запись операции. */
+function topupWallet(
+  user: MockUser,
+  amount: number,
+  description: string,
+): MockWalletTx {
+  user.balance += amount;
+  const tx: MockWalletTx = {
+    id: counters.nextTx(),
+    userId: user.id,
+    type: "topup",
+    amount,
+    balanceAfter: user.balance,
+    description,
+    createdAt: fmt(),
+  };
+  db.transactions.unshift(tx);
+  return tx;
+}
 
 const STATUSES = [
   "Заказ создан",
@@ -398,6 +473,7 @@ function handle(req: Req): MockResponse {
       confirmed: true,
       createdAt: fmt(),
       deleteRequestedAt: null,
+      balance: 0,
     };
     db.users.push(user);
     notify(
@@ -727,6 +803,56 @@ function handle(req: Req): MockResponse {
     if (order.paidAt)
       return err(400, "Заказ уже оплачен. Повторное списание не выполняется.");
 
+    /* Оплата с личного счёта (без карты). */
+    if (b.fromBalance === true) {
+      if (user.balance < order.price)
+        return err(
+          400,
+          "Недостаточно средств на счёте. Пополните счёт в личном кабинете.",
+        );
+      const transactionId = "bal-" + Math.random().toString(16).slice(2, 14);
+      debitWallet(user, order);
+      const payment: MockPayment = {
+        id: counters.nextPayment(),
+        orderId: order.id,
+        userId: user.id,
+        amount: order.price,
+        method: "balance",
+        status: "Оплачен",
+        createdAt: fmt(),
+        transactionId,
+      };
+      db.payments.unshift(payment);
+      order.paidAt = fmt();
+      order.transactionId = transactionId;
+      pushStatus(order, "Оплачен");
+      notify(
+        user.id,
+        "payment",
+        "Оплата заказа " +
+          order.id +
+          " на " +
+          order.price.toLocaleString("ru-RU") +
+          " ₽ списана с личного счёта.",
+      );
+      notifyAdmins(
+        "payment",
+        "Новый оплаченный заказ " +
+          order.id +
+          " (" +
+          order.level.toUpperCase() +
+          ") на сумму " +
+          order.price.toLocaleString("ru-RU") +
+          " ₽ (личный счёт).",
+      );
+      startGeneration(order);
+      return ok({
+        order: orderFull(order),
+        payment,
+        balance: user.balance,
+      });
+    }
+
     const cardError = cardValid(b.card);
     if (cardError) return err(400, "Платёж отклонён: " + cardError);
 
@@ -852,6 +978,33 @@ function handle(req: Req): MockResponse {
     return ok({ payments: db.payments.filter((p) => p.userId === user.id) });
   }
 
+  /* Личный счёт: баланс и история операций */
+  if (method === "GET" && pathname === "/api/wallet") {
+    const { user, error } = requireAuth(req);
+    if (error) return error;
+    return ok({ balance: user.balance, transactions: walletTxs(user.id) });
+  }
+
+  if (method === "POST" && pathname === "/api/wallet/topup") {
+    const { user, error } = requireAuth(req);
+    if (error) return error;
+    const amountErrorText = amountError(b.amount, 100, 500000);
+    if (amountErrorText) return err(400, amountErrorText);
+    const cardErrorText = cardValid(b.card);
+    if (cardErrorText) return err(400, "Платёж отклонён: " + cardErrorText);
+    const number = digits((b.card as Record<string, unknown>)?.number);
+    if (number === "0000000000000000")
+      return err(402, "Платёж отклонён банком. Попробуйте другую карту.");
+    const amount = Math.round(Number(b.amount));
+    const tx = topupWallet(user, amount, "Пополнение счёта");
+    notify(
+      user.id,
+      "account",
+      "Счёт пополнен на " + amount.toLocaleString("ru-RU") + " ₽.",
+    );
+    return ok({ balance: user.balance, transaction: tx });
+  }
+
   if (method === "GET" && pathname === "/api/notifications") {
     const { user, error } = requireAuth(req);
     if (error) return error;
@@ -953,6 +1106,7 @@ function handle(req: Req): MockResponse {
         ...publicUser(u),
         ordersCount: db.orders.filter((o) => o.userId === u.id).length,
         deleteRequestedAt: u.deleteRequestedAt || null,
+        balance: u.balance,
       }));
     return ok({ users: list });
   }
@@ -970,6 +1124,43 @@ function handle(req: Req): MockResponse {
       for (const [t, uid] of db.tokens)
         if (uid === user.id) db.tokens.delete(t);
     return ok({ user: publicUser(user) });
+  }
+
+  /* Счёт выбранного пользователя: история и пополнение техподдержкой. */
+  const userWalletMatch = pathname.match(
+    /^\/api\/admin\/users\/([^/]+)\/wallet$/,
+  );
+  if (method === "GET" && userWalletMatch) {
+    const { error } = requireAdmin(req);
+    if (error) return error;
+    const user = db.users.find((u) => u.id === userWalletMatch[1]);
+    if (!user) return err(404, "Пользователь не найден.");
+    return ok({
+      user: walletPublic(user),
+      transactions: walletTxs(user.id),
+    });
+  }
+
+  const adminTopupMatch = pathname.match(
+    /^\/api\/admin\/users\/([^/]+)\/topup$/,
+  );
+  if (method === "POST" && adminTopupMatch) {
+    const { error } = requireAdmin(req);
+    if (error) return error;
+    const user = db.users.find((u) => u.id === adminTopupMatch[1]);
+    if (!user) return err(404, "Пользователь не найден.");
+    const amountErrorText = amountError(b.amount, 1, 1000000);
+    if (amountErrorText) return err(400, amountErrorText);
+    const amount = Math.round(Number(b.amount));
+    const tx = topupWallet(user, amount, "Пополнение счёта службой поддержки");
+    notify(
+      user.id,
+      "account",
+      "Ваш счёт пополнен на " +
+        amount.toLocaleString("ru-RU") +
+        " ₽ службой поддержки.",
+    );
+    return ok({ user: walletPublic(user), transaction: tx });
   }
 
   const userOrdersMatch = pathname.match(

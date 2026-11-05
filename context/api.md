@@ -121,13 +121,18 @@ statusHistory[], transactionId, generationAttempts, payment` (последний
 
 ### POST /api/orders/:id/pay — auth
 
-Тело: `card: { number, expiry (ММ/ГГ), cvv, holder }`.
+Тело — один из двух вариантов:
 
-- 400 — невалидная карта / заказ уже оплачен / нет прав.
-- **402** — карта `0000000000000000` (отказ банка; платёж «Ошибка», статус
-  возвращается к «Ожидает оплаты»).
-- 200 — успех: `{ order, payment }`. Сразу запускается генерация (статус может
-  уже быть «Передан в обработку»).
+- `card: { number, expiry (ММ/ГГ), cvv, holder }` — оплата картой;
+- `{ fromBalance: true }` — оплата с личного счёта (без карты).
+
+Оплата картой: 400 — невалидная карта / заказ уже оплачен / нет прав; **402** —
+карта `0000000000000000` (отказ банка; платёж «Ошибка», статус возвращается к
+«Ожидает оплаты»); 200 — `{ order, payment }`.
+
+Оплата со счёта: 400 — недостаточно средств (`{ error: "Недостаточно средств…" }`);
+200 — `{ order, payment, balance }` (`payment.method = "balance"`, новая
+транзакция debit). В обоих случаях сразу запускается генерация.
 
 ### POST /api/orders/:id/retry — auth
 
@@ -160,6 +165,26 @@ sections[] } }`. 404 — отчёт ещё не готов. Собирается
 
 Тело: `id?` — конкретное уведомление или все (без id). Ответ: `{ ok: true }`.
 
+## Личный счёт (кошелёк)
+
+У каждого пользователя есть личный счёт: с него можно оплачивать заказы, его
+можно пополнять картой (пользователь) или вручную (админ/техподдержка).
+Баланс и история операций — в ЛК (вкладка «Счёт») и на странице оплаты.
+Сид Ивана: баланс `15100`, история `T-1` (пополнение 20 000) и `T-2`
+(списание 4 900 за заказ `GR-1002`, уровень S).
+
+### GET /api/wallet — auth
+
+`{ balance: number, transactions: WalletTx[] }`. Операции новые-первыми.
+`WalletTx = { id, type: "topup" | "debit", amount (всегда положительное),
+balanceAfter, orderId? (только debit), description, createdAt }`.
+
+### POST /api/wallet/topup — auth
+
+Тело: `amount` (100–500 000 ₽, иначе 400), `card` (как в оплате заказа).
+402 — карта `0000000000000000`. Успех (200): `{ balance, transaction }`,
+уведомление пользователю (тип `account`). Сумма округляется до рублей.
+
 ## Обратная связь
 
 ### POST /api/feedback — публичный
@@ -176,8 +201,8 @@ avgGenerationSeconds, activeGenerations, conversion } }`.
 
 ### GET /api/admin/users?q=строка
 
-Поиск по `name`, `email`, `phone` (case-insensitive). `{ users: [...,
-ordersCount, deleteRequestedAt] }`.
+Поиск по `name`, `email`, `phone` (case-insensitive). `{ users: [...ordersCount,
+deleteRequestedAt, balance] }` — `balance` текущий остаток счёта, ₽.
 
 ### PATCH /api/admin/users/:id/block
 
@@ -187,6 +212,17 @@ ordersCount, deleteRequestedAt] }`.
 ### GET /api/admin/users/:id/orders
 
 `{ orders: [orderSummary] }`.
+
+### GET /api/admin/users/:id/wallet
+
+`{ user: { id, name, email, balance }, transactions: WalletTx[] }`. 404 — нет
+пользователя.
+
+### POST /api/admin/users/:id/topup
+
+Пополнение счёта службой поддержки. Тело: `amount` (1–1 000 000 ₽, иначе 400).
+Успех (200): `{ user: walletPublic, transaction }`, уведомление пользователю
+(тип `account`).
 
 ### GET /api/admin/orders?q=&level=&status=
 

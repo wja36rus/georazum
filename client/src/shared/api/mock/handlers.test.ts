@@ -269,4 +269,234 @@ describe("mock API (демо без бэкенда)", () => {
     ).order;
     expect(fullOrder.parcels).toHaveLength(2);
   });
+
+  it("личный счёт: баланс, пополнение картой (успех/отказ)", async () => {
+    // Логинимся на реальных таймерах, дальше контролируем время вручную.
+    const { headers } = await loginDemo();
+    vi.useFakeTimers();
+    const call = async (path: string, init: MockInit = {}) => {
+      const promise = mockFetch(path, init);
+      await vi.advanceTimersByTimeAsync(400);
+      return promise;
+    };
+
+    const before = await call("/api/wallet", { headers });
+    expect(before.status).toBe(200);
+    const data0 = before.data as {
+      balance: number;
+      transactions: { type: string }[];
+    };
+    const b0 = data0.balance;
+    expect(b0).toBeGreaterThan(0);
+    // Сид-история содержит и пополнение, и списание за заказ.
+    expect(data0.transactions.some((t) => t.type === "topup")).toBe(true);
+    expect(data0.transactions.some((t) => t.type === "debit")).toBe(true);
+
+    // Невалидная сумма -> 400
+    const badAmount = await call("/api/wallet/topup", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: 10,
+        card: {
+          number: "4111 1111 1111 1111",
+          expiry: "12/30",
+          cvv: "123",
+          holder: "IVAN IVANOV",
+        },
+      }),
+    });
+    expect(badAmount.status).toBe(400);
+
+    // Карта-отказ -> 402
+    const refused = await call("/api/wallet/topup", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: 1000,
+        card: {
+          number: "0000 0000 0000 0000",
+          expiry: "12/30",
+          cvv: "123",
+          holder: "IVAN IVANOV",
+        },
+      }),
+    });
+    expect(refused.status).toBe(402);
+
+    // Успешное пополнение на 1000 ₽
+    const topup = await call("/api/wallet/topup", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: 1000,
+        card: {
+          number: "4111 1111 1111 1111",
+          expiry: "12/30",
+          cvv: "123",
+          holder: "IVAN IVANOV",
+        },
+      }),
+    });
+    expect(topup.status).toBe(200);
+    expect(
+      (topup.data as { balance: number; transaction: { type: string } })
+        .balance,
+    ).toBe(b0 + 1000);
+    expect(
+      (topup.data as { transaction: { type: string } }).transaction.type,
+    ).toBe("topup");
+
+    const after = await call("/api/wallet", { headers });
+    expect((after.data as { balance: number }).balance).toBe(b0 + 1000);
+  });
+
+  it("оплата заказа с личного счёта и нехватка средств", async () => {
+    const { headers } = await loginDemo();
+    vi.useFakeTimers();
+    const call = async (path: string, init: MockInit = {}) => {
+      const promise = mockFetch(path, init);
+      await vi.advanceTimersByTimeAsync(400);
+      return promise;
+    };
+
+    const before = await call("/api/wallet", { headers });
+    const b0 = (before.data as { balance: number }).balance;
+
+    // Пополняем на 5000 ₽
+    const topup = await call("/api/wallet/topup", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: 5000,
+        card: {
+          number: "4111 1111 1111 1111",
+          expiry: "12/30",
+          cvv: "123",
+          holder: "IVAN IVANOV",
+        },
+      }),
+    });
+    expect(topup.status).toBe(200);
+
+    // Создаём заказ уровня S (4900 ₽)
+    const created = await call("/api/orders", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cadastral: "36:16:3405742:189",
+        level: "s",
+        offerAccepted: true,
+        offerVersion: "1.0",
+      }),
+    });
+    const orderId = (created.data as { order: { id: string } }).order.id;
+
+    // Оплата со счёта
+    const paid = await call("/api/orders/" + orderId + "/pay", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({ fromBalance: true }),
+    });
+    expect(paid.status).toBe(200);
+    const paidData = paid.data as {
+      order: { status: string };
+      balance: number;
+    };
+    // startGeneration() сразу переводит заказ в обработку.
+    expect(paidData.order.status).toBe("Передан в обработку");
+    expect(paidData.balance).toBe(b0 + 5000 - 4900);
+
+    const after = await call("/api/wallet", { headers });
+    expect((after.data as { balance: number }).balance).toBe(b0 + 5000 - 4900);
+    // В истории появилось списание за заказ.
+    const debitTx = (after.data as { transactions: { type: string }[] })
+      .transactions;
+    expect(debitTx.some((t) => t.type === "debit")).toBe(true);
+
+    // Недостаточно средств: уровень L (49900 ₽) при остатке < 4900.
+    const big = await call("/api/orders", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        cadastral: "36:25:6945030:776",
+        level: "l",
+        offerAccepted: true,
+        offerVersion: "1.0",
+      }),
+    });
+    const bigId = (big.data as { order: { id: string } }).order.id;
+    const noFunds = await call("/api/orders/" + bigId + "/pay", {
+      method: "POST",
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify({ fromBalance: true }),
+    });
+    expect(noFunds.status).toBe(400);
+    expect((noFunds.data as { error: string }).error).toMatch(
+      /Недостаточно средств/,
+    );
+  });
+
+  it("админ: балансы пользователей и пополнение счёта техподдержкой", async () => {
+    // Логинимся администратором на реальных таймерах.
+    const adminRes = await mockFetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: "admin@georazum.ru",
+        password: "admin123",
+      }),
+    });
+    const adminToken = (adminRes.data as { token: string }).token;
+    const adminHeaders = authHeaders(adminToken);
+    vi.useFakeTimers();
+    const call = async (path: string, init: MockInit = {}) => {
+      const promise = mockFetch(path, init);
+      await vi.advanceTimersByTimeAsync(400);
+      return promise;
+    };
+
+    const users = await call("/api/admin/users", { headers: adminHeaders });
+    expect(users.status).toBe(200);
+    const userList = (
+      users.data as {
+        users: { id: string; email: string; balance: number }[];
+      }
+    ).users;
+    const ivan = userList.find((u) => u.email === "ivan@mail.ru");
+    expect(ivan).toBeDefined();
+    expect(typeof ivan!.balance).toBe("number");
+
+    // Счёт пользователя: баланс и история
+    const wallet = await call("/api/admin/users/" + ivan!.id + "/wallet", {
+      headers: adminHeaders,
+    });
+    expect(wallet.status).toBe(200);
+    const w = wallet.data as {
+      user: { balance: number };
+      transactions: unknown[];
+    };
+    expect(w.user.balance).toBe(ivan!.balance);
+    expect(w.transactions.length).toBeGreaterThan(0);
+
+    // Пополнение службой поддержки на 500 ₽
+    const adminTopup = await call("/api/admin/users/" + ivan!.id + "/topup", {
+      method: "POST",
+      headers: { ...adminHeaders, "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: 500 }),
+    });
+    expect(adminTopup.status).toBe(200);
+    expect(
+      (adminTopup.data as { user: { balance: number } }).user.balance,
+    ).toBe(ivan!.balance + 500);
+
+    const after = await call("/api/admin/users", { headers: adminHeaders });
+    const afterList = (
+      after.data as {
+        users: { id: string; balance: number }[];
+      }
+    ).users;
+    const ivanAfter = afterList.find((u) => u.id === ivan!.id);
+    expect(ivanAfter!.balance).toBe(ivan!.balance + 500);
+  });
 });

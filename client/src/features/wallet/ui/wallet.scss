@@ -1,0 +1,77 @@
+/* Вкладка «Счёт» в личном кабинете */
+
+.wallet-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .wallet-grid { grid-template-columns: 1fr; }
+}
+
+/* Карточка баланса */
+.wallet-balance {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 20px;
+  background: var(--grad);
+  color: #fff;
+  border: none;
+}
+.wallet-balance__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.wallet-balance__main { display: flex; flex-direction: column; gap: 4px; }
+.wallet-balance__label { font-size: 13px; opacity: 0.85; }
+.wallet-balance__value { font-size: 28px; font-weight: 800; letter-spacing: 0.2px; }
+.wallet-balance__hint { font-size: 12.5px; opacity: 0.85; }
+
+/* Форма пополнения */
+.wallet-topup { padding: 20px; }
+.wallet-topup__title { margin: 0 0 14px; font-size: 16px; }
+.wallet-topup__card {
+  margin-top: 8px;
+  padding: 14px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+}
+
+.wallet-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+.wallet-preset {
+  padding: 7px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--text);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.wallet-preset:hover { border-color: var(--blue); }
+.wallet-preset--active {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue-dark);
+}
+
+/* История операций */
+.wallet-history { margin-top: 24px; }
+
+.wallet-amount { white-space: nowrap; }
+.wallet-amount--plus { color: var(--green-dark); }
+.wallet-amount--minus { color: var(--blue-dark); }

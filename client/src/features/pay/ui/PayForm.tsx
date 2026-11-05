@@ -8,7 +8,12 @@ import { IconCard } from "@/shared/icons";
 import { payOrder, type OrderFull } from "@/entities/order/api";
 import { cardError } from "@/shared/lib/validators";
 import { ApiError } from "@/shared/api/client";
-import { formatCardNumber, formatCvv, formatExpiry, EMPTY_CARD } from "../lib/cardForm";
+import {
+  formatCardNumber,
+  formatCvv,
+  formatExpiry,
+  EMPTY_CARD,
+} from "../lib/cardForm";
 
 export type PayFormProps = {
   order: OrderFull;
@@ -31,10 +36,12 @@ export function PayForm({ order, onSuccess }: PayFormProps) {
     if (err) return setError(err);
     setBusy(true);
     try {
-      await payOrder(order.id, card);
+      await payOrder(order.id, { card });
       onSuccess();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Не удалось провести оплату.");
+      setError(
+        err instanceof ApiError ? err.message : "Не удалось провести оплату.",
+      );
     } finally {
       setBusy(false);
     }
@@ -54,7 +61,9 @@ export function PayForm({ order, onSuccess }: PayFormProps) {
           autoComplete="cc-number"
           placeholder="4111 1111 1111 1111"
           value={card.number}
-          onChange={(e) => setCard((c) => ({ ...c, number: formatCardNumber(e.target.value) }))}
+          onChange={(e) =>
+            setCard((c) => ({ ...c, number: formatCardNumber(e.target.value) }))
+          }
         />
       </Field>
       <div className="grid-2" style={{ gap: 12 }}>
@@ -64,7 +73,9 @@ export function PayForm({ order, onSuccess }: PayFormProps) {
             autoComplete="cc-exp"
             placeholder="ММ/ГГ"
             value={card.expiry}
-            onChange={(e) => setCard((c) => ({ ...c, expiry: formatExpiry(e.target.value) }))}
+            onChange={(e) =>
+              setCard((c) => ({ ...c, expiry: formatExpiry(e.target.value) }))
+            }
           />
         </Field>
         <Field label="CVV">
@@ -75,7 +86,9 @@ export function PayForm({ order, onSuccess }: PayFormProps) {
             placeholder="•••"
             maxLength={3}
             value={card.cvv}
-            onChange={(e) => setCard((c) => ({ ...c, cvv: formatCvv(e.target.value) }))}
+            onChange={(e) =>
+              setCard((c) => ({ ...c, cvv: formatCvv(e.target.value) }))
+            }
           />
         </Field>
       </div>
@@ -84,17 +97,27 @@ export function PayForm({ order, onSuccess }: PayFormProps) {
           autoComplete="cc-name"
           placeholder="IVAN IVANOV"
           value={card.holder}
-          onChange={(e) => setCard((c) => ({ ...c, holder: e.target.value.toUpperCase() }))}
+          onChange={(e) =>
+            setCard((c) => ({ ...c, holder: e.target.value.toUpperCase() }))
+          }
         />
       </Field>
 
       <div className="form-actions">
-        <Button type="submit" variant="accent" block size="lg" disabled={busy} icon={busy ? <Spinner /> : <IconCard size={18} />}>
+        <Button
+          type="submit"
+          variant="accent"
+          block
+          size="lg"
+          disabled={busy}
+          icon={busy ? <Spinner /> : <IconCard size={18} />}
+        >
           {busy ? "Оплачиваем…" : "Оплатить"}
         </Button>
       </div>
       <p className="muted" style={{ fontSize: 13, marginBottom: 0 }}>
-        Оплата защищена. Данные карты обрабатывает платёжный провайдер и не хранятся на сайте.
+        Оплата защищена. Данные карты обрабатывает платёжный провайдер и не
+        хранятся на сайте.
       </p>
     </form>
   );

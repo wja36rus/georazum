@@ -94,7 +94,8 @@
 
 `auth` (SignIn/SignUp/Recovery-формы), `order-wizard` (6 шагов: участки →
 уровень → параметры M/L → заказчик → контакты → проверка), `pay`
-(PayForm + валидация карты), `order-actions` (Retry/Resend/DownloadReportLink),
+(PayForm + валидация карты), `wallet` (WalletTab: баланс, пополнение картой,
+история операций), `order-actions` (Retry/Resend/DownloadReportLink),
 `feedback`, `profile` (смена данных/пароля), `admin/forms`
 (LevelForm/OrderStatusForm/UserBlockButton/OfferForm).
 
@@ -115,9 +116,9 @@
 /login, /register, /recovery
 /order               Визард заказа (защищён, 6 шагов)
 /order/:id           Статус генерации (поллинг 2 с)
-/order/:id/pay       Оплата картой
+/order/:id/pay       Оплата: картой или с личного счёта
 /order/:id/report    Отчёт (печать) — защищён, без шапки/футера
-/cabinet             ЛК, табы: overview, orders, reports, payments, documents, profile, support
+/cabinet             ЛК, табы: overview, orders, reports, payments, wallet (Счёт), documents, profile, support
 /admin               Админка, табы: overview, orders, users, tariffs, generations, offer
 *                    NotFound
 ```

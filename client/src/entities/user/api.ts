@@ -19,6 +19,8 @@ export type User = {
 export type AdminUser = User & {
   ordersCount: number;
   deleteRequestedAt: string | null;
+  /** Текущий остаток на личном счёте, ₽. */
+  balance: number;
 };
 
 export type LoginResult = {
@@ -47,14 +49,23 @@ export const logout = () => apiPost<{ ok: boolean }>("/api/auth/logout");
 
 export const getMe = () => apiGet<{ user: User }>("/api/auth/me");
 
-export const updateProfile = (patch: { firstName?: string; lastName?: string; phone?: string; email?: string }) =>
-  apiPatch<{ user: User }>("/api/auth/profile", patch);
+export const updateProfile = (patch: {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+}) => apiPatch<{ user: User }>("/api/auth/profile", patch);
 
 export const changePassword = (currentPassword: string, newPassword: string) =>
-  apiPatch<{ ok: boolean; token: string }>("/api/auth/password", { currentPassword, newPassword });
+  apiPatch<{ ok: boolean; token: string }>("/api/auth/password", {
+    currentPassword,
+    newPassword,
+  });
 
 export const recovery = (email: string) =>
   apiPost<{ ok: boolean; message: string }>("/api/auth/recovery", { email });
 
 export const deleteRequest = (password: string) =>
-  apiPost<{ ok: boolean; message: string }>("/api/auth/delete-request", { password });
+  apiPost<{ ok: boolean; message: string }>("/api/auth/delete-request", {
+    password,
+  });

@@ -314,6 +314,8 @@ export type MockUser = {
   confirmed: boolean;
   createdAt: string;
   deleteRequestedAt: string | null;
+  /** Текущий баланс личного счёта (₽). */
+  balance: number;
 };
 
 export type MockCustomer = {
@@ -372,6 +374,21 @@ export type MockPayment = {
   transactionId: string;
 };
 
+/** Операция по личному счёту: пополнение или списание за услугу. */
+export type MockWalletTx = {
+  id: string;
+  userId: string;
+  type: "topup" | "debit";
+  /** Сумма операции, ₽ (всегда положительное число). */
+  amount: number;
+  /** Остаток на счёте после операции. */
+  balanceAfter: number;
+  /** Заказ, за который списаны средства (только для type: "debit"). */
+  orderId?: string;
+  description: string;
+  createdAt: string;
+};
+
 export type MockNotification = {
   id: string;
   userId: string;
@@ -420,6 +437,7 @@ let userSeq = 1;
 let orderSeq = 1001;
 let paymentSeq = 1001;
 let genSeq = 1;
+let txSeq = 1;
 
 const mkUser = (
   firstName: string,
@@ -440,6 +458,7 @@ const mkUser = (
   confirmed: true,
   createdAt: fmt(),
   deleteRequestedAt: null,
+  balance: 0,
 });
 
 const users: MockUser[] = [];
@@ -451,6 +470,7 @@ const payments: MockPayment[] = [];
 const notifications: MockNotification[] = [];
 const reports: Record<string, MockReport> = {};
 const generationQueue: MockGenJob[] = [];
+const transactions: MockWalletTx[] = [];
 
 /* Демо-данные, чтобы ЛК и админка выглядели живыми. */
 function seed() {
@@ -544,6 +564,30 @@ function seed() {
   };
   orders.push(o1, o2);
 
+  /* Личный счёт Ивана: баланс и история операций (демо). */
+  ivan.balance = 15100;
+  transactions.push(
+    {
+      id: "T-1",
+      userId: ivan.id,
+      type: "topup",
+      amount: 20000,
+      balanceAfter: 20000,
+      description: "Пополнение счёта",
+      createdAt: "25.10.2026 10:00",
+    },
+    {
+      id: "T-2",
+      userId: ivan.id,
+      type: "debit",
+      amount: o2.price,
+      balanceAfter: 15100,
+      orderId: o2.id,
+      description: "Оплата заказа " + o2.id + " (уровень S)",
+      createdAt: o2.paidAt ?? "28.10.2026 09:12",
+    },
+  );
+
   payments.push(
     {
       id: "P-1001",
@@ -560,7 +604,7 @@ function seed() {
       orderId: o2.id,
       userId: ivan.id,
       amount: o2.price,
-      method: "card",
+      method: "balance",
       status: "Оплачен",
       createdAt: o2.paidAt ?? "",
       transactionId: o2.transactionId ?? "",
@@ -601,6 +645,7 @@ export const db = {
   notifications,
   reports,
   generationQueue,
+  transactions,
 };
 
 export const counters = {
@@ -608,4 +653,5 @@ export const counters = {
   nextOrder: () => "GR-" + orderSeq++,
   nextPayment: () => "P-" + paymentSeq++,
   nextGen: () => "G-" + genSeq++,
+  nextTx: () => "T-" + txSeq++,
 };

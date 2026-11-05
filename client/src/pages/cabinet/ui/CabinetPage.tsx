@@ -12,6 +12,7 @@ import {
   DeleteRequestForm,
 } from "@/features/profile/ui/profile";
 import { FeedbackForm } from "@/features/feedback/ui/FeedbackForm";
+import { WalletTab } from "@/features/wallet/ui/WalletTab";
 import { useAuth } from "@/app/providers/auth";
 import { Alert } from "@/shared/ui/Alert";
 import { Spinner } from "@/shared/ui/Spinner";
@@ -24,6 +25,7 @@ import {
   IconOrders,
   IconReports,
   IconPayments,
+  IconWallet,
   IconDocuments,
   IconProfile,
   IconSupport,
@@ -32,13 +34,13 @@ import {
   IconCheckCircle,
 } from "@/shared/icons";
 import "./cabinet.scss";
-import "./cabinet.scss";
 
 type TabKey =
   | "overview"
   | "orders"
   | "reports"
   | "payments"
+  | "wallet"
   | "documents"
   | "profile"
   | "support";
@@ -48,6 +50,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "orders", label: "Заказы" },
   { key: "reports", label: "Отчёты" },
   { key: "payments", label: "Платежи" },
+  { key: "wallet", label: "Счёт" },
   { key: "documents", label: "Документы" },
   { key: "profile", label: "Профиль" },
   { key: "support", label: "Поддержка" },
@@ -58,6 +61,7 @@ const TAB_ICONS: Record<TabKey, ReactNode> = {
   orders: <IconOrders size={18} />,
   reports: <IconReports size={18} />,
   payments: <IconPayments size={18} />,
+  wallet: <IconWallet size={18} />,
   documents: <IconDocuments size={18} />,
   profile: <IconProfile size={18} />,
   support: <IconSupport size={18} />,
@@ -103,6 +107,8 @@ export function CabinetPage() {
         <ReportsTab />
       ) : tab === "payments" ? (
         <PaymentsTab />
+      ) : tab === "wallet" ? (
+        <WalletTab />
       ) : tab === "documents" ? (
         <DocumentsTab />
       ) : tab === "profile" ? (

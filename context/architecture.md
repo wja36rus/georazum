@@ -19,13 +19,13 @@
 Point of entry: `src/index.js` (`app.listen(PORT=4000)`). Без сборки, чистый
 Node (18+, требуется global `fetch` для тестов; проверено на Node 24).
 
-| Файл                | Роль                                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `src/app.js`        | Все HTTP-роуты, валидация, авторизация, ответы (`orderSummary`/`orderFull`/`publicUser`)                      |
-| `src/db.js`         | In-memory БД + сид-данные, уровни S/M/L, участки, оферта, документы; `hash`/`verify` (scrypt), `CADASTRAL_RE` |
-| `src/generation.js` | Движок статусов: `startGeneration` (цепочка setTimeout ~4,2 с), `retryGeneration`, уведомления, мок-письма    |
-| `src/report.js`     | `buildReport(order)` — структура отчёта по уровню S/M/L                                                       |
-| `test.js`           | Smoke-тест всего API (32 проверки)                                                                            |
+| Файл                | Роль                                                                                                                                                                         |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app.js`        | Все HTTP-роуты, валидация, авторизация, ответы (`orderSummary`/`orderFull`/`publicUser`), кошелёк (баланс, пополнение, списание)                                             |
+| `src/db.js`         | In-memory БД + сид-данные, уровни S/M/L, участки, оферта, документы; `hash`/`verify` (scrypt), `CADASTRAL_RE`; кошелёк: `user.balance`, `db.transactions`, `seq.transaction` |
+| `src/generation.js` | Движок статусов: `startGeneration` (цепочка setTimeout ~4,2 с), `retryGeneration`, уведомления, мок-письма                                                                   |
+| `src/report.js`     | `buildReport(order)` — структура отчёта по уровню S/M/L                                                                                                                      |
+| `test.js`           | Smoke-тест всего API (42 проверки: +10 на личный счёт)                                                                                                                       |
 
 ### Потоки данных
 
@@ -35,9 +35,12 @@ Node (18+, требуется global `fetch` для тестов; провере
    `db.parcels` → уровень существует и доступен → `offerAccepted === true` и
    `offerVersion === db.offer.version` (иначе 409). Заказ создаётся со статусом
    «Ожидает оплаты», фиксируется `offer: {version, acceptedAt}`.
-3. **Оплата** → `cardValid()` (16 цифр, ММ/ГГ не в прошлом, CVV 3, владелец);
-   карта `0000000000000000` → 402. Успех: платёж в `db.payments`, `paidAt`,
-   статусы «Оплачен» → «Передан в обработку» (синхронно, через `startGeneration`).
+3. **Оплата** → два способа: картой (`cardValid()`, 16 цифр, ММ/ГГ не в прошлом,
+   CVV 3, владелец; карта `0000000000000000` → 402) или с личного счёта
+   (`{ fromBalance: true }` → проверка `user.balance >= order.price`, иначе 400;
+   списание `debitWallet` + платёж `method: "balance"`). Успех: платёж в
+   `db.payments`, `paidAt`, статусы «Оплачен» → «Передан в обработку»
+   (синхронно, через `startGeneration`).
 4. **Генерация** → setTimeout-статусы; на финише `buildReport` → `db.reports`,
    `reportId` у заказа, «Готово», уведомления + письмо. Таймеры в `timers`
    (Map orderId → [timeoutId]); незавершённые теряются при рестарте (допустимо).
@@ -58,8 +61,10 @@ Node (18+, требуется global `fetch` для тестов; провере
 offer{version, acceptedAt}, createdAt, paidAt, reportId, transactionId,
 generationAttempts}` (плюс служебный `_jobId`, в ответы не попадает).
 - `user`: `{id, firstName, lastName, name, email, phone, password, role, blocked,
-confirmed, createdAt, deleteRequestedAt?}`.
-- `payment`: `{id, orderId, userId, amount, method, status, createdAt, transactionId}`.
+confirmed, createdAt, deleteRequestedAt?, balance}`.
+- `payment`: `{id, orderId, userId, amount, method (card|balance), status, createdAt, transactionId}`.
+- `wallet transaction`: `{id, userId, type (topup|debit), amount, balanceAfter,
+orderId? (debit), description, createdAt}` — история счёта хранится в `db.transactions`.
 - `notification`: `{id, userId, type, text, createdAt, read}`.
 - `generation job`: `{id, orderId, level, attempts, status, startedAt, finishedAt, error}`.
 
@@ -106,12 +111,12 @@ GitHub Pages не может запустить Express, поэтому для �
 
 Реализация — `client/src/shared/api/mock/` (зеркало сервера):
 
-| Файл               | Роль                                                                                                                                                                                                                                                                                   |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `data.ts`          | in-memory хранилище + сид (уровни, участки, оферта, пользователи, заказы). Зеркало `server/src/db.js`. Участки: 5 шт., у `…189` два смежных соседа `…190`/`…191`, расстояния между районами                                                                                            |
-| `report.ts`        | генератор отчёта S/M/L. Зеркало `server/src/report.js`; многоучастковый заказ — несколько номеров в заголовке, суммарная площадь, список участков в разделе 1                                                                                                                          |
-| `handlers.ts`      | роутер запросов: все эндпоинты `/api`, валидация, статусы, оплата (карта-отказ `0000…` → 402), генерация с таймерами. Зеркало `server/src/app.js`; `POST /api/parcels/mutual` — взаимное расположение (смежность/расстояние); `POST /api/orders` принимает `cadastrals[]` + `customer` |
-| `handlers.test.ts` | 7 smoke-тестов: логин, 401, публичные данные, полный цикл заказ→оплата→генерация→отчёт, взаимное расположение, многоучастковый заказ                                                                                                                                                   |
+| Файл               | Роль                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data.ts`          | in-memory хранилище + сид (уровни, участки, оферта, пользователи, заказы, кошелёк: `balance`, `transactions`). Зеркало `server/src/db.js`. Участки: 5 шт., у `…189` два смежных соседа `…190`/`…191`, расстояния между районами                                                                                                                                                                                            |
+| `report.ts`        | генератор отчёта S/M/L. Зеркало `server/src/report.js`; многоучастковый заказ — несколько номеров в заголовке, суммарная площадь, список участков в разделе 1                                                                                                                                                                                                                                                              |
+| `handlers.ts`      | роутер запросов: все эндпоинты `/api`, валидация, статусы, оплата (карта-отказ `0000…` → 402, `fromBalance` → списание со счёта), кошелёк (`/api/wallet`, `/api/wallet/topup`, админ: `/api/admin/users/:id/wallet`, `:id/topup`), генерация с таймерами. Зеркало `server/src/app.js`; `POST /api/parcels/mutual` — взаимное расположение (смежность/расстояние); `POST /api/orders` принимает `cadastrals[]` + `customer` |
+| `handlers.test.ts` | 10 smoke-тестов: логин, 401, публичные данные, полный цикл заказ→оплата→генерация→отчёт, взаимное расположение, многоучастковый заказ, кошелёк (пополнение, оплата со счёта, админ-пополнение)                                                                                                                                                                                                                             |
 
 Подключение — в `shared/api/client.ts`: `USE_MOCKS` → динамический
 `import("./mock/handlers")` (отдельный чанк, грузится только в мок-режиме;
@@ -125,7 +130,7 @@ GitHub Pages не может запустить Express, поэтому для �
 | `npm run dev`       | Rspack dev-server + HMR на http://127.0.0.1:5173 (прокси `/api` → 4000) |
 | `npm run build`     | Продакшен-сборка в `client/dist`                                        |
 | `npm run typecheck` | `tsc --noEmit`                                                          |
-| `npm test`          | Vitest run (44 теста, jsdom)                                            |
+| `npm test`          | Vitest run (47 тестов, jsdom)                                           |
 
 ### Структура (FSD)
 
@@ -144,9 +149,9 @@ client/src/
 ├── features/       auth (SignIn/SignUp/Recovery), order-wizard (6 шагов: участки →
 │                   уровень → параметры M/L → заказчик → контакты → проверка/оплата), pay (PayForm),
 │                   order-actions (Retry/Resend/DownloadReportLink), feedback,
-│                   profile, admin/forms (LevelForm/OrderStatusForm/UserBlockButton/OfferForm)
-├── entities/       10 доменных сущностей: level, user, parcel, offer, document,
-│                   order (модель с 10 статусами), payment, notification, report, admin
+│                   profile, wallet (WalletTab: баланс, пополнение, история), admin/forms (LevelForm/OrderStatusForm/UserBlockButton/OfferForm)
+├── entities/       11 доменных сущностей: level, user, parcel, offer, document,
+│                   order (модель с 10 статусами), payment, notification, report, admin, wallet
 └── shared/         api (client.ts: ApiError, apiGet/Post/Patch/Put, setUnauthorizedHandler),
                     config, icons (SVG-компоненты: actions/logo/nav/status),
                     lib (format: fmtPrice/phoneHref; validators), ui (Button, Input,
@@ -166,7 +171,7 @@ client/src/
   `/order/:id/pay`.
 - `/cabinet` (Protected) и `/admin` (AdminOnly) — со своим каркасом
   `SidebarLayout`, табы через `?tab=` (ЛК: overview/orders/reports/payments/
-  documents/profile/support; админка: overview/orders/users/tariffs/generations/offer).
+  wallet/documents/profile/support; админка: overview/orders/users/tariffs/generations/offer).
 - `/order/:id/report` (Protected) — без шапки и футера, для печати
   (`window.print()` + `@media print`, `.no-print`).
 - `*` → `NotFoundPage`.
@@ -184,7 +189,14 @@ client/src/
   (`POST /api/parcels/mutual`: смежные / несмежные с подтверждением).
 - **Оплата**: `PayForm` валидирует карту (16 цифр, ММ/ГГ, CVV, владелец) →
   `POST /api/orders/:id/pay`. Успех → сразу «Передан в обработку» (бэкенд
-  синхронно запускает генерацию), редирект на `/order/:id`.
+  синхронно запускает генерацию), редирект на `/order/:id`. Альтернатива: на
+  странице оплаты блок «Оплата со счёта» (баланс + кнопка, при нехватке
+  средств — предупреждение) → `payOrder(id, { fromBalance: true })`.
+- **Счёт**: вкладка «Счёт» в ЛК (`WalletTab`, feature `wallet`): баланс на
+  фирменном градиенте, форма пополнения картой (пресеты 1/5/10/25 тыс.),
+  история операций (Пополнение/Списание, суммы +/−, остаток, ссылка на заказ
+  для списаний). В админке у пользователя `<details>` «Счёт»: баланс, история,
+  пополнение техподдержкой.
 - **Статус**: поллинг каждые 2 с до «Готово» / ошибки; по «Готово» — ссылка на
   отчёт.
 - **Отчёт**: `GET /api/orders/:id/report` → `ReportView` рендерит разделы по

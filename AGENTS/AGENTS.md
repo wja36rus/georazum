@@ -8,7 +8,8 @@
 SaaS-сервис «Гео Разум» — аналитическое заключение по земельному участку по
 кадастровому номеру. Покупаются уровни анализа **S / M / L** (цена 4 900 /
 14 900 / 49 900 ₽, срок до 24 ч / 3 сут / 7 сут). Заказ → акцепт оферты → оплата
-картой → асинхронная генерация отчёта (10 статусов, п. 8.3 ТЗ) → PDF.
+картой **или с личного счёта** → асинхронная генерация отчёта (10 статусов,
+п. 8.3 ТЗ) → PDF.
 
 - **Backend**: Node.js + Express, готов и покрыт smoke-тестом (`server/test.js`).
 - **Frontend**: React 19 + TypeScript (strict) + **Rspack** (не Vite!), FSD,
@@ -19,13 +20,13 @@ SaaS-сервис «Гео Разум» — аналитическое закл�
 
 | Команда                          | Что делает                                         |
 | -------------------------------- | -------------------------------------------------- |
-| `cd server && npm test`          | Smoke-тест всего API (32 проверки, Node 18+)       |
+| `cd server && npm test`          | Smoke-тест всего API (42 проверки, Node 18+)       |
 | `cd server && npm start`         | API на http://127.0.0.1:4000                       |
 | `cd client && npm install`       | Установка зависимостей клиента                     |
 | `cd client && npm run dev`       | Rspack dev-server :5173, HMR, прокси `/api` → 4000 |
 | `cd client && npm run build`     | Продакшен-сборка в `client/dist`                   |
 | `cd client && npm run typecheck` | `tsc --noEmit` (strict, `noUnusedLocals`)          |
-| `cd client && npm test`          | Vitest run (44 теста, jsdom)                       |
+| `cd client && npm test`          | Vitest run (47 тестов, jsdom)                      |
 
 ## Дизайн (обязательно)
 
@@ -59,9 +60,9 @@ client/src/
 ├── pages/      17 страниц по одной папке: pages/<name>/ui/<Name>Page.tsx
 ├── widgets/    header, footer, layouts/PublicLayout, sidebar/SidebarLayout, status-badge,
 │               level-card, order-card, recent-events, admin/, faq, report-view
-├── features/   auth/, order-wizard/ (6 шагов: участки → уровень → параметры M/L → заказчик → контакты → проверка), pay/, order-actions/, feedback/, profile/, admin/forms/
-├── entities/   10 доменных сущностей (level, user, parcel, offer, document, order, payment,
-│               notification, report, admin)
+├── features/   auth/, order-wizard/ (6 шагов: участки → уровень → параметры M/L → заказчик → контакты → проверка), pay/, order-actions/, feedback/, profile/, wallet/ (WalletTab: баланс, пополнение, история), admin/forms/
+├── entities/   11 доменных сущностей (level, user, parcel, offer, document, order, payment,
+│               notification, report, admin, wallet)
 └── shared/     api/ (client.ts), config/, icons/ (SVG-компоненты), lib/ (format, validators),
                 ui/ (Button, Input, …), testing/ (setup.ts)
 ```
@@ -89,6 +90,14 @@ client/src/
   не «чинить» под обычный пробел, тесты это нормализуют.
 - `phoneHref` возвращает `tel:+` + только цифры.
 - `AdminUser` импортируется из `@/entities/user/api`, НЕ из `entities/admin/api`.
+- **Личный счёт**: entity `wallet` (`@/entities/wallet/api`: `getWallet`,
+  `topUpWallet`); админ-методы в `@/entities/admin/api` (`getUserWallet`,
+  `topUpUserWallet`). `payOrder(id, payload)` — payload `{ card } | { fromBalance:
+true }`; ответ со счёта содержит `balance`. Оплата со счёта на странице
+  оплаты — `PayPage`, пополнение — `WalletTab` (feature `wallet`).
+- `MockUser` (моки) и `seedUser` (сервер) обязательно содержат `balance`;
+  регистрация нового пользователя в `mock/handlers.ts` — тоже (иначе typecheck
+  упадёт на `MockUser`).
 - Отчёт открывается по `/order/:id/report` без шапки/футера — печать
   `window.print()` + `@media print`, элементы шапки/кнопок — класс `.no-print`.
 - Роутер — react-router-dom v7 (`<Routes>`, гварды в `app/router/guards.tsx`).
@@ -138,9 +147,9 @@ client/src/
 
 ## Проверка перед сдачей
 
-1. `cd server && npm test` — все проверки зелёные (32/32).
+1. `cd server && npm test` — все проверки зелёные (42/42).
 2. Если трогал клиент: `cd client && npm run typecheck` (0 ошибок),
-   `npm test` (44/44) и `npm run build` без ошибок.
+   `npm test` (47/47) и `npm run build` без ошибок.
 3. Диагностики: без новых ошибок/предупреждений в изменённых файлах.
 
 Порты: API — 4000, dev-сервер — 5173. Если заняты — переиспользовать уже
